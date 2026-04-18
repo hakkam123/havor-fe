@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Nunito+Sans:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --app-bg: #f3f6fb;
+    --app-surface: #ffffff;
+    --app-surface-soft: #f8fafc;
+    --app-border: #e2e8f0;
+    --app-text: #0f172a;
+    --app-muted: #64748b;
+    --app-accent: #245f5a;
+    --marketing-bg: #f2f4f8;
+    --marketing-surface: #ffffff;
+    --marketing-border: #d5dce8;
+    --marketing-text: #0f172a;
+    --marketing-muted: #64748b;
+    --marketing-navy: #2f3f55;
+    --marketing-primary: #4f79b7;
+    --marketing-primary-soft: #e8eef8;
+    --marketing-accent-gray: #7f8b9d;
+  }
+
+  html {
+    font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-slate-100 text-slate-900 font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-white border border-slate-200 shadow-sm rounded-2xl;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-medium transition-colors duration-200;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-medium transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 appearance-none focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-300 transition-shadow;
+  }
+
+  .marketing-shell {
+    @apply min-h-screen bg-[var(--marketing-bg)] text-slate-900;
+  }
+
+  .marketing-container {
+    @apply mx-auto w-full max-w-[1180px] px-5 sm:px-8 lg:px-10;
+  }
+
+  .marketing-section {
+    @apply py-16 sm:py-20;
+  }
+
+  .marketing-card {
+    @apply rounded-2xl border border-[var(--marketing-border)] bg-white shadow-sm;
+  }
+
+  .marketing-kicker {
+    @apply inline-flex rounded-md bg-slate-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500;
+  }
+
+  .marketing-title {
+    @apply mt-5 font-display text-3xl font-semibold leading-tight text-slate-900 sm:text-4xl;
+  }
+
+  .marketing-copy {
+    @apply mt-4 text-sm leading-7 text-slate-500;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center rounded-xl border border-[var(--marketing-border)] bg-transparent px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-white;
+  }
+
+  .editorial-meta {
+    @apply text-[11px] font-semibold uppercase tracking-[0.13em] text-[var(--marketing-accent-gray)];
+  }
+
+  .listing-toolbar {
+    @apply rounded-2xl border border-[var(--marketing-border)] bg-white p-4 shadow-sm;
+  }
+}
