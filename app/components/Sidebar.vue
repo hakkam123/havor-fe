@@ -6,7 +6,6 @@
           <span class="text-white text-sm font-semibold tracking-[0.18em] ml-[2px]">HV</span>
         </div>
         <div>
-          <p class="text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400">Workspace</p>
           <h1 class="text-[16px] font-semibold text-slate-900 leading-none mt-1">Havor CMS</h1>
         </div>
       </div>
@@ -39,33 +38,10 @@
         </nav>
       </section>
 
-      <section>
-        <p class="px-3 mb-2 text-[11px] font-medium uppercase tracking-[0.16em] text-slate-400">Team</p>
-        <div class="space-y-1.5">
-          <button
-            v-for="member in teamMembers"
-            :key="member.name"
-            class="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-slate-50 transition-colors"
-          >
-            <div class="h-10 w-10 rounded-full flex items-center justify-center text-white text-xs font-medium" :class="member.avatarClass">
-              {{ member.initials }}
-            </div>
-            <div class="min-w-0">
-              <p class="text-sm font-medium text-slate-700 truncate">{{ member.name }}</p>
-              <p class="text-xs text-slate-400 truncate">{{ member.role }}</p>
-            </div>
-          </button>
-        </div>
-      </section>
+      
     </div>
 
     <div class="px-4 py-4 border-t border-slate-100 space-y-1.5">
-      <button class="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
-        <div class="h-9 w-9 rounded-lg bg-slate-100 flex items-center justify-center">
-          <LifeBuoy class="h-4 w-4" />
-        </div>
-        <span class="text-sm font-medium">Help & Support</span>
-      </button>
 
       <button class="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors">
         <div class="h-9 w-9 rounded-lg bg-slate-100 flex items-center justify-center">
@@ -93,6 +69,7 @@ import {
   Newspaper,
   PackageSearch,
   Briefcase,
+  Users,
   Image as ImageIcon,
   Star,
   Tags,
@@ -111,6 +88,7 @@ const mainMenuItems = [
   { label: 'News', path: '/admin/news', icon: Newspaper, badge: '4' },
   { label: 'Products', path: '/admin/products', icon: PackageSearch },
   { label: 'Works', path: '/admin/works', icon: Briefcase },
+  { label: 'Careers', path: '/admin/careers', icon: Users },
   { label: 'Banners', path: '/admin/banners', icon: ImageIcon },
   { label: 'Expertise', path: '/admin/expertises', icon: Star },
   { label: 'Categories', path: '/admin/categories', icon: Tags },

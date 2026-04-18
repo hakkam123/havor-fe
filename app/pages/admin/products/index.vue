@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-6" v-motion-fade-up>
-    <!-- Header Controls -->
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div>
         <h1 class="text-2xl font-semibold text-slate-900 mb-1">Products</h1>
@@ -8,133 +7,215 @@
       </div>
       <button @click="openModal()" class="btn-primary flex items-center gap-2">
         <Plus class="w-4 h-4" />
-        <span>Add Product</span>
+        <span>Create Product</span>
       </button>
     </div>
 
-    <!-- Toolbar -->
-    <div class="flex flex-wrap items-center justify-between gap-4 glass-panel p-4">
-      <div class="flex items-center gap-4 w-full sm:w-auto">
-        <div class="relative w-full sm:w-64">
+    <div class="glass-panel overflow-hidden">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between gap-4">
+        <div class="relative max-w-sm w-full">
           <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input type="text" placeholder="Search products..." class="input-field pl-10 h-10 w-full text-sm">
+          <input v-model="searchQuery" type="text" placeholder="Search products..." class="input-field pl-10 h-10 w-full text-sm">
         </div>
-        
-        <select class="input-field h-10 text-sm w-32 hidden sm:block">
-          <option value="">All Categories</option>
-          <option value="1">Hardware</option>
-          <option value="2">Software</option>
-        </select>
       </div>
-      
-      <div class="flex items-center gap-2 bg-slate-100 rounded-xl p-1 border border-slate-200">
-        <button @click="viewMode = 'grid'" class="p-1.5 rounded-lg transition-colors" :class="viewMode === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-700'">
-          <LayoutGrid class="w-4 h-4" />
-        </button>
-        <button @click="viewMode = 'list'" class="p-1.5 rounded-lg transition-colors" :class="viewMode === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-700'">
-          <List class="w-4 h-4" />
-        </button>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-600">
+          <thead class="bg-slate-50 text-xs uppercase text-slate-500 border-b border-slate-200">
+            <tr>
+              <th class="px-6 py-4 font-medium tracking-wider">Name</th>
+              <th class="px-6 py-4 font-medium tracking-wider">Category</th>
+              <th class="px-6 py-4 font-medium tracking-wider">Description</th>
+              <th class="px-6 py-4 font-medium tracking-wider">External Link</th>
+              <th class="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr v-for="item in filteredProducts" :key="item.id" class="hover:bg-slate-50 transition-colors duration-150">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0">
+                    <img v-if="item.image_url" :src="item.image_url" class="w-full h-full object-cover" />
+                    <ImageIcon v-else class="w-5 h-5 m-auto mt-2 text-slate-400" />
+                  </div>
+                  <div class="font-medium text-slate-900">{{ item.name }}</div>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span class="inline-flex px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs text-slate-600">{{ item.categoryName || '-' }}</span>
+              </td>
+              <td class="px-6 py-4 text-slate-500 max-w-[320px] truncate">{{ stripHtml(item.description) || '-' }}</td>
+              <td class="px-6 py-4">
+                <a v-if="item.external_link" :href="item.external_link" target="_blank" class="inline-flex items-center gap-1 text-slate-700 hover:text-slate-900">
+                  <ExternalLink class="w-3 h-3" />
+                  Visit
+                </a>
+                <span v-else class="text-slate-400">-</span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button @click="openModal(item)" class="p-1.5 text-slate-500 hover:text-slate-800 bg-white border border-slate-200 hover:border-slate-300 rounded-lg transition-colors">
+                    <Edit2 class="w-4 h-4" />
+                  </button>
+                  <button @click="handleDelete(item.id)" class="p-1.5 text-slate-500 hover:text-rose-600 bg-white border border-slate-200 hover:border-rose-200 rounded-lg transition-colors">
+                    <Trash2 class="w-4 h-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="!filteredProducts.length">
+              <td colspan="5" class="px-6 py-8 text-center text-slate-400">No products found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="p-4 border-t border-slate-200 flex items-center justify-between text-sm text-slate-500">
+        <div>Showing {{ filteredProducts.length }} entries</div>
       </div>
     </div>
 
-    <!-- Content Area: Grid View -->
-    <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="item in products" :key="item.id" class="glass-panel overflow-hidden group hover:border-slate-300 transition-colors">
-        <div class="h-48 bg-slate-100 relative overflow-hidden">
-          <img v-if="item.image_url" :src="item.image_url" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          <div v-else class="absolute inset-0 flex items-center justify-center text-slate-600">
-            <ImageIcon class="w-12 h-12" />
-          </div>
-          <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button @click="openModal(item)" class="p-2 bg-white text-slate-700 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"><Edit2 class="w-4 h-4"/></button>
-            <button @click="handleDelete(item.id)" class="p-2 bg-white text-slate-700 rounded-lg border border-slate-200 hover:text-rose-600 hover:bg-slate-50 transition-colors"><Trash2 class="w-4 h-4"/></button>
-          </div>
-        </div>
-        <div class="p-4">
-          <div class="flex justify-between items-start mb-2">
-            <h3 class="font-semibold text-lg text-slate-900 truncate">{{ item.name }}</h3>
-            <span class="px-2 py-0.5 bg-slate-100 border border-slate-200 rounded text-[10px] text-slate-600 uppercase tracking-wide">{{ item.categoryName }}</span>
-          </div>
-          <p class="text-sm text-slate-500 line-clamp-2 mb-4">{{ item.description }}</p>
-          <a v-if="item.external_link" :href="item.external_link" target="_blank" class="text-xs text-slate-700 hover:text-slate-900 flex items-center gap-1">
-            <ExternalLink class="w-3 h-3" /> View External Link
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Add/Edit Modal (Simplified for brevity) -->
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4" v-motion-fade>
+    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" v-motion-fade>
       <div class="absolute inset-0 bg-slate-900/40" @click="closeModal"></div>
-      
-      <div class="glass-panel w-full max-w-lg relative z-10 p-6" v-motion-slide-visible-bottom>
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-xl font-semibold text-slate-900">{{ form.id ? 'Edit Product' : 'Add Product' }}</h2>
-          <button @click="closeModal" class="text-slate-400 hover:text-slate-700"><X class="w-5 h-5" /></button>
+
+      <div class="glass-panel w-full max-w-4xl max-h-[90vh] flex flex-col relative z-10 overflow-hidden" v-motion-slide-visible-bottom>
+        <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white">
+          <h2 class="text-xl font-semibold text-slate-900">{{ form.id ? 'Edit Product' : 'Create Product' }}</h2>
+          <button @click="closeModal" class="p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors">
+            <X class="w-5 h-5" />
+          </button>
         </div>
-        <form @submit.prevent="saveProduct" class="space-y-4">
-          <div><label class="block text-sm text-slate-600 mb-1">Name</label><input v-model="form.name" type="text" class="input-field"></div>
-          <div><label class="block text-sm text-slate-600 mb-1">Description</label><textarea v-model="form.description" rows="3" class="input-field"></textarea></div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm text-slate-600 mb-1">Category</label>
-              <select v-model="form.categoryId" class="input-field" required>
-                <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-              </select>
+
+        <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
+          <form @submit.prevent="saveProduct" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-slate-600 mb-1">Name <span class="text-rose-500">*</span></label>
+                  <input v-model="form.name" type="text" required class="input-field" placeholder="Product name">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600 mb-1">Category <span class="text-rose-500">*</span></label>
+                  <select v-model="form.categoryId" class="input-field py-2.5" required>
+                    <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600 mb-1">External Link</label>
+                  <input v-model="form.external_link" type="url" class="input-field" placeholder="https://...">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-600 mb-1">Image</label>
+                <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 h-[190px] flex flex-col items-center justify-center hover:border-slate-400 hover:bg-slate-50 transition-all cursor-pointer relative overflow-hidden group">
+                  <div v-if="form.image_url" class="absolute inset-0">
+                    <img :src="form.image_url" class="w-full h-full object-cover">
+                  </div>
+                  <div v-else class="text-center">
+                    <Upload class="w-8 h-8 text-slate-400 mx-auto mb-2 group-hover:text-slate-600 transition-colors" />
+                    <p class="text-sm text-slate-500 group-hover:text-slate-700">Click or drag image here</p>
+                  </div>
+                  <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" @change="handleImageUpload">
+                </div>
+                <p v-if="form.imageFileName" class="mt-2 text-xs text-slate-500">{{ form.imageFileName }}</p>
+              </div>
             </div>
-            <div><label class="block text-sm text-slate-600 mb-1">External Link</label><input v-model="form.external_link" type="url" class="input-field" placeholder="https://..."></div>
-          </div>
-          <div>
-            <label class="block text-sm text-slate-600 mb-1">Image</label>
-            <input type="file" accept="image/*" class="input-field py-2" @change="handleImageUpload">
-            <p v-if="form.imageFileName" class="mt-2 text-xs text-slate-400">{{ form.imageFileName }}</p>
-          </div>
-          <button type="submit" class="w-full btn-primary py-2 mt-4">Save Product</button>
-        </form>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-600 mb-2">Description <span class="text-rose-500">*</span></label>
+              <div class="border border-slate-200 rounded-lg overflow-hidden bg-white h-[300px]">
+                <Editor
+                  api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
+                  v-model="form.description"
+                  :init="editorConfig"
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-3">
+          <button @click="closeModal" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium">Cancel</button>
+          <button @click="saveProduct" class="btn-primary py-2 text-sm">Save Product</button>
+        </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Plus, Search, LayoutGrid, List, Edit2, Trash2, X, ExternalLink, Image as ImageIcon } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
+import { Plus, Search, Edit2, Trash2, X, ExternalLink, Upload, Image as ImageIcon } from 'lucide-vue-next'
+import Editor from '@tinymce/tinymce-vue'
 
-const viewMode = ref('grid')
 const { products, fetchProducts, createProduct, updateProduct, deleteProduct } = useProducts()
 const { categories, fetchCategories } = useCategories()
+
+const isModalOpen = ref(false)
+const searchQuery = ref('')
+const form = ref({})
+
+const editorConfig = {
+  height: 300,
+  menubar: false,
+  plugins: [
+    'advlist autolink lists link image charmap print preview anchor',
+    'searchreplace visualblocks code fullscreen',
+    'insertdatetime media table paste code help wordcount'
+  ],
+  toolbar:
+    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+  content_style: 'body { font-family: Nunito Sans, sans-serif; font-size: 14px; color: #0f172a; }'
+}
+
+const stripHtml = (value) => (value || '').replace(/<[^>]*>?/gm, '').trim()
+
+const filteredProducts = computed(() => {
+  if (!searchQuery.value) return products.value
+
+  const query = searchQuery.value.toLowerCase()
+  return products.value.filter((item) =>
+    [item.name, item.categoryName, stripHtml(item.description)]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(query))
+  )
+})
 
 onMounted(async () => {
   await Promise.all([fetchProducts(), fetchCategories()])
 })
 
-const isModalOpen = ref(false)
-const form = ref({})
-
 const openModal = (item = null) => {
-  form.value = item ? {
-    ...item,
-    imageFile: null,
-    imageFileName: ''
-  } : {
-    name: '',
-    description: '',
-    categoryId: categories.value[0]?.id || '',
-    external_link: '',
-    image_url: null,
-    imageFile: null,
-    imageFileName: ''
-  }
+  form.value = item
+    ? {
+      ...item,
+      imageFile: null,
+      imageFileName: ''
+    }
+    : {
+      name: '',
+      description: '',
+      categoryId: categories.value[0]?.id || '',
+      external_link: '',
+      image_url: null,
+      imageFile: null,
+      imageFileName: ''
+    }
+
   isModalOpen.value = true
 }
-const closeModal = () => isModalOpen.value = false
 
-const handleImageUpload = async (e) => {
+const closeModal = () => {
+  isModalOpen.value = false
+}
+
+const handleImageUpload = (e) => {
   if (e.target.files && e.target.files[0]) {
     const file = e.target.files[0]
     form.value.imageFile = file
     form.value.imageFileName = file.name
+    form.value.image_url = URL.createObjectURL(file)
   }
 }
 
@@ -144,11 +225,12 @@ const saveProduct = async () => {
   } else {
     await createProduct(form.value)
   }
+
   closeModal()
 }
 
 const handleDelete = async (id) => {
-  if(confirm('Delete this product?')) {
+  if (confirm('Delete this product?')) {
     await deleteProduct(id)
   }
 }
