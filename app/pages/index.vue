@@ -114,10 +114,24 @@
     <section class="marketing-section">
       <div class="marketing-container">
         <h2 class="font-display text-4xl font-semibold text-slate-900">Trusted by</h2>
-        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div v-for="logo in logos" :key="logo" class="marketing-card flex h-16 items-center justify-center text-sm font-semibold text-slate-500">
-            {{ logo }}
+        <div v-if="clientsLoading" class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div v-for="index in 5" :key="`client-loading-${index}`" class="marketing-card flex h-16 animate-pulse items-center justify-center bg-slate-50">
+            <div class="h-5 w-24 rounded bg-slate-100"></div>
           </div>
+        </div>
+        <div v-else class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <component
+            :is="logo.external_link ? 'a' : 'div'"
+            v-for="logo in trustedClients"
+            :key="logo.name"
+            :href="logo.external_link || undefined"
+            :target="logo.external_link ? '_blank' : undefined"
+            :rel="logo.external_link ? 'noreferrer' : undefined"
+            class="marketing-card flex h-16 items-center justify-center px-4 text-sm font-semibold text-slate-500 transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
+          >
+            <img v-if="logo.logo_url" :src="logo.logo_url" :alt="logo.name" class="max-h-8 max-w-full object-contain">
+            <span v-else>{{ logo.name }}</span>
+          </component>
         </div>
       </div>
     </section>
@@ -207,13 +221,14 @@ usePageSeo({
   path: '/'
 })
 
-const { banners, fetchBanners, isLoading: bannersLoading } = useBanners()
+const { fetchBanners, isLoading: bannersLoading, useBannerPage } = useBanners()
 const { expertise, fetchExpertise, isLoading: expertiseLoading } = useExpertise()
 const { works, fetchWorks, isLoading: worksLoading } = useWorks()
 const { news, fetchNews, isLoading: newsLoading } = useNews()
+const { clients, fetchClients, isLoading: clientsLoading } = useClients()
 
 onMounted(async () => {
-  await Promise.allSettled([fetchBanners(), fetchExpertise(), fetchWorks(), fetchNews()])
+  await Promise.allSettled([fetchBanners(), fetchExpertise(), fetchWorks(), fetchNews(), fetchClients()])
 })
 
 const fallbackExpertiseItems = [
@@ -237,7 +252,13 @@ const fallbackExpertiseItems = [
   }
 ]
 
-const logos = ['StarkCorp', 'Vortex Systems', 'Nucleus', 'Apex Digital', 'GlobalTech']
+const fallbackClients = [
+  { name: 'StarkCorp', logo_url: '', external_link: '' },
+  { name: 'Vortex Systems', logo_url: '', external_link: '' },
+  { name: 'Nucleus', logo_url: '', external_link: '' },
+  { name: 'Apex Digital', logo_url: '', external_link: '' },
+  { name: 'GlobalTech', logo_url: '', external_link: '' }
+]
 
 const fallbackProjects = [
   {
@@ -277,7 +298,7 @@ const fallbackNews = [
   }
 ]
 
-const heroBanner = computed(() => banners.value[0] || {})
+const heroBanner = useBannerPage('home')
 
 const heroTitleLineA = computed(() => {
   const source = heroBanner.value.title || 'Speed, Quality, and Trust.'
@@ -330,5 +351,10 @@ const latestNews = computed(() => {
     slug: item.slug || toSlug(item.title),
     image: item.image_url || fallbackNews[index % fallbackNews.length].image
   }))
+})
+
+const trustedClients = computed(() => {
+  if (!clients.value.length) return fallbackClients
+  return clients.value.slice(0, 5)
 })
 </script>

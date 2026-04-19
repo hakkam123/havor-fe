@@ -1,74 +1,73 @@
 <template>
-  <div class="glass-panel p-8 w-full relative" v-motion-fade-up>
-    <div class="text-center mb-8">
-      <div class="w-14 h-14 mx-auto bg-slate-900 rounded-2xl flex items-center justify-center mb-4">
-        <span class="text-2xl font-semibold text-white">H</span>
+  <div class="admin-panel relative overflow-hidden p-8 sm:p-9" v-motion-fade-up>
+    <div class="absolute inset-x-0 top-0 h-32 bg-[linear-gradient(180deg,rgba(255,106,61,0.12),transparent)]"></div>
+
+    <div class="relative">
+      <div class="mb-8 text-center">
+        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] bg-[var(--admin-accent)] text-2xl font-semibold text-white shadow-sm">H</div>
+        <p class="admin-kicker mt-5">Admin Access</p>
+        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Welcome Back</h1>
+        <p class="mt-2 text-sm text-slate-500">Sign in to continue managing the Havor dashboard workspace.</p>
       </div>
-      <h1 class="text-2xl font-semibold text-slate-900 mb-2">Welcome Back</h1>
-      <p class="text-slate-500 text-sm">Sign in to Havor CMS Dashboard</p>
+
+      <form @submit.prevent="handleLogin" class="space-y-5">
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Email <span class="text-rose-500">*</span></label>
+          <div class="relative">
+            <Mail class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <input
+              v-model="email"
+              type="email"
+              required
+              class="admin-input pl-12"
+              placeholder="admin@havorsmarta.com"
+            >
+          </div>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Password <span class="text-rose-500">*</span></label>
+          <div class="relative">
+            <Lock class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <input
+              v-model="password"
+              :type="showPassword ? 'text' : 'password'"
+              required
+              class="admin-input pl-12 pr-12"
+              placeholder="********"
+            >
+            <button
+              type="button"
+              @click="showPassword = !showPassword"
+              class="absolute inset-y-0 right-0 pr-4 text-slate-400 transition hover:text-slate-700"
+            >
+              <Eye v-if="!showPassword" class="h-4 w-4" />
+              <EyeOff v-else class="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        <div v-if="errorMsg" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-center text-sm text-rose-600">
+          {{ errorMsg }}
+        </div>
+
+        <button
+          type="submit"
+          :disabled="isLoading"
+          class="admin-primary-btn w-full py-3"
+        >
+          <Loader2 v-if="isLoading" class="h-5 w-5 animate-spin" />
+          <span v-else>Sign In</span>
+        </button>
+      </form>
     </div>
-
-    <form @submit.prevent="handleLogin" class="space-y-5">
-      <div>
-        <label class="block text-sm font-medium text-slate-600 mb-1">Email <span class="text-rose-500">*</span></label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Mail class="w-5 h-5 text-slate-500" />
-          </div>
-          <input 
-            v-model="email" 
-            type="email" 
-            required
-            class="input-field pl-10" 
-            placeholder="admin@havorsmarta.com"
-          >
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-slate-600 mb-1">Password <span class="text-rose-500">*</span></label>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Lock class="w-5 h-5 text-slate-500" />
-          </div>
-          <input 
-            v-model="password" 
-            :type="showPassword ? 'text' : 'password'" 
-            required
-            class="input-field pl-10 pr-10" 
-            placeholder="••••••••"
-          >
-          <button 
-            type="button" 
-            @click="showPassword = !showPassword"
-            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-700 transition-colors"
-          >
-            <Eye v-if="!showPassword" class="w-4 h-4" />
-            <EyeOff v-else class="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      <div v-if="errorMsg" class="text-rose-600 text-sm bg-rose-50 p-3 rounded-xl border border-rose-200 text-center">
-        {{ errorMsg }}
-      </div>
-
-      <button 
-        type="submit" 
-        :disabled="isLoading"
-        class="w-full btn-primary py-2.5 flex items-center justify-center gap-2"
-      >
-        <Loader2 v-if="isLoading" class="w-5 h-5 animate-spin" />
-        <span v-else>Sign In</span>
-      </button>
-    </form>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-vue-next'
+import { Eye, EyeOff, Loader2, Lock, Mail } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'auth'
@@ -85,11 +84,10 @@ const handleLogin = async () => {
   try {
     isLoading.value = true
     errorMsg.value = ''
-    
+
     const authStore = useAuthStore()
     await authStore.login({ email: email.value, password: password.value })
     router.push('/admin')
-
   } catch (err) {
     if (err.response && err.response.status === 401) {
       errorMsg.value = 'Invalid email or password.'

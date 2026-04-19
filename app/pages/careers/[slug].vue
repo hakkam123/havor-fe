@@ -155,7 +155,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { ArrowRight } from 'lucide-vue-next'
 
 definePageMeta({
@@ -163,10 +163,14 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { careers, getCareerBySlug } = useCareers()
+const { careers, fetchCareers, getCareerBySlug } = useCareers()
 const slug = computed(() => String(route.params.slug || ''))
 
 const heroImage = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80'
+
+onMounted(() => {
+  fetchCareers()
+})
 
 const careerRole = computed(() => getCareerBySlug(slug.value))
 

@@ -89,7 +89,7 @@ definePageMeta({
 
 const route = useRoute()
 const { expertise, fetchExpertise, isLoading } = useExpertise()
-const { banners, fetchBanners } = useBanners()
+const { fetchBanners, useBannerPage } = useBanners()
 const slug = computed(() => String(route.params.slug || ''))
 const heroImage = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80'
 
@@ -98,7 +98,7 @@ onMounted(async () => {
 })
 
 const service = computed(() => expertise.value.find((item) => item.slug === slug.value) || null)
-const pageBanner = computed(() => banners.value.find((item) => (item.page_name || '').toLowerCase().includes('services')) || banners.value[0] || {})
+const pageBanner = useBannerPage('services', 'service')
 const pageTitle = computed(() => service.value?.name ? `${service.value.name} | Services | Havor Smarta Digital` : 'Service Details | Havor Smarta Digital')
 const pageDescription = computed(() => service.value?.description || 'Explore Havor Smarta Digital service details and capability information.')
 

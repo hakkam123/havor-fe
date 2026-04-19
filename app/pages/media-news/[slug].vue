@@ -80,7 +80,7 @@ definePageMeta({
 
 const route = useRoute()
 const { news, fetchNews } = useNews()
-const { banners, fetchBanners } = useBanners()
+const { fetchBanners, useBannerPage } = useBanners()
 const { apiFetch, resolveAssetUrl } = useApi()
 const slug = computed(() => String(route.params.slug || ''))
 const article = ref(null)
@@ -118,7 +118,7 @@ onMounted(async () => {
   await Promise.allSettled([fetchBanners(), loadArticle()])
 })
 
-const pageBanner = computed(() => banners.value.find((item) => (item.page_name || '').toLowerCase().includes('media')) || banners.value[0] || {})
+const pageBanner = useBannerPage('media-news', 'media')
 const pageTitle = computed(() => article.value?.title ? `${article.value.title} | Media & News | Havor Smarta Digital` : 'News Article | Havor Smarta Digital')
 const pageDescription = computed(() => article.value?.excerpt || 'Read the latest Havor Smarta Digital news article and company update.')
 const dateLabel = computed(() => formatDate(article.value?.createdAt))

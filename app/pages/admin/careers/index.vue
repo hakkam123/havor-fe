@@ -1,119 +1,125 @@
 <template>
   <div class="space-y-6" v-motion-fade-up>
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-semibold text-slate-900 mb-1">Careers</h1>
-        <p class="text-slate-500 text-sm">Manage open positions and publishing status.</p>
-      </div>
-      <button @click="openModal()" class="btn-primary flex items-center gap-2">
-        <Plus class="w-4 h-4" />
-        <span>Create Position</span>
-      </button>
-    </div>
-
-    <div class="glass-panel overflow-hidden">
-      <div class="p-4 border-b border-slate-200 flex items-center justify-between gap-4">
-        <div class="relative max-w-sm w-full">
-          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search careers..."
-            class="input-field pl-10 h-10 w-full text-sm"
-          >
+    <section class="admin-hero">
+      <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+        <div>
+          <p class="admin-kicker">Hiring</p>
+          <h1 class="admin-title">Careers</h1>
+          <p class="admin-copy">Manage open positions, publishing status, hiring details, and role requirements in one clean hiring board.</p>
         </div>
+
+        <button @click="openModal()" class="admin-primary-btn">
+          <Plus class="h-4 w-4" />
+          Create Position
+        </button>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-slate-600">
-          <thead class="bg-slate-50 text-xs uppercase text-slate-500 border-b border-slate-200">
+      <div class="admin-stat-grid mt-6">
+        <article v-for="stat in stats" :key="stat.label" class="admin-stat-card">
+          <p class="admin-stat-label">{{ stat.label }}</p>
+          <div class="admin-stat-value">{{ stat.value }}</div>
+          <p class="admin-stat-meta">{{ stat.meta }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="admin-table-shell">
+      <div class="admin-toolbar">
+        <div class="relative min-w-0 xl:w-[320px]">
+          <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input v-model="searchQuery" type="text" placeholder="Search title, team, location..." class="admin-input pl-11">
+        </div>
+        <div class="text-sm text-slate-500">Showing {{ filteredCareers.length }} entries</div>
+      </div>
+
+      <div class="custom-scrollbar overflow-x-auto">
+        <table class="admin-table">
+          <thead>
             <tr>
-              <th class="px-6 py-4 font-medium tracking-wider">Position</th>
-              <th class="px-6 py-4 font-medium tracking-wider">Team</th>
-              <th class="px-6 py-4 font-medium tracking-wider">Location</th>
-              <th class="px-6 py-4 font-medium tracking-wider">Status</th>
-              <th class="px-6 py-4 font-medium tracking-wider">Posted</th>
-              <th class="px-6 py-4 font-medium tracking-wider text-right">Actions</th>
+              <th>Position</th>
+              <th>Team</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Posted</th>
+              <th class="text-right">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-200">
-            <tr v-for="item in filteredCareers" :key="item.id || item.slug" class="hover:bg-slate-50 transition-colors duration-150">
-              <td class="px-6 py-4">
+          <tbody>
+            <tr v-for="item in filteredCareers" :key="item.id || item.slug">
+              <td>
                 <div>
-                  <div class="font-medium text-slate-900">{{ item.title }}</div>
-                  <div class="text-xs text-slate-500">/{{ item.slug }}</div>
+                  <p class="font-semibold text-slate-900">{{ item.title }}</p>
+                  <p class="text-xs text-slate-400">/{{ item.slug }}</p>
                 </div>
               </td>
-              <td class="px-6 py-4">{{ item.team }}</td>
-              <td class="px-6 py-4">{{ item.location }}</td>
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 rounded-full" :class="item.is_published ? 'bg-emerald-500' : 'bg-amber-500'" />
+              <td>{{ item.team }}</td>
+              <td>{{ item.location }}</td>
+              <td>
+                <span class="admin-status" :class="item.is_published ? 'admin-status-success' : 'admin-status-warning'">
                   {{ item.is_published ? 'Published' : 'Draft' }}
-                </div>
+                </span>
               </td>
-              <td class="px-6 py-4 text-slate-400">{{ formatDate(item.postedAt || item.createdAt) }}</td>
-              <td class="px-6 py-4 text-right">
+              <td class="text-slate-400">{{ formatDate(item.postedAt || item.createdAt) }}</td>
+              <td>
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="openModal(item)" class="p-1.5 text-slate-500 hover:text-slate-800 bg-white border border-slate-200 hover:border-slate-300 rounded-lg transition-colors">
-                    <Edit2 class="w-4 h-4" />
+                  <button @click="openModal(item)" class="admin-icon-btn">
+                    <Edit2 class="h-4 w-4" />
                   </button>
-                  <button @click="handleDelete(item.id)" class="p-1.5 text-slate-500 hover:text-rose-600 bg-white border border-slate-200 hover:border-rose-200 rounded-lg transition-colors">
-                    <Trash2 class="w-4 h-4" />
+                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
+                    <Trash2 class="h-4 w-4" />
                   </button>
                 </div>
               </td>
             </tr>
             <tr v-if="!filteredCareers.length">
-              <td colspan="6" class="px-6 py-8 text-center text-slate-400">No career positions found.</td>
+              <td colspan="6" class="admin-empty-state">No career positions found.</td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      <div class="p-4 border-t border-slate-200 flex items-center justify-between text-sm text-slate-500">
-        <div>Showing {{ filteredCareers.length }} entries</div>
-      </div>
-    </div>
+    </section>
 
     <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" v-motion-fade>
-      <div class="absolute inset-0 bg-slate-900/40" @click="closeModal" />
+      <div class="absolute inset-0 bg-slate-950/40" @click="closeModal" />
 
-      <div class="glass-panel w-full max-w-5xl max-h-[90vh] flex flex-col relative z-10 overflow-hidden" v-motion-slide-visible-bottom>
-        <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white">
-          <h2 class="text-xl font-semibold text-slate-900">{{ form.id ? 'Edit Position' : 'Create Position' }}</h2>
-          <button @click="closeModal" class="p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors">
-            <X class="w-5 h-5" />
+      <div class="admin-modal-card max-w-5xl" v-motion-slide-visible-bottom>
+        <div class="flex items-center justify-between border-b border-[var(--admin-border)] px-6 py-4">
+          <div>
+            <p class="admin-kicker">Hiring Form</p>
+            <h2 class="mt-1 text-xl font-semibold text-slate-900">{{ form.id ? 'Edit Position' : 'Create Position' }}</h2>
+          </div>
+          <button @click="closeModal" class="admin-icon-btn">
+            <X class="h-4 w-4" />
           </button>
         </div>
 
-        <div class="p-6 overflow-y-auto flex-1 custom-scrollbar">
+        <div class="custom-scrollbar flex-1 overflow-y-auto px-6 py-6">
           <form @submit.prevent="saveForm" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-slate-600 mb-1">Title <span class="text-rose-500">*</span></label>
-                  <input v-model="form.title" @input="generateSlug" type="text" required class="input-field" placeholder="Senior Frontend Engineer">
+                  <label class="mb-2 block text-sm font-medium text-slate-600">Title <span class="text-rose-500">*</span></label>
+                  <input v-model="form.title" @input="generateSlug" type="text" required class="admin-input" placeholder="Senior Frontend Engineer">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-600 mb-1">Slug</label>
-                  <input v-model="form.slug" type="text" class="input-field bg-slate-50 text-slate-500" readonly>
+                  <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
+                  <input v-model="form.slug" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-600 mb-1">Summary <span class="text-rose-500">*</span></label>
-                  <textarea v-model="form.summary" rows="3" required class="input-field" placeholder="Short listing summary"></textarea>
+                  <label class="mb-2 block text-sm font-medium text-slate-600">Summary <span class="text-rose-500">*</span></label>
+                  <textarea v-model="form.summary" rows="3" required class="admin-textarea" placeholder="Short listing summary"></textarea>
                 </div>
               </div>
 
               <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Team</label>
-                    <input v-model="form.team" type="text" class="input-field" placeholder="Engineering">
+                    <label class="mb-2 block text-sm font-medium text-slate-600">Team</label>
+                    <input v-model="form.team" type="text" class="admin-input" placeholder="Engineering">
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Level</label>
-                    <select v-model="form.level" class="input-field py-2.5">
+                    <label class="mb-2 block text-sm font-medium text-slate-600">Level</label>
+                    <select v-model="form.level" class="admin-select">
                       <option>Junior</option>
                       <option>Mid</option>
                       <option>Senior</option>
@@ -123,12 +129,12 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Location</label>
-                    <input v-model="form.location" type="text" class="input-field" placeholder="Jakarta / Hybrid">
+                    <label class="mb-2 block text-sm font-medium text-slate-600">Location</label>
+                    <input v-model="form.location" type="text" class="admin-input" placeholder="Jakarta / Hybrid">
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Type</label>
-                    <select v-model="form.type" class="input-field py-2.5">
+                    <label class="mb-2 block text-sm font-medium text-slate-600">Type</label>
+                    <select v-model="form.type" class="admin-select">
                       <option>Full-Time</option>
                       <option>Contract</option>
                       <option>Part-Time</option>
@@ -138,12 +144,12 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Posted Date</label>
-                    <input v-model="form.postedAt" type="date" class="input-field">
+                    <label class="mb-2 block text-sm font-medium text-slate-600">Posted Date</label>
+                    <input v-model="form.postedAt" type="date" class="admin-input">
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">Publish Status</label>
-                    <select v-model="form.is_published" class="input-field py-2.5">
+                    <label class="mb-2 block text-sm font-medium text-slate-600">Publish Status</label>
+                    <select v-model="form.is_published" class="admin-select">
                       <option :value="1">Published</option>
                       <option :value="0">Draft</option>
                     </select>
@@ -153,45 +159,32 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-slate-600 mb-2">Description <span class="text-rose-500">*</span></label>
-              <div class="border border-slate-200 rounded-lg overflow-hidden bg-white h-[320px]">
+              <label class="mb-2 block text-sm font-medium text-slate-600">Description <span class="text-rose-500">*</span></label>
+              <div class="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-white">
                 <Editor
                   api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
                   v-model="form.description"
-                  :init="{
-                    height: 320,
-                    menubar: false,
-                    plugins: [
-                      'advlist autolink lists link image charmap print preview anchor',
-                      'searchreplace visualblocks code fullscreen',
-                      'insertdatetime media table paste code help wordcount'
-                    ],
-                    toolbar:
-                      'undo redo | formatselect | bold italic backcolor | \
-                      alignleft aligncenter alignright alignjustify | \
-                      bullist numlist outdent indent | removeformat | help',
-                    content_style: 'body { font-family: Nunito Sans, sans-serif; font-size: 14px; color: #0f172a; }'
-                  }"
+                  :init="editorConfig"
                 />
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <label class="block text-sm font-medium text-slate-600 mb-1">Responsibilities</label>
+                <label class="mb-2 block text-sm font-medium text-slate-600">Responsibilities</label>
                 <textarea
                   v-model="responsibilitiesText"
                   rows="6"
-                  class="input-field"
+                  class="admin-textarea"
                   placeholder="One item per line"
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-slate-600 mb-1">Requirements</label>
+                <label class="mb-2 block text-sm font-medium text-slate-600">Requirements</label>
                 <textarea
                   v-model="requirementsText"
                   rows="6"
-                  class="input-field"
+                  class="admin-textarea"
                   placeholder="One item per line"
                 />
               </div>
@@ -199,9 +192,9 @@
           </form>
         </div>
 
-        <div class="p-4 border-t border-slate-200 bg-white flex justify-end gap-3">
-          <button @click="closeModal" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium">Cancel</button>
-          <button @click="saveForm" class="btn-primary py-2 text-sm">Save Position</button>
+        <div class="flex justify-end gap-3 border-t border-[var(--admin-border)] px-6 py-4">
+          <button @click="closeModal" class="admin-secondary-btn">Cancel</button>
+          <button @click="saveForm" class="admin-primary-btn">Save Position</button>
         </div>
       </div>
     </div>
@@ -210,7 +203,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Plus, Search, Edit2, Trash2, X } from 'lucide-vue-next'
+import { Edit2, Plus, Search, Trash2, X } from 'lucide-vue-next'
 import Editor from '@tinymce/tinymce-vue'
 
 const { careers, fetchCareers, createCareer, updateCareer, deleteCareer } = useAdminCareers()
@@ -238,6 +231,19 @@ const initialForm = () => ({
 
 const form = ref(initialForm())
 
+const editorConfig = {
+  height: 320,
+  menubar: false,
+  plugins: [
+    'advlist autolink lists link image charmap print preview anchor',
+    'searchreplace visualblocks code fullscreen',
+    'insertdatetime media table paste code help wordcount'
+  ],
+  toolbar:
+    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+  content_style: 'body { font-family: Nunito Sans, sans-serif; font-size: 14px; color: #0f172a; }'
+}
+
 const filteredCareers = computed(() => {
   if (!searchQuery.value) return careers.value
 
@@ -248,6 +254,13 @@ const filteredCareers = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
+
+const stats = computed(() => [
+  { label: 'Open Roles', value: careers.value.length, meta: 'Positions stored in workspace' },
+  { label: 'Published', value: careers.value.filter((item) => item.is_published).length, meta: 'Live on careers page' },
+  { label: 'Drafts', value: careers.value.filter((item) => !item.is_published).length, meta: 'Waiting for approval' },
+  { label: 'Teams', value: new Set(careers.value.map((item) => item.team).filter(Boolean)).size, meta: 'Distinct hiring groups' }
+])
 
 const formatDate = (value) => {
   if (!value) return '-'

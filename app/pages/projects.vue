@@ -71,7 +71,7 @@ usePageSeo({
 })
 
 const { works, fetchWorks } = useWorks()
-const { banners, fetchBanners } = useBanners()
+const { fetchBanners, useBannerPage } = useBanners()
 const searchQuery = ref('')
 
 const defaultHeroImage = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80'
@@ -115,9 +115,7 @@ const fallbackProjects = [
   }
 ]
 
-const pageBanner = computed(() => {
-  return banners.value.find((item) => (item.page_name || '').toLowerCase().includes('projects')) || banners.value[0] || {}
-})
+const pageBanner = useBannerPage('projects', 'project')
 
 const projectsData = computed(() => {
   if (!works.value.length) return fallbackProjects

@@ -60,7 +60,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { ArrowRight } from 'lucide-vue-next'
 
 definePageMeta({
@@ -73,10 +73,14 @@ usePageSeo({
   path: '/careers'
 })
 
-const { careers } = useCareers()
+const { careers, fetchCareers, isLoading } = useCareers()
 const heroImage = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80'
 
 const searchQuery = ref('')
+
+onMounted(() => {
+  fetchCareers()
+})
 
 const filteredRoles = computed(() => {
   if (!searchQuery.value) return careers.value

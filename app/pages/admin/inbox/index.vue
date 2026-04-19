@@ -1,84 +1,128 @@
 <template>
-  <div class="h-[calc(100vh-8rem)] flex flex-col glass-panel overflow-hidden" v-motion-fade-up>
-    <!-- Header -->
-    <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-white">
-      <div>
-        <h1 class="text-2xl font-semibold text-slate-900 mb-1">Inbox</h1>
-        <p class="text-slate-500 text-sm">Customer contact messages and inquiries.</p>
-      </div>
-      <div class="flex gap-2">
-        <button class="p-2 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-50"><Filter class="w-4 h-4"/></button>
-        <button @click="refreshMessages" class="p-2 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-50"><RefreshCw class="w-4 h-4"/></button>
-      </div>
-    </div>
+  <div class="space-y-6" v-motion-fade-up>
+    <section class="admin-hero">
+      <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+        <div>
+          <p class="admin-kicker">Conversations</p>
+          <h1 class="admin-title">Inbox</h1>
+          <p class="admin-copy">Review customer questions, track unread messages, and handle replies from one compact inbox surface.</p>
+        </div>
 
-    <!-- Messages Layout -->
-    <div class="flex-1 flex overflow-hidden">
-      <!-- List -->
-      <div class="w-1/3 border-r border-slate-200 overflow-y-auto custom-scrollbar bg-slate-50">
-        <div 
-          v-for="msg in messages" 
-          :key="msg.id" 
-          @click="selectedMessage = msg"
-          class="p-4 border-b border-slate-200 cursor-pointer transition-colors relative"
-          :class="selectedMessage?.id === msg.id ? 'bg-white border-l-2 border-l-slate-900' : 'hover:bg-white border-l-2 border-l-transparent'"
-        >
-          <div class="flex justify-between items-start mb-1">
-            <h4 class="font-medium text-slate-900 truncate pr-4" :class="!msg.is_read ? 'font-semibold' : ''">{{ msg.name }}</h4>
-            <span class="text-[10px] text-slate-500 whitespace-nowrap">{{ msg.dateLabel || '-' }}</span>
-          </div>
-          <p class="text-sm text-slate-600 truncate mb-1">{{ msg.subject }}</p>
-          <p class="text-xs text-slate-500 line-clamp-1">{{ msg.summary }}</p>
-          <div v-if="!msg.is_read" class="absolute top-4 right-4 w-2 h-2 bg-slate-900 rounded-full"></div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="admin-secondary-btn" @click="refreshMessages">
+            <RefreshCw class="h-4 w-4" />
+            Refresh
+          </button>
         </div>
       </div>
 
-      <!-- Detail -->
-      <div class="flex-1 flex flex-col bg-white">
-        <div v-if="selectedMessage" class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-          <div class="flex justify-between items-start mb-8 pb-6 border-b border-slate-200">
+      <div class="admin-stat-grid mt-6">
+        <article v-for="stat in stats" :key="stat.label" class="admin-stat-card">
+          <p class="admin-stat-label">{{ stat.label }}</p>
+          <div class="admin-stat-value">{{ stat.value }}</div>
+          <p class="admin-stat-meta">{{ stat.meta }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="admin-panel overflow-hidden">
+      <div class="grid min-h-[680px] grid-cols-1 xl:grid-cols-[340px_minmax(0,1fr)]">
+        <div class="border-r border-[var(--admin-border)] bg-[var(--admin-surface-soft)]">
+          <div class="flex items-center justify-between border-b border-[var(--admin-border)] px-5 py-4">
             <div>
-              <h2 class="text-2xl font-semibold text-slate-900 mb-2">{{ selectedMessage.subject }}</h2>
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white font-medium">
-                  {{ selectedMessage.name.charAt(0) }}
+              <p class="text-sm font-semibold text-slate-900">Messages</p>
+              <p class="mt-1 text-xs text-[var(--admin-muted)]">Latest customer inquiries</p>
+            </div>
+            <button class="admin-icon-btn">
+              <Filter class="h-4 w-4" />
+            </button>
+          </div>
+
+          <div class="custom-scrollbar max-h-[620px] overflow-y-auto">
+            <button
+              v-for="msg in messages"
+              :key="msg.id"
+              type="button"
+              @click="selectedMessage = msg"
+              class="relative block w-full border-b border-[var(--admin-border)] px-5 py-4 text-left transition"
+              :class="selectedMessage?.id === msg.id ? 'bg-white' : 'hover:bg-white/70'"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate text-sm text-slate-900" :class="!msg.is_read ? 'font-semibold' : 'font-medium'">{{ msg.name }}</p>
+                  <p class="mt-1 truncate text-sm text-slate-600">{{ msg.subject }}</p>
+                  <p class="mt-1 line-clamp-1 text-xs text-slate-400">{{ msg.summary }}</p>
                 </div>
-                <div>
-                  <p class="text-slate-900 text-sm font-medium">{{ selectedMessage.name }}</p>
-                  <p class="text-slate-400 text-xs">{{ selectedMessage.email }}</p>
+                <span class="shrink-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">{{ msg.dateLabel || '-' }}</span>
+              </div>
+              <span v-if="!msg.is_read" class="absolute right-5 top-5 h-2.5 w-2.5 rounded-full bg-[var(--admin-accent)]"></span>
+            </button>
+
+            <div v-if="!messages.length" class="admin-empty-state">No messages yet.</div>
+          </div>
+        </div>
+
+        <div class="flex min-h-[680px] flex-col bg-white">
+          <div v-if="selectedMessage" class="custom-scrollbar flex-1 overflow-y-auto px-6 py-6 lg:px-8">
+            <div class="flex flex-col gap-6 border-b border-[var(--admin-border)] pb-6 xl:flex-row xl:items-start xl:justify-between">
+              <div>
+                <p class="admin-kicker">Message Detail</p>
+                <h2 class="mt-2 text-2xl font-semibold text-slate-900">{{ selectedMessage.subject }}</h2>
+                <div class="mt-4 flex items-center gap-3">
+                  <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--admin-accent)] text-sm font-semibold text-white">
+                    {{ selectedMessage.name.charAt(0) }}
+                  </div>
+                  <div>
+                    <p class="text-sm font-semibold text-slate-900">{{ selectedMessage.name }}</p>
+                    <p class="text-xs text-slate-400">{{ selectedMessage.email }}</p>
+                  </div>
                 </div>
               </div>
+
+              <div class="flex items-center gap-2">
+                <button
+                  v-if="!selectedMessage.is_read"
+                  @click="handleMarkAsRead(selectedMessage)"
+                  class="admin-primary-btn"
+                >
+                  <Check class="h-4 w-4" />
+                  Mark as Read
+                </button>
+                <button @click="handleDelete(selectedMessage.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
+                  <Trash2 class="h-4 w-4" />
+                </button>
+              </div>
             </div>
-            <div class="flex gap-2">
-              <button 
-                v-if="!selectedMessage.is_read" 
-                @click="handleMarkAsRead(selectedMessage)"
-                class="btn-primary text-xs py-1.5 px-3 flex items-center gap-2"
-              >
-                <Check class="w-3 h-3" /> Mark as Read
-              </button>
-              <button @click="handleDelete(selectedMessage.id)" class="p-1.5 border border-slate-200 text-slate-500 rounded-lg hover:bg-slate-50 hover:text-rose-600 transition-colors"><Trash2 class="w-4 h-4"/></button>
+
+            <div class="mt-6 rounded-3xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-5">
+              <p class="whitespace-pre-wrap text-sm leading-7 text-slate-600">{{ selectedMessage.body }}</p>
             </div>
           </div>
-          <div class="max-w-none">
-            <p class="text-slate-600 leading-relaxed whitespace-pre-wrap">{{ selectedMessage.body }}</p>
+
+          <div v-else class="flex flex-1 flex-col items-center justify-center px-6 text-center text-slate-500">
+            <Mail class="h-14 w-14 text-slate-300" />
+            <p class="mt-4 text-base font-medium text-slate-600">Select a message to read</p>
+            <p class="mt-2 max-w-sm text-sm text-slate-400">New customer messages and contact requests will appear here.</p>
           </div>
-        </div>
-        <div v-else class="flex-1 flex flex-col items-center justify-center text-slate-500">
-          <Mail class="w-16 h-16 mb-4 opacity-50" />
-          <p>Select a message to read</p>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { Filter, RefreshCw, Trash2, Check, Mail } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
+import { Check, Filter, Mail, RefreshCw, Trash2 } from 'lucide-vue-next'
 
 const { messages, fetchMessages, markAsRead, deleteMessage } = useContact()
 const selectedMessage = ref(null)
+
+const stats = computed(() => [
+  { label: 'Total Messages', value: messages.value.length, meta: 'Customer inquiries in inbox' },
+  { label: 'Unread', value: messages.value.filter((msg) => !msg.is_read).length, meta: 'Need your attention' },
+  { label: 'Read', value: messages.value.filter((msg) => msg.is_read).length, meta: 'Already reviewed' },
+  { label: 'Active Thread', value: selectedMessage.value ? 1 : 0, meta: selectedMessage.value ? selectedMessage.value.name : 'No message selected' }
+])
 
 const syncSelectedMessage = (preferredId = selectedMessage.value?.id) => {
   if (!messages.value.length) {

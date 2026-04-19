@@ -7,7 +7,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
     '/news': '/admin/news',
     '/products': '/admin/products',
     '/works': '/admin/works',
-    '/careers': '/admin/careers',
     '/banners': '/admin/banners',
     '/expertises': '/admin/expertises',
     '/categories': '/admin/categories',

@@ -1,50 +1,60 @@
 <template>
-  <header class="h-[72px] flex-shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-20">
-    <div class="flex items-center gap-5">
-      <div>
-        <h2 class="text-[22px] font-semibold text-slate-900">Management Dashboard</h2>
+  <header class="border-b border-[var(--admin-border)] bg-white/90 px-4 py-4 backdrop-blur-sm sm:px-5 lg:px-6">
+    <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+      <div class="min-w-0">
+        <div class="mt-1 flex flex-wrap items-center gap-3">
+          <h2 class="truncate text-[24px] font-semibold tracking-tight text-[var(--admin-text)]">{{ pageTitle }}</h2>
+        </div>
       </div>
 
-      <div class="hidden xl:flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 text-xs font-medium text-slate-500">
-        <CalendarDays class="w-4 h-4 text-slate-400" />
-        {{ currentDate }}
-      </div>
-    </div>
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div class="relative min-w-0 lg:w-[320px] xl:w-[360px]">
+          <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search products, pages, messages..."
+            class="admin-input w-full pl-11"
+          >
+        </div>
 
-    <div class="flex items-center gap-4">
-      <div class="hidden lg:block relative group">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search class="w-4 h-4 text-slate-400 transition-colors" />
+        <div class="flex items-center justify-between gap-3">
+          <NuxtLink
+            to="/admin/profile"
+            class="flex items-center gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-3 py-2 transition hover:bg-white"
+          >
+            <div class="hidden text-right sm:block">
+              <p class="text-sm font-semibold text-[var(--admin-text)] leading-tight">Admin Havor</p>
+            </div>
+            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--admin-accent)] text-white">
+              <User class="h-5 w-5" />
+            </div>
+          </NuxtLink>
         </div>
-        <input 
-          type="text" 
-          placeholder="Search tasks, pages, and content..." 
-          class="w-[330px] pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-300 transition-all"
-        >
       </div>
-
-      <NuxtLink to="/admin/profile" class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 cursor-pointer hover:bg-white transition-colors">
-        <div class="text-right hidden md:block">
-          <p class="text-sm font-semibold text-slate-900 leading-tight">Admin User</p>
-          <p class="text-xs text-slate-500">Superadmin</p>
-        </div>
-        <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center overflow-hidden">
-          <User class="w-5 h-5 text-white" />
-        </div>
-      </NuxtLink>
     </div>
   </header>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { Search, Bell, User, CalendarDays } from 'lucide-vue-next'
+import { Bell, Search, Settings2, User } from 'lucide-vue-next'
+import { useRoute } from 'vue-router'
 
-const currentDate = computed(() =>
-  new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-    month: 'long',
-    day: 'numeric'
-  }).format(new Date())
-)
+const route = useRoute()
+
+const pageTitleMap = {
+  '/admin': 'Dashboard',
+  '/admin/news': 'News',
+  '/admin/products': 'Product',
+  '/admin/works': 'Works',
+  '/admin/careers': 'Careers',
+  '/admin/clients': 'Clients',
+  '/admin/banners': 'Banners',
+  '/admin/expertises': 'Expertise',
+  '/admin/categories': 'Categories',
+  '/admin/inbox': 'Inbox',
+  '/admin/profile': 'Profile'
+}
+
+const pageTitle = computed(() => pageTitleMap[route.path] || 'Dashboard')
 </script>

@@ -73,7 +73,7 @@ usePageSeo({
 })
 
 const { expertise, fetchExpertise } = useExpertise()
-const { banners, fetchBanners } = useBanners()
+const { fetchBanners, useBannerPage } = useBanners()
 const searchQuery = ref('')
 
 const defaultHeroImage = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80'
@@ -121,9 +121,7 @@ const fallbackServices = [
   }
 ]
 
-const pageBanner = computed(() => {
-  return banners.value.find((item) => (item.page_name || '').toLowerCase().includes('services')) || banners.value[0] || {}
-})
+const pageBanner = useBannerPage('services', 'service')
 
 const servicesData = computed(() => {
   if (!expertise.value.length) return fallbackServices

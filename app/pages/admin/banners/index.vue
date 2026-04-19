@@ -1,88 +1,129 @@
 <template>
   <div class="space-y-6" v-motion-fade-up>
-    <div class="flex items-center justify-between glass-panel p-6">
-      <div>
-        <h1 class="text-2xl font-semibold text-slate-900 mb-1">Hero Banners</h1>
-        <p class="text-slate-500 text-sm">Manage dynamic hero banners for pages.</p>
+    <section class="admin-hero">
+      <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
+        <div>
+          <p class="admin-kicker">Media</p>
+          <h1 class="admin-title">Hero Banners</h1>
+          <p class="admin-copy">Organize banner visuals for each landing page with a cleaner media-first dashboard layout.</p>
+        </div>
+
+        <button @click="openModal()" class="admin-primary-btn">
+          <Upload class="h-4 w-4" />
+          Upload New Banner
+        </button>
       </div>
-      <button @click="openModal()" class="btn-primary flex items-center gap-2">
-        <Upload class="w-4 h-4" />
-        <span>Upload New Banner</span>
-      </button>
-    </div>
 
-    <!-- Media Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div v-for="banner in banners" :key="banner.id" class="glass-panel overflow-hidden relative group">
-        <div class="absolute top-3 left-3 z-10 px-2 py-1 bg-white rounded-lg text-xs font-medium text-slate-600 border border-slate-200">
-          {{ banner.page_name }}
-        </div>
-        
-        <div class="h-56 bg-slate-100 relative flex items-center justify-center overflow-hidden">
-          <video v-if="banner.media_type === 'video'" :src="banner.media_url" class="w-full h-full object-cover" controls></video>
-          <img v-else :src="banner.media_url || 'https://via.placeholder.com/600x300'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-          
-          <div class="absolute inset-x-0 bottom-0 p-4 bg-white/92 border-t border-slate-200">
-            <h3 class="text-lg font-semibold text-slate-900">{{ banner.title }}</h3>
-            <p class="text-sm text-slate-500">{{ banner.subtitle }}</p>
-          </div>
-        </div>
-        
-        <div class="p-4 border-t border-slate-200 flex justify-between items-center bg-white">
-          <div class="text-xs text-slate-500 flex items-center gap-1">
-            <BadgeInfo class="w-4 h-4" /> {{ banner.media_type.toUpperCase() }}
-          </div>
-          <div class="flex items-center gap-2">
-            <button class="p-2 bg-white text-slate-500 hover:text-slate-700 rounded-lg border border-slate-200 transition-colors"><Edit2 class="w-4 h-4"/></button>
-            <button @click="handleDelete(banner.id)" class="p-2 bg-white text-slate-500 hover:text-rose-600 rounded-lg border border-slate-200 transition-colors"><Trash2 class="w-4 h-4"/></button>
-          </div>
-        </div>
+      <div class="admin-stat-grid mt-6">
+        <article v-for="stat in stats" :key="stat.label" class="admin-stat-card">
+          <p class="admin-stat-label">{{ stat.label }}</p>
+          <div class="admin-stat-value">{{ stat.value }}</div>
+          <p class="admin-stat-meta">{{ stat.meta }}</p>
+        </article>
       </div>
-    </div>
+    </section>
 
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4" v-motion-fade>
-      <div class="absolute inset-0 bg-slate-900/40" @click="closeModal"></div>
+    <section class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <article v-for="banner in banners" :key="banner.id" class="admin-panel overflow-hidden">
+        <div class="relative">
+          <div class="absolute left-4 top-4 z-10">
+            <span class="admin-badge">{{ banner.page_name }}</span>
+          </div>
 
-      <div class="glass-panel w-full max-w-xl relative z-10 p-6" v-motion-slide-visible-bottom>
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-xl font-semibold text-slate-900">Create Banner</h2>
-          <button @click="closeModal" class="text-slate-400 hover:text-slate-700"><X class="w-5 h-5" /></button>
+          <div class="flex h-60 items-center justify-center overflow-hidden bg-[var(--admin-surface-soft)]">
+            <video v-if="banner.media_type === 'video'" :src="banner.media_url" class="h-full w-full object-cover" controls></video>
+            <img v-else :src="banner.media_url || 'https://via.placeholder.com/600x300'" class="h-full w-full object-cover" >
+          </div>
         </div>
 
-        <form @submit.prevent="saveBanner" class="space-y-4">
-          <div><label class="block text-sm text-slate-600 mb-1">Page Name</label><input v-model="form.page_name" type="text" class="input-field" placeholder="home"></div>
-          <div><label class="block text-sm text-slate-600 mb-1">Title</label><input v-model="form.title" type="text" class="input-field"></div>
-          <div><label class="block text-sm text-slate-600 mb-1">Subtitle</label><textarea v-model="form.subtitle" rows="3" class="input-field"></textarea></div>
+        <div class="space-y-4 p-5">
           <div>
-            <label class="block text-sm text-slate-600 mb-1">Media Type</label>
-            <select v-model="form.media_type" class="input-field">
-              <option value="image">Image</option>
-              <option value="video">Video</option>
-            </select>
+            <p class="text-lg font-semibold text-slate-900">{{ banner.title }}</p>
+            <p class="mt-2 text-sm leading-6 text-slate-500">{{ banner.subtitle || 'No subtitle provided.' }}</p>
           </div>
+
+          <div class="flex items-center justify-between gap-3 border-t border-[var(--admin-border)] pt-4">
+            <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+              <BadgeInfo class="h-4 w-4" />
+              {{ banner.media_type }}
+            </div>
+            <div class="flex items-center gap-2">
+              <button @click="openModal(banner)" class="admin-icon-btn">
+                <Edit2 class="h-4 w-4" />
+              </button>
+              <button @click="handleDelete(banner.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
+                <Trash2 class="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" v-motion-fade>
+      <div class="absolute inset-0 bg-slate-950/40" @click="closeModal"></div>
+
+      <div class="admin-modal-card max-w-xl" v-motion-slide-visible-bottom>
+        <div class="flex items-center justify-between border-b border-[var(--admin-border)] px-6 py-4">
           <div>
-            <label class="block text-sm text-slate-600 mb-1">Upload File</label>
-            <input type="file" accept="image/*,video/*" class="input-field py-2" @change="handleMediaUpload">
-            <p v-if="form.mediaFileName" class="mt-2 text-xs text-slate-400">{{ form.mediaFileName }}</p>
+            <p class="admin-kicker">Media Form</p>
+            <h2 class="mt-1 text-xl font-semibold text-slate-900">{{ form.id ? 'Edit Banner' : 'Create Banner' }}</h2>
           </div>
-          <div>
-            <label class="block text-sm text-slate-600 mb-1">Or Existing Media URL</label>
-            <input v-model="form.media_url" type="text" class="input-field" placeholder="/uploads/banners/home-banner.jpg">
-          </div>
-          <button type="submit" class="w-full btn-primary py-2">Save Banner</button>
-        </form>
+          <button @click="closeModal" class="admin-icon-btn">
+            <X class="h-4 w-4" />
+          </button>
+        </div>
+
+        <div class="custom-scrollbar flex-1 overflow-y-auto px-6 py-6">
+          <form @submit.prevent="saveBanner" class="space-y-4">
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Page Name</label>
+              <input v-model="form.page_name" type="text" class="admin-input" placeholder="home">
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Title</label>
+              <input v-model="form.title" type="text" class="admin-input">
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Subtitle</label>
+              <textarea v-model="form.subtitle" rows="3" class="admin-textarea"></textarea>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Media Type</label>
+              <select v-model="form.media_type" class="admin-select">
+                <option value="image">Image</option>
+                <option value="video">Video</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Upload File</label>
+              <input type="file" accept="image/*,video/*" class="admin-input py-2" @change="handleMediaUpload">
+              <p v-if="form.mediaFileName" class="mt-2 text-xs text-slate-500">{{ form.mediaFileName }}</p>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Or Existing Media URL</label>
+              <input v-model="form.media_url" type="text" class="admin-input" placeholder="/uploads/banners/home-banner.jpg">
+            </div>
+          </form>
+        </div>
+
+        <div class="flex justify-end gap-3 border-t border-[var(--admin-border)] px-6 py-4">
+          <button @click="closeModal" class="admin-secondary-btn">Cancel</button>
+          <button @click="saveBanner" class="admin-primary-btn">Save Banner</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { Upload, Edit2, Trash2, BadgeInfo, X } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
+import { BadgeInfo, Edit2, Trash2, Upload, X } from 'lucide-vue-next'
 
-const { banners, fetchBanners, createBanner, deleteBanner } = useBanners()
+const { banners, fetchBanners, createBanner, updateBanner, deleteBanner } = useBanners()
 const isModalOpen = ref(false)
 const form = ref({
+  id: null,
   page_name: '',
   title: '',
   subtitle: '',
@@ -92,20 +133,34 @@ const form = ref({
   mediaFileName: ''
 })
 
+const stats = computed(() => [
+  { label: 'Total Banners', value: banners.value.length, meta: 'Media items in workspace' },
+  { label: 'Image Banners', value: banners.value.filter((item) => item.media_type === 'image').length, meta: 'Static hero visuals' },
+  { label: 'Video Banners', value: banners.value.filter((item) => item.media_type === 'video').length, meta: 'Motion hero visuals' },
+  { label: 'Pages Covered', value: new Set(banners.value.map((item) => item.page_name).filter(Boolean)).size, meta: 'Distinct banner destinations' }
+])
+
 onMounted(() => {
   fetchBanners()
 })
 
-const openModal = () => {
-  form.value = {
-    page_name: '',
-    title: '',
-    subtitle: '',
-    media_type: 'image',
-    media_url: '',
-    mediaFile: null,
-    mediaFileName: ''
-  }
+const openModal = (item = null) => {
+  form.value = item
+    ? {
+      ...item,
+      mediaFile: null,
+      mediaFileName: ''
+    }
+    : {
+      id: null,
+      page_name: '',
+      title: '',
+      subtitle: '',
+      media_type: 'image',
+      media_url: '',
+      mediaFile: null,
+      mediaFileName: ''
+    }
 
   isModalOpen.value = true
 }
@@ -123,7 +178,11 @@ const handleMediaUpload = (e) => {
 }
 
 const saveBanner = async () => {
-  await createBanner(form.value)
+  if (form.value.id) {
+    await updateBanner(form.value.id, form.value)
+  } else {
+    await createBanner(form.value)
+  }
   closeModal()
 }
 

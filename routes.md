@@ -264,6 +264,61 @@ Example output:
 }
 ```
 
+## Client Routes
+
+### GET `/api/clients`
+
+Example output:
+
+```json
+[
+  {
+    "id": 1,
+    "name": "StarkCorp",
+    "logo_url": "/uploads/clients/starkcorp.svg",
+    "external_link": "https://starkcorp.example"
+  }
+]
+```
+
+### POST `/api/clients`
+
+Protected. Send `multipart/form-data` with `logo_url` file.
+
+Example output:
+
+```json
+{
+  "id": 2,
+  "name": "Vortex Systems",
+  "logo_url": "/uploads/clients/vortex-systems.png",
+  "external_link": "https://vortex.example"
+}
+```
+
+### PUT `/api/clients/:id`
+
+Example output:
+
+```json
+{
+  "id": "2",
+  "name": "Vortex Systems",
+  "logo_url": "/uploads/clients/vortex-systems.png",
+  "external_link": "https://vortex.example"
+}
+```
+
+### DELETE `/api/clients/:id`
+
+Example output:
+
+```json
+{
+  "message": "Client removed"
+}
+```
+
 ## Product Routes
 
 ### GET `/api/products`

@@ -1,19 +1,19 @@
 <template>
-  <div class="h-screen w-full bg-[#f7f8fb] flex overflow-hidden text-slate-900">
-    <!-- Sidebar -->
-    <Sidebar />
+  <div class="admin-shell">
+    <div class="flex min-h-screen gap-4 p-3 sm:p-4">
+      <Sidebar />
 
-    <!-- Main Content Wrapper -->
-    <div class="flex-1 flex flex-col h-full overflow-hidden">
-      <!-- Header -->
-      <Header />
-      
-      <!-- Scrollable Main Content -->
-      <main class="flex-1 overflow-x-hidden overflow-y-auto bg-transparent px-5 pb-5 pt-4">
-        <div class="w-full max-w-[1440px] mx-auto">
-          <slot />
+      <div class="flex min-w-0 flex-1 flex-col">
+        <div class="admin-panel flex min-h-0 flex-1 flex-col overflow-hidden">
+          <Header />
+
+          <main class="custom-scrollbar flex-1 overflow-x-hidden overflow-y-auto px-4 pb-4 pt-4 sm:px-5 lg:px-6 lg:pb-6 lg:pt-5">
+            <div class="mx-auto w-full max-w-[1400px]">
+              <slot />
+            </div>
+          </main>
         </div>
-      </main>
+      </div>
     </div>
   </div>
 </template>
@@ -21,6 +21,4 @@
 <script setup>
 import Sidebar from '~/components/Sidebar.vue'
 import Header from '~/components/Header.vue'
-
-// Assume we enforce an auth middleware generally
 </script>

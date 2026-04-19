@@ -90,7 +90,7 @@ definePageMeta({
 
 const route = useRoute()
 const { works, fetchWorks, isLoading } = useWorks()
-const { banners, fetchBanners } = useBanners()
+const { fetchBanners, useBannerPage } = useBanners()
 const slug = computed(() => String(route.params.slug || ''))
 const projectImage = 'https://images.unsplash.com/photo-1551281044-8b0d665d4fd4?auto=format&fit=crop&w=1600&q=80'
 
@@ -99,7 +99,7 @@ onMounted(async () => {
 })
 
 const project = computed(() => works.value.find((item) => item.slug === slug.value) || null)
-const pageBanner = computed(() => banners.value.find((item) => (item.page_name || '').toLowerCase().includes('projects')) || banners.value[0] || {})
+const pageBanner = useBannerPage('projects', 'project')
 const pageTitle = computed(() => project.value?.title ? `${project.value.title} | Projects | Havor Smarta Digital` : 'Project Details | Havor Smarta Digital')
 const pageDescription = computed(() => project.value?.description || 'Explore Havor Smarta Digital project details and case study information.')
 
