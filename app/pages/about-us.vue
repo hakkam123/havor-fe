@@ -1,35 +1,78 @@
 <template>
-  <div class="space-y-16 pb-8">
-    <HeroSection
-      kicker="About Havor"
-      title="A technology partner built on precision, ownership, and trust."
-      description="We help enterprises accelerate digital delivery without sacrificing reliability. Our teams combine product thinking, technical depth, and execution discipline to deliver outcomes that last."
-      :image="heroImage"
-      image-alt="About Havor hero banner"
+  <div class="overflow-hidden">
+    <CorporatePageHero
+      :title="aboutPage.hero.title"
+      :subtitle="aboutPage.hero.subtitle"
+      :image="aboutPage.hero.image"
+      image-label="Company Identity"
+      image-title="A technology partner shaped by disciplined collaboration and long-term commitment."
+      :side-copy="company.tagline"
+
     >
-      <template #actions>
-        <NuxtLink to="/projects" class="btn-primary">See Our Work</NuxtLink>
-        <NuxtLink to="/careers" class="btn-outline text-white border-white/20 hover:bg-white/10">Join the Team</NuxtLink>
-      </template>
-    </HeroSection>
+    </CorporatePageHero>
 
-    <section class="marketing-section pt-0">
+    <section class="brand-section pt-12">
       <div class="marketing-container">
-        <div class="grid gap-6 md:grid-cols-3">
-          <article v-for="value in values" :key="value.title" class="marketing-card p-6" v-motion-fade-up>
-            <h2 class="font-display text-xl font-semibold text-slate-900">{{ value.title }}</h2>
-            <p class="mt-3 text-sm leading-7 text-slate-500">{{ value.description }}</p>
+        <div class="grid gap-8 lg:grid-cols-[0.84fr_1.16fr]">
+          <article class="brand-panel p-8 sm:p-10">
+            <SectionHeading
+              :title="aboutPage.journey.title"
+              :description="aboutPage.journey.intro"
+            />
+            <p class="mt-8 text-base leading-8 text-slate-600">
+              {{ aboutPage.journey.narrative }}
+            </p>
           </article>
-        </div>
 
-        <div class="mt-10 marketing-card p-7" v-motion-fade-up>
-          <h2 class="font-display text-2xl font-semibold text-slate-900">Our Journey</h2>
-          <div class="mt-6 grid gap-4 md:grid-cols-3">
-            <div v-for="milestone in milestones" :key="milestone.year" class="rounded-xl border border-[#d8e1ee] bg-slate-50 p-4">
-              <p class="font-display text-3xl font-semibold text-[#1846a3]">{{ milestone.year }}</p>
-              <p class="mt-2 text-sm font-semibold text-slate-900">{{ milestone.title }}</p>
-              <p class="mt-1 text-sm text-slate-500">{{ milestone.description }}</p>
+          <div class="space-y-4">
+            <article
+              v-for="item in aboutPage.journey.milestones"
+              :key="item.phase"
+              class="brand-soft-panel grid gap-4 p-6 sm:grid-cols-[8.5rem_1fr] sm:items-start"
+              v-motion-fade-up
+            >
+              <div class="rounded-[1.5rem] bg-white px-4 py-5 shadow-[0_12px_30px_rgba(18,56,122,0.06)]">
+                <p class="text-[0.72rem] font-extrabold uppercase tracking-[0.22em] text-[#6c86ad]">Phase</p>
+                <p class="mt-3 text-xl font-extrabold text-[#0e2344]">{{ item.phase }}</p>
+              </div>
+              <div class="pt-1">
+                <h3 class="text-2xl font-extrabold tracking-[-0.03em] text-[#0e2344]">{{ item.title }}</h3>
+                <p class="mt-3 text-sm leading-7 text-slate-600">{{ item.description }}</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="brand-section pt-0 pb-24">
+      <div class="marketing-container">
+        <div class="grid gap-6 lg:grid-cols-[0.96fr_1.04fr]">
+          <article class="overflow-hidden rounded-[2.2rem] bg-[linear-gradient(135deg,#0f2b57_0%,#1f5dcc_55%,#79adff_140%)] px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
+            <h2 class="mt-6 text-[clamp(2.2rem,4vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.04em]">
+              A long-term vision for dependable digital transformation.
+            </h2>
+            <div class="mt-8 rounded-[1.8rem] border border-white/14 bg-white/10 p-6">
+              <p class="text-[0.72rem] font-extrabold uppercase tracking-[0.22em] text-white/70">Vision Statement</p>
+              <p class="mt-4 text-lg leading-8 text-white/88">
+                {{ aboutPage.visionMission.vision }}
+              </p>
             </div>
+            <p class="mt-6 text-sm leading-7 text-white/78">
+              {{ aboutPage.visionMission.supportNote }}
+            </p>
+          </article>
+
+          <div class="space-y-4">
+            <article
+              v-for="mission in aboutPage.visionMission.missions"
+              :key="mission.title"
+              class="brand-panel p-6"
+              v-motion-fade-up
+            >
+              <h3 class="mt-3 text-2xl font-extrabold tracking-[-0.03em] text-[#0e2344]">{{ mission.title }}</h3>
+              <p class="mt-3 text-sm leading-7 text-slate-600">{{ mission.description }}</p>
+            </article>
           </div>
         </div>
       </div>
@@ -43,43 +86,10 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'About Us | Havor Smarta Digital',
-  description: 'Learn about Havor Smarta Digital, our mission, company journey, and how we build lasting digital products.',
+  title: 'About Us | PT Havor SMART Digital',
+  description: 'Learn about PT Havor SMART Digital, our company journey, vision, mission, and commitment to serious digital delivery.',
   path: '/about-us'
 })
 
-const heroImage = 'https://images.unsplash.com/photo-1573167243872-43c6433b9d40?auto=format&fit=crop&w=1600&q=80'
-
-const values = [
-  {
-    title: 'Craftsmanship',
-    description: 'We build with technical rigor and attention to detail from architecture to release.'
-  },
-  {
-    title: 'Partnership',
-    description: 'We embed with your teams, communicate transparently, and stay accountable to outcomes.'
-  },
-  {
-    title: 'Sustainability',
-    description: 'We optimize for maintainability, security, and long-term business leverage.'
-  }
-]
-
-const milestones = [
-  {
-    year: '2010',
-    title: 'Company Founded',
-    description: 'Started as a boutique engineering team focused on enterprise web delivery.'
-  },
-  {
-    year: '2017',
-    title: 'Regional Expansion',
-    description: 'Scaled delivery hubs and launched mobile/cloud practice lines.'
-  },
-  {
-    year: '2024',
-    title: 'AI Enablement Era',
-    description: 'Expanded into intelligent workflow platforms and data-driven modernization.'
-  }
-]
+const { company, aboutPage } = useCorporateContent()
 </script>

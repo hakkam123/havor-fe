@@ -1,21 +1,31 @@
+import type { ApiProduct, Product } from '~/types/api'
+
 export const useProducts = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const products = ref<any[]>([])
+  const products = ref<Product[]>([])
   const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
-  const normalizeProduct = (item: any) => ({
-    ...item,
+  const normalizeProduct = (item: ApiProduct): Product => ({
+    id: Number(item.id),
+    name: String(item.name || ''),
+    description: String(item.description || ''),
     image_url: resolveAssetUrl(item.image_url),
-    categoryName: item.categoryName ?? item.category_name ?? ''
+    external_link: String(item.external_link || ''),
+    categoryId: item.categoryId === null || item.categoryId === undefined || item.categoryId === '' ? null : Number(item.categoryId),
+    categoryName: String(item.categoryName ?? item.category_name ?? '')
   })
 
   const fetchProducts = async () => {
     isLoading.value = true
+    error.value = null
     try {
-      const res = await apiFetch<any[]>('/products')
-      products.value = res.map(normalizeProduct)
-    } catch (e) {
-      console.error(e)
+      const res = await apiFetch<ApiProduct[]>('/products')
+      products.value = (res || []).map(normalizeProduct)
+    } catch (fetchError) {
+      console.error(fetchError)
+      products.value = []
+      error.value = 'Unable to load products right now.'
     } finally {
       isLoading.value = false
     }
@@ -30,15 +40,15 @@ export const useProducts = () => {
   })
 
   const createProduct = async (payload: any) => {
-    const res = await apiFetch('/products', { method: 'POST', body: toProductFormData(payload) })
+    const res = await apiFetch<ApiProduct>('/products', { method: 'POST', body: toProductFormData(payload) })
     await fetchProducts()
-    return normalizeProduct(res)
+    return res ? normalizeProduct(res) : null
   }
 
   const updateProduct = async (id: number, payload: any) => {
-    const res = await apiFetch(`/products/${id}`, { method: 'PUT', body: toProductFormData(payload) })
+    await apiFetch(`/products/${id}`, { method: 'PUT', body: toProductFormData(payload) })
     await fetchProducts()
-    return normalizeProduct(res)
+    return products.value.find((item) => item.id === id) || null
   }
 
   const deleteProduct = async (id: number) => {
@@ -47,5 +57,5 @@ export const useProducts = () => {
     return res
   }
 
-  return { products, isLoading, fetchProducts, createProduct, updateProduct, deleteProduct }
+  return { products, isLoading, error, fetchProducts, createProduct, updateProduct, deleteProduct }
 }

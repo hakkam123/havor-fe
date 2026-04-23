@@ -1,33 +1,34 @@
+import type { ApiWork, Work } from '~/types/api'
+import { toSlug } from '~/composables/useSlug'
+
 export const useWorks = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const works = ref<any[]>([])
+  const works = ref<Work[]>([])
   const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
-  const toSlug = (value?: string | null) => {
-    if (!value) return ''
-
-    return value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-  }
-
-  const normalizeWork = (item: any) => ({
-    ...item,
-    slug: item.slug || toSlug(item.title),
+  const normalizeWork = (item: ApiWork): Work => ({
+    id: Number(item.id),
+    title: String(item.title || ''),
+    description: String(item.description || ''),
+    client: String(item.client || ''),
+    year: item.year === null || item.year === undefined || item.year === '' ? null : Number(item.year),
+    slug: String(item.slug || toSlug(item.title)),
     image_url: resolveAssetUrl(item.image_url),
-    categoryName: item.categoryName ?? item.category_name ?? ''
+    categoryId: item.categoryId === null || item.categoryId === undefined || item.categoryId === '' ? null : Number(item.categoryId),
+    categoryName: String(item.categoryName ?? item.category_name ?? '')
   })
 
   const fetchWorks = async () => {
     isLoading.value = true
+    error.value = null
     try {
-      const res = await apiFetch<any[]>('/works')
-      works.value = res.map(normalizeWork)
-    } catch (error) {
-      console.error('Failed to fetch works', error)
+      const res = await apiFetch<ApiWork[]>('/works')
+      works.value = (res || []).map(normalizeWork)
+    } catch (fetchError) {
+      console.error('Failed to fetch works', fetchError)
+      works.value = []
+      error.value = 'Unable to load works right now.'
     } finally {
       isLoading.value = false
     }
@@ -43,23 +44,23 @@ export const useWorks = () => {
   })
 
   const createWork = async (payload: any) => {
-    const res = await apiFetch('/works', {
+    const res = await apiFetch<ApiWork>('/works', {
       method: 'POST',
       body: toWorkFormData(payload)
     })
 
     await fetchWorks()
-    return normalizeWork(res)
+    return res ? normalizeWork(res) : null
   }
 
   const updateWork = async (id: number, payload: any) => {
-    const res = await apiFetch(`/works/${id}`, {
+    await apiFetch(`/works/${id}`, {
       method: 'PUT',
       body: toWorkFormData(payload)
     })
 
     await fetchWorks()
-    return normalizeWork(res)
+    return works.value.find((item) => item.id === id) || null
   }
 
   const deleteWork = async (id: number) => {
@@ -71,6 +72,7 @@ export const useWorks = () => {
   return {
     works,
     isLoading,
+    error,
     fetchWorks,
     createWork,
     updateWork,

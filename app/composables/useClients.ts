@@ -1,20 +1,29 @@
+import type { ApiClient, Client } from '~/types/api'
+
 export const useClients = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const clients = ref<any[]>([])
+  const clients = ref<Client[]>([])
   const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
-  const normalizeClient = (item: any) => ({
-    ...item,
-    logo_url: resolveAssetUrl(item.logo_url)
+  const normalizeClient = (item: ApiClient): Client => ({
+    id: Number(item.id),
+    name: String(item.name || ''),
+    description: String(item.description || ''),
+    excerpt: String(item.description || '').slice(0, 96),
+    client_icon: resolveAssetUrl(item.client_icon)
   })
 
   const fetchClients = async () => {
     isLoading.value = true
+    error.value = null
     try {
-      const res = await apiFetch<any[]>('/clients')
-      clients.value = res.map(normalizeClient)
-    } catch (error) {
-      console.error('Failed to fetch clients', error)
+      const res = await apiFetch<ApiClient[]>('/clients')
+      clients.value = (res || []).map(normalizeClient)
+    } catch (fetchError) {
+      console.error('Failed to fetch clients', fetchError)
+      clients.value = []
+      error.value = 'Unable to load client data right now.'
     } finally {
       isLoading.value = false
     }
@@ -22,28 +31,28 @@ export const useClients = () => {
 
   const toClientFormData = (payload: any) => toFormData({
     name: payload.name,
-    external_link: payload.external_link,
-    logo_url: payload.logoFile ?? payload.logo_url
+    description: payload.description,
+    client_icon: payload.clientFile ?? payload.client_icon
   })
 
   const createClient = async (payload: any) => {
-    const res = await apiFetch('/clients', {
+    const res = await apiFetch<ApiClient>('/clients', {
       method: 'POST',
       body: toClientFormData(payload)
     })
 
     await fetchClients()
-    return normalizeClient(res)
+    return res ? normalizeClient(res) : null
   }
 
   const updateClient = async (id: number, payload: any) => {
-    const res = await apiFetch(`/clients/${id}`, {
+    await apiFetch(`/clients/${id}`, {
       method: 'PUT',
       body: toClientFormData(payload)
     })
 
     await fetchClients()
-    return normalizeClient(res)
+    return clients.value.find((item) => item.id === id) || null
   }
 
   const deleteClient = async (id: number) => {
@@ -55,6 +64,7 @@ export const useClients = () => {
   return {
     clients,
     isLoading,
+    error,
     fetchClients,
     createClient,
     updateClient,

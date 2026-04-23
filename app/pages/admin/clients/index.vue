@@ -5,7 +5,7 @@
         <div>
           <p class="admin-kicker">Trust Signals</p>
           <h1 class="admin-title">Clients</h1>
-          <p class="admin-copy">Add, edit, and remove the client logos shown in the landing page “Trusted by” section.</p>
+          <p class="admin-copy">Manage the public client list shown on the landing page, including descriptions and icon assets.</p>
         </div>
 
         <button @click="openModal()" class="admin-primary-btn">
@@ -27,7 +27,7 @@
       <div class="admin-toolbar">
         <div class="relative min-w-0 xl:w-[320px]">
           <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input v-model="searchQuery" type="text" placeholder="Search client name or URL..." class="admin-input pl-11">
+          <input v-model="searchQuery" type="text" placeholder="Search client name or description..." class="admin-input pl-11">
         </div>
         <div class="text-sm text-slate-500">Showing {{ filteredClients.length }} entries</div>
       </div>
@@ -37,8 +37,8 @@
           <thead>
             <tr>
               <th>Client</th>
-              <th>Website</th>
-              <th>Logo Status</th>
+              <th>Description</th>
+              <th>Icon Status</th>
               <th class="text-right">Actions</th>
             </tr>
           </thead>
@@ -47,7 +47,7 @@
               <td>
                 <div class="flex items-center gap-3">
                   <div class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-2">
-                    <img v-if="item.logo_url" :src="item.logo_url" :alt="item.name" class="max-h-full max-w-full object-contain">
+                    <img v-if="item.client_icon" :src="item.client_icon" :alt="item.name" class="max-h-full max-w-full object-contain">
                     <Building2 v-else class="h-5 w-5 text-slate-400" />
                   </div>
                   <div>
@@ -56,21 +56,12 @@
                   </div>
                 </div>
               </td>
-              <td>
-                <a
-                  v-if="item.external_link"
-                  :href="item.external_link"
-                  target="_blank"
-                  class="inline-flex items-center gap-2 font-medium text-slate-700 transition hover:text-slate-950"
-                >
-                  <ExternalLink class="h-4 w-4" />
-                  Visit
-                </a>
-                <span v-else class="text-slate-400">-</span>
+              <td class="max-w-[380px] text-slate-500">
+                <p class="line-clamp-2">{{ item.description || '-' }}</p>
               </td>
               <td>
-                <span class="admin-status" :class="item.logo_url ? 'admin-status-success' : 'admin-status-warning'">
-                  {{ item.logo_url ? 'Ready' : 'No Logo' }}
+                <span class="admin-status" :class="item.client_icon ? 'admin-status-success' : 'admin-status-warning'">
+                  {{ item.client_icon ? 'Ready' : 'Missing' }}
                 </span>
               </td>
               <td>
@@ -85,7 +76,9 @@
               </td>
             </tr>
             <tr v-if="!filteredClients.length">
-              <td colspan="4" class="admin-empty-state">No clients found.</td>
+              <td colspan="4" class="admin-empty-state">
+                {{ error ? error : 'No clients found.' }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -115,24 +108,27 @@
                   <input v-model="form.name" type="text" required class="admin-input" placeholder="Client name">
                 </div>
                 <div>
-                  <label class="mb-2 block text-sm font-medium text-slate-600">Website URL</label>
-                  <input v-model="form.external_link" type="url" class="admin-input" placeholder="https://example.com">
+                  <label class="mb-2 block text-sm font-medium text-slate-600">Description <span class="text-rose-500">*</span></label>
+                  <textarea v-model="form.description" rows="6" required class="admin-textarea" placeholder="Long-term technology partner"></textarea>
                 </div>
+                <p v-if="formError" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+                  {{ formError }}
+                </p>
               </div>
 
               <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600">Client Logo</label>
+                <label class="mb-2 block text-sm font-medium text-slate-600">Client Icon <span class="text-rose-500">*</span></label>
                 <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
-                  <div v-if="form.logo_url" class="absolute inset-0 flex items-center justify-center bg-white p-6">
-                    <img :src="form.logo_url" class="max-h-full max-w-full object-contain">
+                  <div v-if="form.client_icon" class="absolute inset-0 flex items-center justify-center bg-white p-6">
+                    <img :src="form.client_icon" class="max-h-full max-w-full object-contain">
                   </div>
                   <div v-else class="text-center">
                     <Upload class="mx-auto h-8 w-8 text-slate-400" />
-                    <p class="mt-3 text-sm text-slate-500">Click or drag logo here</p>
+                    <p class="mt-3 text-sm text-slate-500">Click or drag icon here</p>
                   </div>
-                  <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*,.svg" @change="handleLogoUpload">
+                  <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*,.svg" @change="handleClientUpload">
                 </div>
-                <p v-if="form.logoFileName" class="mt-2 text-xs text-slate-500">{{ form.logoFileName }}</p>
+                <p v-if="form.clientFileName" class="mt-2 text-xs text-slate-500">{{ form.clientFileName }}</p>
               </div>
             </div>
           </form>
@@ -149,12 +145,13 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Building2, Edit2, ExternalLink, Plus, Search, Trash2, Upload, X } from 'lucide-vue-next'
+import { Building2, Edit2, Plus, Search, Trash2, Upload, X } from 'lucide-vue-next'
 
-const { clients, fetchClients, createClient, updateClient, deleteClient } = useClients()
+const { clients, error, fetchClients, createClient, updateClient, deleteClient } = useClients()
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
+const formError = ref('')
 const form = ref({})
 
 const filteredClients = computed(() => {
@@ -162,16 +159,16 @@ const filteredClients = computed(() => {
 
   const query = searchQuery.value.toLowerCase()
   return clients.value.filter((item) =>
-    [item.name, item.external_link]
+    [item.name, item.description]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
 
 const stats = computed(() => [
-  { label: 'Total Clients', value: clients.value.length, meta: 'Shown in trusted-by listings' },
-  { label: 'With Logo', value: clients.value.filter((item) => item.logo_url).length, meta: 'Ready for homepage display' },
-  { label: 'With Website', value: clients.value.filter((item) => item.external_link).length, meta: 'Linked to client website' },
+  { label: 'Total Clients', value: clients.value.length, meta: 'Shown in public trust sections' },
+  { label: 'With Icon', value: clients.value.filter((item) => item.client_icon).length, meta: 'Ready for landing-page display' },
+  { label: 'With Description', value: clients.value.filter((item) => item.description).length, meta: 'Includes supporting context' },
   { label: 'Search Results', value: filteredClients.value.length, meta: 'Current filtered client count' }
 ])
 
@@ -179,20 +176,24 @@ onMounted(() => {
   fetchClients()
 })
 
+const emptyForm = () => ({
+  id: null,
+  name: '',
+  description: '',
+  client_icon: '',
+  clientFile: null,
+  clientFileName: ''
+})
+
 const openModal = (item = null) => {
+  formError.value = ''
   form.value = item
     ? {
       ...item,
-      logoFile: null,
-      logoFileName: ''
+      clientFile: null,
+      clientFileName: ''
     }
-    : {
-      name: '',
-      external_link: '',
-      logo_url: '',
-      logoFile: null,
-      logoFileName: ''
-    }
+    : emptyForm()
 
   isModalOpen.value = true
 }
@@ -201,16 +202,28 @@ const closeModal = () => {
   isModalOpen.value = false
 }
 
-const handleLogoUpload = (e) => {
+const handleClientUpload = (e) => {
   if (e.target.files && e.target.files[0]) {
     const file = e.target.files[0]
-    form.value.logoFile = file
-    form.value.logoFileName = file.name
-    form.value.logo_url = URL.createObjectURL(file)
+    form.value.clientFile = file
+    form.value.clientFileName = file.name
+    form.value.client_icon = URL.createObjectURL(file)
   }
 }
 
 const saveClient = async () => {
+  formError.value = ''
+
+  if (!form.value.name?.trim() || !form.value.description?.trim()) {
+    formError.value = 'Client name and description are required.'
+    return
+  }
+
+  if (!form.value.id && !form.value.clientFile) {
+    formError.value = 'A client icon is required when creating a client.'
+    return
+  }
+
   if (form.value.id) {
     await updateClient(form.value.id, form.value)
   } else {

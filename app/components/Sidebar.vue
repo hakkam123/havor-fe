@@ -1,11 +1,9 @@
 <template>
-  <aside class="admin-panel custom-scrollbar hidden h-[calc(100vh-1.5rem)] w-[268px] flex-shrink-0 overflow-y-auto lg:flex lg:flex-col">
+  <aside class="admin-panel custom-scrollbar hidden h-[calc(100vh-2rem)] w-[268px] flex-shrink-0 overflow-y-auto lg:fixed lg:left-4 lg:top-4 lg:z-30 lg:flex lg:flex-col">
     <div class="border-b border-[var(--admin-border)] px-5 pb-5 pt-6">
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--admin-accent)] text-sm font-semibold tracking-[0.18em] text-white">
-            HV
-          </div>
+          <img src="/logo-havor.svg" alt="Havor" class="h-11 w-11 rounded-2xl object-cover" >
           <div>
             <p class="text-sm font-semibold text-[var(--admin-text)]">Havor CMS</p>
           </div>
@@ -102,16 +100,16 @@ const menuSections = [
     items: [
       { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
       { label: 'Product', path: '/admin/products', icon: PackageSearch },
-      { label: 'Order', path: '/admin/works', icon: Briefcase },
+      { label: 'Works', path: '/admin/works', icon: Briefcase },
       { label: 'Career', path: '/admin/careers', icon: Users },
-      { label: 'Message', path: '/admin/inbox', icon: Inbox, badge: '12' }
+      { label: 'Message', path: '/admin/inbox', icon: Inbox }
     ]
   },
   {
     label: 'Other Menu',
     items: [
       { label: 'Clients', path: '/admin/clients', icon: Building2 },
-      { label: 'News', path: '/admin/news', icon: Newspaper, badge: '4' },
+      { label: 'News', path: '/admin/news', icon: Newspaper },
       { label: 'Banners', path: '/admin/banners', icon: ImageIcon },
       { label: 'Expertise', path: '/admin/expertises', icon: Star },
       { label: 'Categories', path: '/admin/categories', icon: Tags }
@@ -120,8 +118,8 @@ const menuSections = [
   {
     label: 'Workspace',
     items: [
-      { label: 'Campaign', path: '/admin/profile', icon: BellRing, badge: '5' },
-      { label: 'Settings', path: '/admin/profile', icon: Settings, badge: '2' }
+      { label: 'Campaign', path: '/admin/profile', icon: BellRing },
+      { label: 'Settings', path: '/admin/profile', icon: Settings }
     ]
   }
 ]

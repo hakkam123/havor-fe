@@ -1,0 +1,53 @@
+[
+  {
+    "slug": "nusa-finance-service-portal",
+    "title": "Nusa Finance Service Portal",
+    "category": "Business Platform",
+    "industry": "Financial Services",
+    "summary": "A service portal that consolidated customer requests, internal approvals, and reporting workflows into one governed platform.",
+    "challenge": "Disconnected manual processes slowed approvals across multiple teams and branches.",
+    "solution": "Havor designed a centralized portal with role-based access, automated workflow routing, and reporting views for management.",
+    "impact": "Faster processing, stronger internal visibility, and a more consistent service experience.",
+    "metric": "Workflow consolidation across 12 operational functions",
+    "technologies": ["Nuxt", "Node API", "Role-based access", "Analytics"],
+    "image": "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80",
+    "client": "Financial Services Client",
+    "deliveryTitle": "Structured delivery for financial service operations",
+    "deliverySummary": "The engagement was shaped around discovery, delivery control, operational fit, and a practical handover process so the client could adopt the solution with confidence.",
+    "businessOutcome": "Faster processing, stronger internal visibility, and a more consistent service experience. The implementation was designed to remain maintainable as operational scope grows and governance expectations become more formal."
+  },
+  {
+    "slug": "astra-logistics-mobile-operations",
+    "title": "Astra Logistics Mobile Operations",
+    "category": "Mobile App",
+    "industry": "Logistics",
+    "summary": "A mobile operations suite for dispatch coordination, route visibility, and real-time field reporting.",
+    "challenge": "Operational teams needed mobile access to schedules, delivery status, and incident reporting.",
+    "solution": "We delivered a cross-platform mobile application connected to central planning and operational dashboards.",
+    "impact": "Improved field coordination and stronger visibility from headquarters to daily operations.",
+    "metric": "Real-time reporting for distributed teams",
+    "technologies": ["Flutter", "Realtime APIs", "Offline sync", "Notifications"],
+    "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80",
+    "client": "Logistics Client",
+    "deliveryTitle": "Operational mobility for distributed logistics teams",
+    "deliverySummary": "The mobile solution was planned to support field execution, dispatch visibility, and stronger coordination between operations teams and headquarters.",
+    "businessOutcome": "Improved field coordination and stronger visibility from headquarters to daily operations. The implementation was designed to remain maintainable as operational scope grows and governance expectations become more formal."
+  },
+  {
+    "slug": "mandala-institution-digital-services",
+    "title": "Mandala Institution Digital Services",
+    "category": "Digital Transformation",
+    "industry": "Public Institution",
+    "summary": "A modernization program spanning public-facing services, internal administration, and integration across legacy systems.",
+    "challenge": "The institution needed to improve service access without disrupting existing operations.",
+    "solution": "Havor phased the delivery through service design, integration planning, and modular rollout across priority functions.",
+    "impact": "Better service accessibility, clearer governance, and a practical path for long-term modernization.",
+    "metric": "Phased rollout designed for low operational disruption",
+    "technologies": ["Service design", "Integration layer", "CMS", "Security review"],
+    "image": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1600&q=80",
+    "client": "Institutional Stakeholder",
+    "deliveryTitle": "Phased modernization for institutional digital services",
+    "deliverySummary": "This program was delivered with a structured rollout model so modernization could happen in stages without forcing operational disruption across the institution.",
+    "businessOutcome": "Better service accessibility, clearer governance, and a practical path for long-term modernization. The implementation was designed to remain maintainable as operational scope grows and governance expectations become more formal."
+  }
+]

@@ -1,58 +1,53 @@
+import type { ApiCategory, Category } from '~/types/api'
+import { toSlug } from '~/composables/useSlug'
+
 export const useCategories = () => {
   const { apiFetch } = useApi()
-  const categories = ref<any[]>([])
+  const categories = ref<Category[]>([])
   const isLoading = ref(false)
+  const error = ref<string | null>(null)
 
-  const toSlug = (value?: string | null) => {
-    if (!value) return ''
-
-    return value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-  }
-
-  const normalizeCategory = (item: any) => ({
-    ...item,
-    slug: item.slug || toSlug(item.name),
-    description: item.description || ''
+  const normalizeCategory = (item: ApiCategory): Category => ({
+    id: Number(item.id),
+    name: String(item.name || ''),
+    slug: toSlug(item.name)
   })
 
-  const toCategoryPayload = (payload: string | { name: string; description?: string }) => {
+  const toCategoryPayload = (payload: string | { name: string }) => {
     if (typeof payload === 'string') {
       return { name: payload }
     }
 
     return {
-      name: payload.name,
-      description: payload.description || ''
+      name: payload.name
     }
   }
 
   const fetchCategories = async () => {
     isLoading.value = true
+    error.value = null
     try {
-      const res = await apiFetch<any[]>('/categories')
+      const res = await apiFetch<ApiCategory[]>('/categories')
       categories.value = (res || []).map(normalizeCategory)
-    } catch (e) {
-      console.error(e)
+    } catch (fetchError) {
+      console.error(fetchError)
+      categories.value = []
+      error.value = 'Unable to load categories right now.'
     } finally {
       isLoading.value = false
     }
   }
 
-  const createCategory = async (payload: string | { name: string; description?: string }) => {
-    const res = await apiFetch('/categories', { method: 'POST', body: toCategoryPayload(payload) })
+  const createCategory = async (payload: string | { name: string }) => {
+    const res = await apiFetch<ApiCategory>('/categories', { method: 'POST', body: toCategoryPayload(payload) })
     await fetchCategories()
-    return normalizeCategory(res)
+    return res ? normalizeCategory(res) : null
   }
 
-  const updateCategory = async (id: number, payload: string | { name: string; description?: string }) => {
-    const res = await apiFetch(`/categories/${id}`, { method: 'PUT', body: toCategoryPayload(payload) })
+  const updateCategory = async (id: number, payload: string | { name: string }) => {
+    await apiFetch(`/categories/${id}`, { method: 'PUT', body: toCategoryPayload(payload) })
     await fetchCategories()
-    return normalizeCategory(res)
+    return categories.value.find((item) => item.id === id) || null
   }
 
   const deleteCategory = async (id: number) => {
@@ -61,5 +56,5 @@ export const useCategories = () => {
     return res
   }
 
-  return { categories, isLoading, fetchCategories, createCategory, updateCategory, deleteCategory }
+  return { categories, isLoading, error, fetchCategories, createCategory, updateCategory, deleteCategory }
 }

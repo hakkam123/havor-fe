@@ -5,7 +5,7 @@
         <div>
           <p class="admin-kicker">Hiring</p>
           <h1 class="admin-title">Careers</h1>
-          <p class="admin-copy">Manage open positions, publishing status, hiring details, and role requirements in one clean hiring board.</p>
+          <p class="admin-copy">Manage the public careers feed using the backend contract defined for job title, description, and thumbnail media.</p>
         </div>
 
         <button @click="openModal()" class="admin-primary-btn">
@@ -27,7 +27,7 @@
       <div class="admin-toolbar">
         <div class="relative min-w-0 xl:w-[320px]">
           <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input v-model="searchQuery" type="text" placeholder="Search title, team, location..." class="admin-input pl-11">
+          <input v-model="searchQuery" type="text" placeholder="Search title or description..." class="admin-input pl-11">
         </div>
         <div class="text-sm text-slate-500">Showing {{ filteredCareers.length }} entries</div>
       </div>
@@ -37,10 +37,8 @@
           <thead>
             <tr>
               <th>Position</th>
-              <th>Team</th>
-              <th>Location</th>
-              <th>Status</th>
-              <th>Posted</th>
+              <th>Description</th>
+              <th>Thumbnail</th>
               <th class="text-right">Actions</th>
             </tr>
           </thead>
@@ -48,18 +46,18 @@
             <tr v-for="item in filteredCareers" :key="item.id || item.slug">
               <td>
                 <div>
-                  <p class="font-semibold text-slate-900">{{ item.title }}</p>
+                  <p class="font-semibold text-slate-900">{{ item.job_title }}</p>
                   <p class="text-xs text-slate-400">/{{ item.slug }}</p>
                 </div>
               </td>
-              <td>{{ item.team }}</td>
-              <td>{{ item.location }}</td>
+              <td class="max-w-[420px] text-slate-500">
+                <p class="line-clamp-2">{{ item.excerpt || '-' }}</p>
+              </td>
               <td>
-                <span class="admin-status" :class="item.is_published ? 'admin-status-success' : 'admin-status-warning'">
-                  {{ item.is_published ? 'Published' : 'Draft' }}
+                <span class="admin-status" :class="item.thumbnail ? 'admin-status-success' : 'admin-status-warning'">
+                  {{ item.thumbnail ? 'Ready' : 'Missing' }}
                 </span>
               </td>
-              <td class="text-slate-400">{{ formatDate(item.postedAt || item.createdAt) }}</td>
               <td>
                 <div class="flex items-center justify-end gap-2">
                   <button @click="openModal(item)" class="admin-icon-btn">
@@ -72,7 +70,9 @@
               </td>
             </tr>
             <tr v-if="!filteredCareers.length">
-              <td colspan="6" class="admin-empty-state">No career positions found.</td>
+              <td colspan="4" class="admin-empty-state">
+                {{ error ? error : 'No career positions found.' }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -98,95 +98,43 @@
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div class="space-y-4">
                 <div>
-                  <label class="mb-2 block text-sm font-medium text-slate-600">Title <span class="text-rose-500">*</span></label>
-                  <input v-model="form.title" @input="generateSlug" type="text" required class="admin-input" placeholder="Senior Frontend Engineer">
+                  <label class="mb-2 block text-sm font-medium text-slate-600">Job Title <span class="text-rose-500">*</span></label>
+                  <input v-model="form.job_title" type="text" required class="admin-input" placeholder="Frontend Developer">
                 </div>
                 <div>
-                  <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
-                  <input v-model="form.slug" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
+                  <label class="mb-2 block text-sm font-medium text-slate-600">Slug Preview</label>
+                  <input :value="toSlug(form.job_title)" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
                 </div>
                 <div>
-                  <label class="mb-2 block text-sm font-medium text-slate-600">Summary <span class="text-rose-500">*</span></label>
-                  <textarea v-model="form.summary" rows="3" required class="admin-textarea" placeholder="Short listing summary"></textarea>
+                  <label class="mb-2 block text-sm font-medium text-slate-600">Thumbnail <span class="text-rose-500">*</span></label>
+                  <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
+                    <div v-if="form.thumbnail" class="absolute inset-0">
+                      <img :src="form.thumbnail" class="h-full w-full object-cover">
+                    </div>
+                    <div v-else class="text-center">
+                      <Upload class="mx-auto h-8 w-8 text-slate-400" />
+                      <p class="mt-3 text-sm text-slate-500">Click or drag thumbnail here</p>
+                    </div>
+                    <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*" @change="handleThumbnailUpload">
+                  </div>
+                  <p v-if="form.thumbnailFileName" class="mt-2 text-xs text-slate-500">{{ form.thumbnailFileName }}</p>
                 </div>
               </div>
 
               <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-600">Team</label>
-                    <input v-model="form.team" type="text" class="admin-input" placeholder="Engineering">
-                  </div>
-                  <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-600">Level</label>
-                    <select v-model="form.level" class="admin-select">
-                      <option>Junior</option>
-                      <option>Mid</option>
-                      <option>Senior</option>
-                      <option>Lead</option>
-                    </select>
+                <div>
+                  <label class="mb-2 block text-sm font-medium text-slate-600">Job Description <span class="text-rose-500">*</span></label>
+                  <div class="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-white">
+                    <Editor
+                      api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
+                      v-model="form.job_description"
+                      :init="editorConfig"
+                    />
                   </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-600">Location</label>
-                    <input v-model="form.location" type="text" class="admin-input" placeholder="Jakarta / Hybrid">
-                  </div>
-                  <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-600">Type</label>
-                    <select v-model="form.type" class="admin-select">
-                      <option>Full-Time</option>
-                      <option>Contract</option>
-                      <option>Part-Time</option>
-                      <option>Internship</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-600">Posted Date</label>
-                    <input v-model="form.postedAt" type="date" class="admin-input">
-                  </div>
-                  <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-600">Publish Status</label>
-                    <select v-model="form.is_published" class="admin-select">
-                      <option :value="1">Published</option>
-                      <option :value="0">Draft</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Description <span class="text-rose-500">*</span></label>
-              <div class="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-white">
-                <Editor
-                  api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
-                  v-model="form.description"
-                  :init="editorConfig"
-                />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600">Responsibilities</label>
-                <textarea
-                  v-model="responsibilitiesText"
-                  rows="6"
-                  class="admin-textarea"
-                  placeholder="One item per line"
-                />
-              </div>
-              <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600">Requirements</label>
-                <textarea
-                  v-model="requirementsText"
-                  rows="6"
-                  class="admin-textarea"
-                  placeholder="One item per line"
-                />
+                <p v-if="formError" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+                  {{ formError }}
+                </p>
               </div>
             </div>
           </form>
@@ -203,30 +151,22 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Edit2, Plus, Search, Trash2, X } from 'lucide-vue-next'
+import { Edit2, Plus, Search, Trash2, Upload, X } from 'lucide-vue-next'
 import Editor from '@tinymce/tinymce-vue'
 
-const { careers, fetchCareers, createCareer, updateCareer, deleteCareer } = useAdminCareers()
+const { careers, error, fetchCareers, createCareer, updateCareer, deleteCareer } = useAdminCareers()
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
-const responsibilitiesText = ref('')
-const requirementsText = ref('')
+const formError = ref('')
 
 const initialForm = () => ({
   id: null,
-  title: '',
-  slug: '',
-  team: 'Engineering',
-  level: 'Mid',
-  location: 'Jakarta / Hybrid',
-  type: 'Full-Time',
-  summary: '',
-  description: '',
-  postedAt: new Date().toISOString().slice(0, 10),
-  is_published: 1,
-  responsibilities: [],
-  requirements: []
+  job_title: '',
+  job_description: '',
+  thumbnail: '',
+  thumbnailFile: null,
+  thumbnailFileName: ''
 })
 
 const form = ref(initialForm())
@@ -249,60 +189,38 @@ const filteredCareers = computed(() => {
 
   const query = searchQuery.value.toLowerCase()
   return careers.value.filter((item) =>
-    [item.title, item.slug, item.team, item.location, item.level, item.type]
+    [item.job_title, item.job_description]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
 
 const stats = computed(() => [
-  { label: 'Open Roles', value: careers.value.length, meta: 'Positions stored in workspace' },
-  { label: 'Published', value: careers.value.filter((item) => item.is_published).length, meta: 'Live on careers page' },
-  { label: 'Drafts', value: careers.value.filter((item) => !item.is_published).length, meta: 'Waiting for approval' },
-  { label: 'Teams', value: new Set(careers.value.map((item) => item.team).filter(Boolean)).size, meta: 'Distinct hiring groups' }
+  { label: 'Open Roles', value: careers.value.length, meta: 'Entries exposed on the public careers route' },
+  { label: 'With Thumbnail', value: careers.value.filter((item) => item.thumbnail).length, meta: 'Ready for listing cards and detail pages' },
+  { label: 'Search Results', value: filteredCareers.value.length, meta: 'Current filtered role count' },
+  { label: 'Slugs', value: new Set(careers.value.map((item) => item.slug).filter(Boolean)).size, meta: 'Frontend route keys derived from titles' }
 ])
 
-const formatDate = (value) => {
-  if (!value) return '-'
-
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  }).format(new Date(value))
-}
-
-const generateSlug = () => {
-  form.value.slug = form.value.title
+const toSlug = (value = '') =>
+  value
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-}
 
-const toLines = (items = []) => items.join('\n')
-
-const parseLines = (value = '') =>
-  value
-    .split(/\r?\n/)
-    .map((item) => item.trim())
-    .filter(Boolean)
+const stripHtml = (value = '') => value.replace(/<[^>]*>?/gm, '').trim()
 
 const openModal = (item = null) => {
-  if (item) {
-    form.value = {
-      ...initialForm(),
+  formError.value = ''
+  form.value = item
+    ? {
       ...item,
-      postedAt: item.postedAt ? String(item.postedAt).slice(0, 10) : new Date().toISOString().slice(0, 10)
+      thumbnailFile: null,
+      thumbnailFileName: ''
     }
-    responsibilitiesText.value = toLines(item.responsibilities || [])
-    requirementsText.value = toLines(item.requirements || [])
-  } else {
-    form.value = initialForm()
-    responsibilitiesText.value = ''
-    requirementsText.value = ''
-  }
+    : initialForm()
 
   isModalOpen.value = true
 }
@@ -311,9 +229,27 @@ const closeModal = () => {
   isModalOpen.value = false
 }
 
+const handleThumbnailUpload = (e) => {
+  if (e.target.files && e.target.files[0]) {
+    const file = e.target.files[0]
+    form.value.thumbnailFile = file
+    form.value.thumbnailFileName = file.name
+    form.value.thumbnail = URL.createObjectURL(file)
+  }
+}
+
 const saveForm = async () => {
-  form.value.responsibilities = parseLines(responsibilitiesText.value)
-  form.value.requirements = parseLines(requirementsText.value)
+  formError.value = ''
+
+  if (!form.value.job_title?.trim() || !stripHtml(form.value.job_description).trim()) {
+    formError.value = 'Job title and description are required.'
+    return
+  }
+
+  if (!form.value.id && !form.value.thumbnailFile) {
+    formError.value = 'A thumbnail image is required when creating a career entry.'
+    return
+  }
 
   if (form.value.id) {
     await updateCareer(form.value.id, form.value)

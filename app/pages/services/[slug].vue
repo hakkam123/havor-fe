@@ -1,8 +1,7 @@
 <template>
   <div class="space-y-16 pb-8">
     <HeroSection
-      :kicker="service?.name || 'Service detail'"
-      :title="pageTitle"
+      :title="heroTitle"
       :description="pageDescription"
       :image="pageBanner.media_url || heroImage"
       :image-alt="service?.name || 'Service detail hero banner'"
@@ -71,7 +70,7 @@
 
         <div v-else class="marketing-card p-8 text-center">
           <h2 class="font-display text-2xl font-semibold text-slate-900">Service not found</h2>
-          <p class="mt-3 text-sm text-slate-500">The requested service is not available.</p>
+          <p class="mt-3 text-sm text-slate-500">{{ error || 'The requested service is not available.' }}</p>
           <NuxtLink to="/services" class="btn-primary mt-6 inline-flex">Back to Services</NuxtLink>
         </div>
       </div>
@@ -88,22 +87,23 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { expertise, fetchExpertise, isLoading } = useExpertise()
-const { fetchBanners, useBannerPage } = useBanners()
+const { expertise, error, fetchExpertise, isLoading } = useExpertise()
+const { fetchBannerPage, useBannerPage } = useBanners()
 const slug = computed(() => String(route.params.slug || ''))
 const heroImage = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80'
 
 onMounted(async () => {
-  await Promise.allSettled([fetchExpertise(), fetchBanners()])
+  await Promise.allSettled([fetchExpertise(), fetchBannerPage('services')])
 })
 
 const service = computed(() => expertise.value.find((item) => item.slug === slug.value) || null)
 const pageBanner = useBannerPage('services', 'service')
-const pageTitle = computed(() => service.value?.name ? `${service.value.name} | Services | Havor Smarta Digital` : 'Service Details | Havor Smarta Digital')
+const heroTitle = computed(() => service.value?.name || 'Service Details')
+const seoTitle = computed(() => service.value?.name ? `${service.value.name} | Services | Havor Smarta Digital` : 'Service Details | Havor Smarta Digital')
 const pageDescription = computed(() => service.value?.description || 'Explore Havor Smarta Digital service details and capability information.')
 
 usePageSeo({
-  title: pageTitle,
+  title: seoTitle,
   description: pageDescription,
   path: computed(() => `/services/${slug.value}`),
   image: computed(() => pageBanner.value.media_url || heroImage),

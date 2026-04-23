@@ -1,3 +1,3 @@
 <script setup>
-await navigateTo('/admin/works', { replace: true })
+await navigateTo('/projects', { replace: true })
 </script>

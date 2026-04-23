@@ -1,32 +1,28 @@
 <template>
-  <section class="relative overflow-hidden bg-[var(--marketing-navy)] text-white">
-    <div class="absolute inset-0">
-      <div class="absolute -top-24 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[var(--marketing-primary)]/25 blur-3xl"></div>
-      <div class="absolute right-0 top-10 h-[300px] w-[300px] rounded-full bg-[var(--marketing-primary)]/20 blur-2xl"></div>
-      <div class="absolute left-0 bottom-0 h-44 w-full bg-gradient-to-t from-[#1e293b] to-transparent"></div>
-    </div>
-
+  <section class="relative isolate min-h-screen overflow-hidden text-white">
     <img
       v-if="image"
       :src="image"
       :alt="imageAlt || title"
-      :style="styleFor(0.05, -16, 1.12)"
-      class="absolute inset-0 h-full w-full object-cover opacity-25 transition-transform duration-300"
+      :style="styleFor(0.05, -16, 1.08)"
+      class="absolute inset-0 h-full w-full object-cover transition-transform duration-300"
     >
+    <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,12,26,0.82)_0%,rgba(4,12,26,0.48)_42%,rgba(4,12,26,0.34)_100%)]"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,7,16,0.54)_0%,rgba(2,7,16,0.1)_24%,rgba(2,7,16,0.5)_100%)]"></div>
 
-    <div class="marketing-container relative py-20 sm:py-24 lg:py-28">
-      <div class="max-w-2xl" v-motion-fade-up>
-        <p v-if="kicker" class="inline-flex rounded-md border border-white/15 bg-white/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+    <div class="marketing-container relative flex min-h-screen items-end py-14">
+      <div class="max-w-3xl pb-10 pt-32">
+        <p v-if="kicker" class="inline-flex rounded-full border border-white/18 bg-white/10 px-3 py-1.5 text-[0.7rem] font-extrabold uppercase tracking-[0.24em] text-white/82">
           {{ kicker }}
         </p>
-        <h1 class="mt-5 font-display text-5xl font-semibold leading-[1.06] sm:text-6xl">
+        <h1 class="mt-6 text-[clamp(3rem,7vw,5.8rem)] font-extrabold leading-[0.95] tracking-[-0.05em] text-white">
           {{ title }}
         </h1>
-        <p class="mt-7 max-w-xl text-base leading-8 text-slate-200/90">
+        <p class="mt-6 max-w-2xl text-base leading-8 text-white/82 sm:text-lg">
           {{ description }}
         </p>
 
-        <div v-if="$slots.actions" class="mt-9 flex flex-wrap gap-3">
+        <div v-if="$slots.actions" class="mt-8 flex flex-wrap gap-3">
           <slot name="actions" />
         </div>
       </div>

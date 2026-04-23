@@ -3,6 +3,21 @@ export default defineNuxtConfig({
   ssr: false, // Disable SSR to avoid custom directive ('v-motion') errors and because this is an administrative dashboard.
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  app: {
+    pageTransition: {
+      name: 'page-flow',
+      mode: 'out-in'
+    },
+    layoutTransition: {
+      name: 'layout-flow',
+      mode: 'out-in'
+    },
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/logo-havor.svg' }
+      ]
+    }
+  },
   modules: [
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',

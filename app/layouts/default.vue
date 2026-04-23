@@ -3,7 +3,7 @@
     <div class="flex min-h-screen gap-4 p-3 sm:p-4">
       <Sidebar />
 
-      <div class="flex min-w-0 flex-1 flex-col">
+      <div class="flex min-w-0 flex-1 flex-col lg:pl-[284px]">
         <div class="admin-panel flex min-h-0 flex-1 flex-col overflow-hidden">
           <Header />
 

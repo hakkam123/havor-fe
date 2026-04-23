@@ -1,3 +1,3 @@
 <script setup>
-await navigateTo('/admin/expertises', { replace: true })
+await navigateTo('/services', { replace: true })
 </script>

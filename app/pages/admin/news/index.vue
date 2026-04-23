@@ -132,8 +132,8 @@
                   <div>
                     <label class="mb-2 block text-sm font-medium text-slate-600">Publish Status</label>
                     <select v-model="form.is_published" class="admin-select">
-                      <option :value="1">Published</option>
-                      <option :value="0">Draft</option>
+                      <option :value="true">Published</option>
+                      <option :value="false">Draft</option>
                     </select>
                   </div>
                 </div>
@@ -183,7 +183,7 @@ import { computed, onMounted, ref } from 'vue'
 import { Download, Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload, X } from 'lucide-vue-next'
 import Editor from '@tinymce/tinymce-vue'
 
-const { news: newsItems, fetchNews, createNews, updateNews, deleteNews } = useNews()
+const { news: newsItems, fetchNews, createNews, updateNews, deleteNews } = useNews({ includeDrafts: true })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
@@ -192,7 +192,7 @@ const form = ref({
   title: '',
   slug: '',
   category: 'Technology',
-  is_published: 1,
+  is_published: true,
   image_url: null,
   imageFile: null,
   imageFileName: '',
@@ -253,7 +253,7 @@ const openModal = (item = null) => {
       title: '',
       slug: '',
       category: 'Technology',
-      is_published: 1,
+      is_published: true,
       image_url: null,
       imageFile: null,
       imageFileName: '',

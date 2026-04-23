@@ -4,11 +4,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const token = useCookie('auth_token')
   const legacyRedirectMap: Record<string, string> = {
     '/login': '/admin/login',
-    '/news': '/admin/news',
     '/products': '/admin/products',
-    '/works': '/admin/works',
     '/banners': '/admin/banners',
-    '/expertises': '/admin/expertises',
     '/categories': '/admin/categories',
     '/inbox': '/admin/inbox',
     '/profile': '/admin/profile'

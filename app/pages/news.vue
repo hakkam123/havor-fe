@@ -1,3 +1,3 @@
 <script setup>
-await navigateTo('/admin/news', { replace: true })
+await navigateTo('/media-news', { replace: true })
 </script>

@@ -1,7 +1,12 @@
+import type { ApiBanner, Banner } from '~/types/api'
+import { toSlug } from '~/composables/useSlug'
+
 export const useBanners = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const banners = ref<any[]>([])
+  const banners = ref<Banner[]>([])
   const isLoading = ref(false)
+  const error = ref<string | null>(null)
+  const pageBanners = ref<Record<string, Banner>>({})
 
   const normalizePageName = (value?: string | null) =>
     String(value || '')
@@ -9,47 +14,77 @@ export const useBanners = () => {
       .toLowerCase()
       .replace(/[_\s]+/g, '-')
 
-  const toSlug = (value?: string | null) => {
-    if (!value) return ''
-
-    return value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-  }
-
-  const normalizeBanner = (item: any) => ({
-    ...item,
-    slug: item.slug || toSlug(item.page_name || item.title),
+  const normalizeBanner = (item: ApiBanner): Banner => ({
+    id: Number(item.id),
+    title: String(item.title || ''),
+    subtitle: String(item.subtitle || ''),
+    media_type: String(item.media_type || 'image'),
     media_url: resolveAssetUrl(item.media_url),
-    page_name: normalizePageName(item.page_name)
+    page_name: normalizePageName(item.page_name),
+    slug: String(item.slug || toSlug(item.page_name || item.title))
   })
+
+  const setPageBanner = (item?: Banner | null) => {
+    if (!item?.page_name) return
+    pageBanners.value[item.page_name] = item
+  }
 
   const findBannerByPage = (...pageNames: string[]) => {
     const normalizedNames = pageNames.map(normalizePageName).filter(Boolean)
     if (!normalizedNames.length) return {}
 
-    return banners.value.find((item) => normalizedNames.includes(normalizePageName(item.page_name))) || {}
+    return normalizedNames
+      .map((pageName) => pageBanners.value[pageName] || banners.value.find((item) => item.page_name === pageName))
+      .find(Boolean) || {}
   }
 
   const useBannerPage = (...pageNames: string[]) => computed(() => findBannerByPage(...pageNames))
 
   const fetchBanners = async () => {
     isLoading.value = true
+    error.value = null
     try {
-      const res = await apiFetch<any[]>('/banners')
-      banners.value = res.map(normalizeBanner)
-    } catch (error) {
-      console.error('Failed to fetch banners', error)
+      const res = await apiFetch<ApiBanner[]>('/banners')
+      banners.value = (res || []).map(normalizeBanner)
+      banners.value.forEach(setPageBanner)
+    } catch (fetchError) {
+      console.error('Failed to fetch banners', fetchError)
+      banners.value = []
+      error.value = 'Unable to load banners right now.'
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const fetchBannerPage = async (pageName: string) => {
+    const normalizedPageName = normalizePageName(pageName)
+    if (!normalizedPageName) return null
+
+    isLoading.value = true
+    error.value = null
+    try {
+      const res = await apiFetch<ApiBanner | ApiBanner[]>(`/banners/${normalizedPageName}`)
+      const banner = Array.isArray(res) ? res[0] : res
+      if (!banner) {
+        delete pageBanners.value[normalizedPageName]
+        return null
+      }
+
+      const normalizedBanner = normalizeBanner(banner)
+      setPageBanner(normalizedBanner)
+      return normalizedBanner
+    } catch (fetchError) {
+      console.error(`Failed to fetch banner for page "${normalizedPageName}"`, fetchError)
+      delete pageBanners.value[normalizedPageName]
+      error.value = 'Unable to load banner content right now.'
+      return null
     } finally {
       isLoading.value = false
     }
   }
 
   const createBanner = async (payload: any) => {
-    const res = await apiFetch('/banners', {
+    const res = await apiFetch<ApiBanner>('/banners', {
       method: 'POST',
       body: toFormData({
         page_name: payload.page_name,
@@ -61,11 +96,11 @@ export const useBanners = () => {
     })
 
     await fetchBanners()
-    return normalizeBanner(res)
+    return res ? normalizeBanner(res) : null
   }
 
   const updateBanner = async (id: number, payload: any) => {
-    const res = await apiFetch(`/banners/${id}`, {
+    await apiFetch(`/banners/${id}`, {
       method: 'PUT',
       body: toFormData({
         page_name: payload.page_name,
@@ -77,7 +112,7 @@ export const useBanners = () => {
     })
 
     await fetchBanners()
-    return normalizeBanner(res)
+    return banners.value.find((item) => item.id === id) || null
   }
 
   const deleteBanner = async (id: number) => {
@@ -89,7 +124,9 @@ export const useBanners = () => {
   return {
     banners,
     isLoading,
+    error,
     fetchBanners,
+    fetchBannerPage,
     findBannerByPage,
     useBannerPage,
     createBanner,

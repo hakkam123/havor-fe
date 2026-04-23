@@ -1,45 +1,148 @@
 # API Routes
 
-This file documents the backend endpoints and example outputs so the frontend can fetch data consistently.
+Dokumen ini berisi daftar endpoint backend yang sudah dikelompokkan berdasarkan akses Public vs Admin, lengkap dengan contoh request frontend dan contoh response.
 
 ## Base URL
-
-For local development, the API is typically served from:
 
 ```text
 http://localhost:5000
 ```
 
-If you deploy the backend, replace this with your production API URL.
+## Konsep Akses
 
-## Frontend Fetch Pattern
+- Public: bisa diakses tanpa token.
+- Admin (Protected): wajib header `Authorization: Bearer <accessToken>`.
 
-For public data:
+## Access Token vs Refresh Token
+
+Backend menggunakan 2 token:
+
+- Access token untuk akses endpoint protected.
+- Refresh token untuk meminta access token baru saat access token expired.
+
+Konfigurasi default:
+
+```text
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=120m
+```
+
+Flow frontend:
+
+1. Login ke `/api/auth/login` dan simpan `accessToken` + `refreshToken`.
+2. Pakai `accessToken` untuk endpoint Admin.
+3. Kalau access token expired, panggil `/api/auth/refresh` dengan `refreshToken`.
+4. Simpan token baru dari response.
+5. Kalau refresh token juga expired, user harus login ulang.
+
+## Contoh Kode Frontend
+
+### 1) Public GET
 
 ```js
-const response = await fetch(`${API_URL}/api/news`);
+const response = await fetch(`${API_URL}/api/careers`);
+if (!response.ok) throw new Error('Failed to fetch careers');
 const data = await response.json();
 ```
 
-For protected routes:
+### 2) Admin JSON Request
 
 ```js
 const response = await fetch(`${API_URL}/api/categories`, {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${accessToken}`,
+  },
+  body: JSON.stringify({ name: 'UI/UX Design' }),
+});
+const data = await response.json();
+```
+
+### 3) Admin Upload (multipart/form-data)
+
+```js
+const formData = new FormData();
+formData.append('job_title', 'Frontend Developer');
+formData.append('job_description', 'Build and maintain web interfaces');
+formData.append('thumbnail', fileInput.files[0]);
+
+const response = await fetch(`${API_URL}/api/careers`, {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${accessToken}`,
   },
   body: formData,
 });
+const data = await response.json();
 ```
 
-For routes that upload files, use `FormData` and do not set `Content-Type` manually.
+### 4) Refresh Token
 
-## Auth Routes
+```js
+const response = await fetch(`${API_URL}/api/auth/refresh`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ refreshToken }),
+});
+const data = await response.json();
+```
 
-### POST `/api/auth/login`
+## Ringkasan Endpoint (Public vs Admin)
 
-Request body:
+| Method | Endpoint | Access | Content-Type |
+|---|---|---|---|
+| POST | /api/auth/login | Public | application/json |
+| POST | /api/auth/refresh | Public | application/json |
+| GET | /api/banners | Public | - |
+| GET | /api/banners/:page | Public | - |
+| POST | /api/banners | Admin | multipart/form-data |
+| PUT | /api/banners/:id | Admin | multipart/form-data |
+| DELETE | /api/banners/:id | Admin | - |
+| GET | /api/categories | Public | - |
+| POST | /api/categories | Admin | application/json |
+| PUT | /api/categories/:id | Admin | application/json |
+| DELETE | /api/categories/:id | Admin | - |
+| GET | /api/clients | Public | - |
+| POST | /api/clients | Admin | multipart/form-data |
+| PUT | /api/clients/:id | Admin | multipart/form-data |
+| DELETE | /api/clients/:id | Admin | - |
+| GET | /api/careers | Public | - |
+| POST | /api/careers | Admin | multipart/form-data |
+| PUT | /api/careers/:id | Admin | multipart/form-data |
+| DELETE | /api/careers/:id | Admin | - |
+| GET | /api/expertise | Public | - |
+| POST | /api/expertise | Admin | multipart/form-data |
+| PUT | /api/expertise/:id | Admin | multipart/form-data |
+| DELETE | /api/expertise/:id | Admin | - |
+| GET | /api/news | Public | - |
+| GET | /api/news/:slug | Public | - |
+| POST | /api/news | Admin | multipart/form-data |
+| PUT | /api/news/:id | Admin | multipart/form-data |
+| DELETE | /api/news/:id | Admin | - |
+| GET | /api/products | Public | - |
+| POST | /api/products | Admin | multipart/form-data |
+| PUT | /api/products/:id | Admin | multipart/form-data |
+| DELETE | /api/products/:id | Admin | - |
+| GET | /api/works | Public | - |
+| POST | /api/works | Admin | multipart/form-data |
+| PUT | /api/works/:id | Admin | multipart/form-data |
+| DELETE | /api/works/:id | Admin | - |
+| POST | /api/contact | Public | application/json |
+| GET | /api/contact | Admin | - |
+| PUT | /api/contact/:id/read | Admin | - |
+| DELETE | /api/contact/:id | Admin | - |
+
+## Detail per Resource
+
+### Auth Routes
+
+#### POST /api/auth/login
+
+Access: Public  
+Body (JSON):
 
 ```json
 {
@@ -48,7 +151,7 @@ Request body:
 }
 ```
 
-Example output:
+Success response:
 
 ```json
 {
@@ -60,9 +163,10 @@ Example output:
 }
 ```
 
-### POST `/api/auth/refresh`
+#### POST /api/auth/refresh
 
-Request body:
+Access: Public  
+Body (JSON):
 
 ```json
 {
@@ -70,7 +174,7 @@ Request body:
 }
 ```
 
-Example output:
+Success response:
 
 ```json
 {
@@ -79,57 +183,32 @@ Example output:
 }
 ```
 
-## Banner Routes
+### Banner Routes
 
-### GET `/api/banners`
+#### GET /api/banners
 
-Returns all banners.
-
-Example output:
+Access: Public  
+Success response:
 
 ```json
 [
   {
     "id": 1,
     "page_name": "home",
-    "title": "Build Better Digital Products",
-    "subtitle": "Design, development, and automation",
-    "media_url": "/uploads/banners/home-banner.jpg",
+    "title": "Homepage Banner",
+    "subtitle": "Subtitle",
+    "media_url": "/uploads/banners/banner.jpg",
     "media_type": "image"
   }
 ]
 ```
 
-### GET `/api/banners/:page`
+#### POST /api/banners
 
-Example output:
+Access: Admin (Bearer Token)  
+Body (multipart): `page_name`, `title`, `subtitle`, `media_type`, `media_url` (file/url)
 
-```json
-{
-  "id": 1,
-  "page_name": "home",
-  "title": "Build Better Digital Products",
-  "subtitle": "Design, development, and automation",
-  "media_url": "/uploads/banners/home-banner.jpg",
-  "media_type": "image"
-}
-```
-
-### POST `/api/banners`
-
-Protected. Send `multipart/form-data`.
-
-Fields:
-
-```text
-page_name
-title
-subtitle
-media_type
-media_url (optional if file is uploaded)
-```
-
-Example output:
+Success response:
 
 ```json
 {
@@ -142,21 +221,11 @@ Example output:
 }
 ```
 
-### DELETE `/api/banners/:id`
+### Category Routes
 
-Example output:
+#### GET /api/categories
 
-```json
-{
-  "message": "Banner removed"
-}
-```
-
-## Category Routes
-
-### GET `/api/categories`
-
-Example output:
+Access: Public
 
 ```json
 [
@@ -167,19 +236,16 @@ Example output:
 ]
 ```
 
-### POST `/api/categories`
+#### POST /api/categories
 
-Protected.
-
-Request body:
+Access: Admin (Bearer Token)  
+Body (JSON):
 
 ```json
 {
   "name": "UI/UX Design"
 }
 ```
-
-Example output:
 
 ```json
 {
@@ -188,32 +254,112 @@ Example output:
 }
 ```
 
-### PUT `/api/categories/:id`
+#### PUT /api/categories/:id
 
-Example output:
+Access: Admin (Bearer Token)  
+Body (JSON):
 
 ```json
 {
-  "id": "2",
   "name": "Brand Design"
 }
 ```
 
-### DELETE `/api/categories/:id`
-
-Example output:
-
 ```json
 {
-  "message": "Category removed"
+  "message": "Category updated successfully"
 }
 ```
 
-## Expertise Routes
+### Client Routes
 
-### GET `/api/expertise`
+#### GET /api/clients
 
-Example output:
+Access: Public
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Global Partner",
+    "client_icon": "/uploads/clients/client-icon.png",
+    "description": "Long-term technology partner"
+  }
+]
+```
+
+#### POST /api/clients
+
+Access: Admin (Bearer Token)  
+Body (multipart): `name`, `description`, `client_icon` (file)
+
+```json
+{
+  "id": 2,
+  "name": "New Client",
+  "client_icon": "/uploads/clients/new-client.png",
+  "description": "Project partner"
+}
+```
+
+#### PUT /api/clients/:id
+
+Access: Admin (Bearer Token)  
+Body (multipart): `name`, `description`, `client_icon` (optional file)
+
+```json
+{
+  "message": "Client updated successfully"
+}
+```
+
+### Career Routes
+
+#### GET /api/careers
+
+Access: Public
+
+```json
+[
+  {
+    "id": 1,
+    "thumbnail": "/uploads/careers/career-thumb.jpg",
+    "job_title": "Frontend Developer",
+    "job_description": "Build and maintain web interfaces"
+  }
+]
+```
+
+#### POST /api/careers
+
+Access: Admin (Bearer Token)  
+Body (multipart): `job_title`, `job_description`, `thumbnail` (file)
+
+```json
+{
+  "id": 2,
+  "thumbnail": "/uploads/careers/ui-designer.jpg",
+  "job_title": "UI Designer",
+  "job_description": "Design modern digital experiences"
+}
+```
+
+#### PUT /api/careers/:id
+
+Access: Admin (Bearer Token)  
+Body (multipart): `job_title`, `job_description`, `thumbnail` (optional file)
+
+```json
+{
+  "message": "Career updated successfully"
+}
+```
+
+### Expertise Routes
+
+#### GET /api/expertise
+
+Access: Public
 
 ```json
 [
@@ -226,106 +372,78 @@ Example output:
 ]
 ```
 
-### POST `/api/expertise`
+#### POST /api/expertise
 
-Protected. Send `multipart/form-data` with `icon_url` file.
-
-Example output:
+Access: Admin (Bearer Token)  
+Body (multipart): `name`, `description`, `icon_url` (file)
 
 ```json
 {
-  "id": 3,
+  "id": 2,
   "name": "DevOps",
-  "description": "Deployment, automation, and cloud workflows",
-  "icon_url": "/uploads/expertise/devops.svg"
+  "description": "Deployment and automation",
+  "icon_url": "/uploads/expertise/devops.png"
 }
 ```
 
-### PUT `/api/expertise/:id`
+### News Routes
 
-Example output:
+#### GET /api/news
 
-```json
-{
-  "id": "3",
-  "name": "DevOps",
-  "description": "Deployment, automation, and cloud workflows",
-  "icon_url": "/uploads/expertise/devops.svg"
-}
-```
-
-### DELETE `/api/expertise/:id`
-
-Example output:
-
-```json
-{
-  "message": "Expertise removed"
-}
-```
-
-## Client Routes
-
-### GET `/api/clients`
-
-Example output:
+Access: Public
 
 ```json
 [
   {
     "id": 1,
-    "name": "StarkCorp",
-    "logo_url": "/uploads/clients/starkcorp.svg",
-    "external_link": "https://starkcorp.example"
+    "title": "New Office Launch",
+    "slug": "new-office-launch",
+    "content": "We opened a new office...",
+    "category": "Company",
+    "is_published": true,
+    "image_url": "/uploads/news/office.jpg"
   }
 ]
 ```
 
-### POST `/api/clients`
+#### GET /api/news/:slug
 
-Protected. Send `multipart/form-data` with `logo_url` file.
+Access: Public
 
-Example output:
+```json
+{
+  "id": 1,
+  "title": "New Office Launch",
+  "slug": "new-office-launch",
+  "content": "We opened a new office...",
+  "category": "Company",
+  "is_published": true,
+  "image_url": "/uploads/news/office.jpg"
+}
+```
+
+#### POST /api/news
+
+Access: Admin (Bearer Token)  
+Body (multipart): `title`, `content`, `category`, `is_published`, `image_url` (file)
 
 ```json
 {
   "id": 2,
-  "name": "Vortex Systems",
-  "logo_url": "/uploads/clients/vortex-systems.png",
-  "external_link": "https://vortex.example"
+  "title": "Product Update",
+  "slug": "product-update",
+  "content": "We improved the dashboard...",
+  "category": "Product",
+  "is_published": true,
+  "image_url": "/uploads/news/update.jpg"
 }
 ```
 
-### PUT `/api/clients/:id`
+### Product Routes
 
-Example output:
+#### GET /api/products
 
-```json
-{
-  "id": "2",
-  "name": "Vortex Systems",
-  "logo_url": "/uploads/clients/vortex-systems.png",
-  "external_link": "https://vortex.example"
-}
-```
-
-### DELETE `/api/clients/:id`
-
-Example output:
-
-```json
-{
-  "message": "Client removed"
-}
-```
-
-## Product Routes
-
-### GET `/api/products`
-
-Returns products with `category_name`.
-
-Example output:
+Access: Public
 
 ```json
 [
@@ -341,11 +459,10 @@ Example output:
 ]
 ```
 
-### POST `/api/products`
+#### POST /api/products
 
-Protected. Send `multipart/form-data` with `image_url` file.
-
-Example output:
+Access: Admin (Bearer Token)  
+Body (multipart): `name`, `description`, `external_link`, `categoryId`, `image_url` (file)
 
 ```json
 {
@@ -358,37 +475,11 @@ Example output:
 }
 ```
 
-### PUT `/api/products/:id`
+### Work Routes
 
-Example output:
+#### GET /api/works
 
-```json
-{
-  "id": "2",
-  "name": "Landing Page Kit",
-  "description": "Reusable marketing sections",
-  "image_url": "/uploads/products/landing-page.png",
-  "categoryId": 1
-}
-```
-
-### DELETE `/api/products/:id`
-
-Example output:
-
-```json
-{
-  "message": "Product removed"
-}
-```
-
-## Work Routes
-
-### GET `/api/works`
-
-Returns works with `category_name`.
-
-Example output:
+Access: Public
 
 ```json
 [
@@ -405,11 +496,10 @@ Example output:
 ]
 ```
 
-### POST `/api/works`
+#### POST /api/works
 
-Protected. Send `multipart/form-data` with `image_url` file.
-
-Example output:
+Access: Admin (Bearer Token)  
+Body (multipart): `title`, `description`, `client`, `year`, `categoryId`, `image_url` (file)
 
 ```json
 {
@@ -423,119 +513,12 @@ Example output:
 }
 ```
 
-### PUT `/api/works/:id`
+### Contact Routes
 
-Example output:
+#### POST /api/contact
 
-```json
-{
-  "id": "2",
-  "title": "POS System",
-  "description": "Point-of-sale platform",
-  "client": "Retail Partner",
-  "year": 2026,
-  "image_url": "/uploads/works/pos.png",
-  "categoryId": 2
-}
-```
-
-### DELETE `/api/works/:id`
-
-Example output:
-
-```json
-{
-  "message": "Work entry removed"
-}
-```
-
-## News Routes
-
-### GET `/api/news`
-
-Example output:
-
-```json
-[
-  {
-    "id": 1,
-    "title": "New Office Launch",
-    "slug": "new-office-launch",
-    "content": "We opened a new office...",
-    "category": "Company",
-    "is_published": 1,
-    "image_url": "/uploads/news/office.jpg"
-  }
-]
-```
-
-### GET `/api/news/:slug`
-
-Example output:
-
-```json
-{
-  "id": 1,
-  "title": "New Office Launch",
-  "slug": "new-office-launch",
-  "content": "We opened a new office...",
-  "category": "Company",
-  "is_published": 1,
-  "image_url": "/uploads/news/office.jpg"
-}
-```
-
-### POST `/api/news`
-
-Protected. Send `multipart/form-data` with `image_url` file.
-
-Example output:
-
-```json
-{
-  "id": 2,
-  "title": "Product Update",
-  "slug": "product-update",
-  "content": "We improved the dashboard...",
-  "category": "Product",
-  "is_published": true,
-  "image_url": "/uploads/news/update.jpg"
-}
-```
-
-### PUT `/api/news/:id`
-
-Example output:
-
-```json
-{
-  "id": "2",
-  "title": "Product Update",
-  "slug": "product-update",
-  "content": "We improved the dashboard...",
-  "category": "Product",
-  "is_published": true,
-  "image_url": "/uploads/news/update.jpg"
-}
-```
-
-### DELETE `/api/news/:id`
-
-Example output:
-
-```json
-{
-  "message": "News removed"
-}
-```
-
-## Contact Routes
-
-### POST `/api/contact`
-
-Public. Used by the frontend contact form.
-
-Request body:
+Access: Public  
+Body (JSON):
 
 ```json
 {
@@ -545,8 +528,6 @@ Request body:
   "message": "I want to discuss a website project."
 }
 ```
-
-Example output:
 
 ```json
 {
@@ -558,11 +539,9 @@ Example output:
 }
 ```
 
-### GET `/api/contact`
+#### GET /api/contact
 
-Protected. Returns all messages for admin.
-
-Example output:
+Access: Admin (Bearer Token)
 
 ```json
 [
@@ -572,14 +551,14 @@ Example output:
     "email": "john@example.com",
     "subject": "Project Inquiry",
     "message": "I want to discuss a website project.",
-    "is_read": 0
+    "is_read": false
   }
 ]
 ```
 
-### PUT `/api/contact/:id/read`
+#### PUT /api/contact/:id/read
 
-Example output:
+Access: Admin (Bearer Token)
 
 ```json
 {
@@ -587,20 +566,30 @@ Example output:
 }
 ```
 
-### DELETE `/api/contact/:id`
+## Response Error Umum
 
-Example output:
+Error yang umum dari backend:
 
 ```json
 {
-  "message": "Message removed"
+  "message": "Not authorized, no token"
 }
 ```
 
-## Notes For Frontend
+```json
+{
+  "message": "Not authorized, token failed"
+}
+```
 
-- Public endpoints can be called directly from the browser.
-- Protected endpoints need a valid `Authorization: Bearer <token>` header.
-- File upload routes use `multipart/form-data` and `FormData` on the frontend.
-- Image and file URLs are returned as relative paths like `/uploads/news/file.jpg`.
-- The frontend should prepend the backend host before rendering uploaded assets.
+```json
+{
+  "message": "Internal server error"
+}
+```
+
+## Catatan Frontend
+
+- Untuk endpoint upload, gunakan `FormData` dan jangan set `Content-Type` manual.
+- URL file dari API berbentuk path relatif seperti `/uploads/news/file.jpg`.
+- Di frontend, gabungkan dengan host backend, misalnya: `${API_URL}${image_url}`.

@@ -4,11 +4,11 @@
       <div class="relative">
         <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         <input
-          :value="searchTerm"
+          :value="resolvedSearchValue"
           type="text"
           :placeholder="placeholder || 'Search'"
           class="input-field py-2.5 pl-10 text-sm"
-          @input="emit('update:searchTerm', $event.target.value)"
+          @input="emitSearch($event.target.value)"
         >
       </div>
 
@@ -39,9 +39,14 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { Search } from 'lucide-vue-next'
 
-defineProps({
+const props = defineProps({
+  searchValue: {
+    type: String,
+    default: ''
+  },
   searchTerm: {
     type: String,
     default: ''
@@ -72,5 +77,11 @@ defineProps({
   }
 })
 
-const emit = defineEmits(['update:searchTerm', 'update:category', 'update:sortBy', 'reset'])
+const emit = defineEmits(['update:search', 'update:searchTerm', 'update:category', 'update:sortBy', 'reset'])
+const resolvedSearchValue = computed(() => props.searchValue || props.searchTerm)
+
+const emitSearch = (value) => {
+  emit('update:search', value)
+  emit('update:searchTerm', value)
+}
 </script>
