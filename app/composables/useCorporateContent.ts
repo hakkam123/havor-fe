@@ -10,39 +10,53 @@ export const useCorporateContent = () => {
 
   const serviceItems = [
     {
+      slug: 'web-development',
       title: 'Web Development',
       summary: 'Corporate websites, service portals, and internal web platforms designed for reliability, clarity, and long-term scale.',
-      deliverables: ['Corporate websites', 'Customer portals', 'Internal dashboards']
+      deliverables: ['Corporate websites', 'Customer portals', 'Internal dashboards'],
+      image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'
     },
     {
+      slug: 'mobile-app-development',
       title: 'Mobile App Development',
       summary: 'Cross-platform and native mobile products built for operational efficiency, customer engagement, and field mobility.',
-      deliverables: ['iOS and Android apps', 'Cross-platform delivery', 'Performance optimization']
+      deliverables: ['iOS and Android apps', 'Cross-platform delivery', 'Performance optimization'],
+      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1200&q=80'
     },
     {
+      slug: 'custom-software-development',
       title: 'Custom Software Development',
       summary: 'Tailored software systems that fit specific operational workflows, approvals, governance, and reporting requirements.',
-      deliverables: ['Workflow platforms', 'Business systems', 'Custom integrations']
+      deliverables: ['Workflow platforms', 'Business systems', 'Custom integrations'],
+      image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=1200&q=80'
     },
     {
+      slug: 'system-integration',
       title: 'System Integration',
       summary: 'Structured integration work that connects legacy applications, cloud tools, internal services, and third-party platforms.',
-      deliverables: ['API orchestration', 'Middleware design', 'Data synchronization']
+      deliverables: ['API orchestration', 'Middleware design', 'Data synchronization'],
+      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80'
     },
     {
+      slug: 'ui-ux-design',
       title: 'UI/UX Design',
       summary: 'Research-led user experience and interface systems that improve usability while preserving enterprise credibility.',
-      deliverables: ['User journeys', 'Interface systems', 'Design QA']
+      deliverables: ['User journeys', 'Interface systems', 'Design QA'],
+      image: 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1200&q=80'
     },
     {
+      slug: 'it-consulting',
       title: 'IT Consulting',
       summary: 'Technology direction, architecture planning, and modernization guidance shaped around business objectives and constraints.',
-      deliverables: ['Discovery workshops', 'Roadmaps', 'Architecture review']
+      deliverables: ['Discovery workshops', 'Roadmaps', 'Architecture review'],
+      image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80'
     },
     {
+      slug: 'maintenance-support',
       title: 'Maintenance & Support',
       summary: 'Continuous support for updates, monitoring, optimization, and operational continuity after launch.',
-      deliverables: ['Release support', 'Preventive maintenance', 'Improvement backlog']
+      deliverables: ['Release support', 'Preventive maintenance', 'Improvement backlog'],
+      image: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1200&q=80'
     }
   ]
 

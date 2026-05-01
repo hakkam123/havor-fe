@@ -4,6 +4,7 @@
       :title="servicesPage.hero.title"
       :subtitle="servicesPage.hero.subtitle"
       :image="servicesPage.hero.image"
+      hero-size="half"
       image-label="Digital Expertise"
       image-title="Technology implementation shaped for enterprise clarity, scale, and operational fit."
       side-label="How We Help"
@@ -14,10 +15,6 @@
         { label: 'Support Scope', value: 'End-to-End' }
       ]"
     >
-      <template #actions>
-        <NuxtLink to="/projects" class="btn-primary">View Projects</NuxtLink>
-        <NuxtLink to="/#contact" class="btn-outline">Consult Your Needs</NuxtLink>
-      </template>
 
       <template #aside>
         <p class="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-[#5374a8]">Service Philosophy</p>
@@ -31,7 +28,7 @@
     <section class="brand-section pt-12">
       <div class="marketing-container">
         <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <article class="brand-panel p-8 sm:p-10">
+          <article class="brand-panel p-7 sm:p-8">
             <SectionHeading
               :title="servicesPage.overview.title"
               :description="servicesPage.overview.intro"
@@ -42,10 +39,10 @@
             <article
               v-for="point in servicesPage.overview.points"
               :key="point"
-              class="brand-soft-panel p-6"
+              class="brand-soft-panel flex min-h-[220px] items-center p-5"
               v-motion-fade-up
             >
-              <p class="mt-3 text-lg font-extrabold leading-8 text-[#0e2344]">{{ point }}</p>
+              <p class="text-[1.2rem] leading-7 text-[#0e2344]">{{ point }}</p>
             </article>
           </div>
         </div>
@@ -59,36 +56,26 @@
           description="Each service combines implementation depth with supporting deliverables so clients can move from direction to execution with confidence."
         />
 
-        <div class="mt-10 grid gap-6 lg:grid-cols-2">
-          <article
-            v-for="(service, index) in servicesPage.coreServices"
-            :key="service.title"
-            class="overflow-hidden rounded-[2rem] border border-[#dbe6f4] bg-white shadow-[0_18px_60px_rgba(18,56,122,0.08)]"
-            :class="index === 0 ? 'lg:col-span-2' : ''"
+        <div v-if="expertise.length" class="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <NuxtLink
+            v-for="(service) in expertise"
+            :key="service.id"
+            :to="`/services/${service.slug}`"
+            class="group brand-service-card"
+            :aria-label="`Open ${service.name} service detail`"
             v-motion-fade-up
           >
-            <div class="grid gap-0 h-full" :class="index === 0 ? 'lg:grid-cols-[0.92fr_1.08fr]' : ''">
-              <div class="bg-[linear-gradient(180deg,#f7fbff_0%,#edf4ff_100%)] px-7 py-7 sm:px-8">
-                <h3 class="mt-4 text-3xl font-extrabold tracking-[-0.04em] text-[#0e2344]">{{ service.title }}</h3>
-                <p class="mt-4 text-sm leading-7 text-slate-600">{{ service.summary }}</p>
-              </div>
-              <div class="px-7 py-7 sm:px-8">
-                <p class="brand-meta">Supporting Features / Deliverables</p>
-                <div class="mt-5 flex flex-wrap gap-2">
-                  <span
-                    v-for="deliverable in service.deliverables"
-                    :key="deliverable"
-                    class="rounded-full border border-[#d6e5fb] bg-[#f7fbff] px-3 py-2 text-xs font-extrabold uppercase tracking-[0.16em] text-[#31527d]"
-                  >
-                    {{ deliverable }}
-                  </span>
-                </div>
-                <p class="mt-5 text-sm leading-7 text-slate-600">
-                  Structured to help organizations move from concept and planning into build quality, operational fit, and long-term support.
-                </p>
-              </div>
+            <img :src="service.icon_url || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'" :alt="service.name" class="brand-service-card-media">
+            <div class="brand-service-card-overlay"></div>
+            <div class="brand-service-card-body">
+              <h3 class="brand-service-card-title">{{ service.name }}</h3>
             </div>
-          </article>
+          </NuxtLink>
+        </div>
+        <div v-else class="mt-10 brand-soft-panel p-20 text-center">
+          <h3 class="text-2xl font-extrabold text-[#0e2344]">Our services are being finalized</h3>
+          <p class="mt-4 text-slate-600">We are currently updating our service offerings. Please contact us directly for inquiries regarding our technology solutions.</p>
+          <NuxtLink to="/#contact" class="btn-primary mt-8 inline-flex">Get in touch</NuxtLink>
         </div>
       </div>
     </section>
@@ -110,11 +97,11 @@
             <article
               v-for="capability in servicesPage.capabilities.groups"
               :key="capability.title"
-              class="brand-panel p-6"
-              v-motion-fade-up
-            >
-              <h3 class="mt-3 text-2xl font-extrabold tracking-[-0.03em] text-[#0e2344]">{{ capability.title }}</h3>
-              <p class="mt-3 text-sm leading-7 text-slate-600">{{ capability.description }}</p>
+            class="brand-panel p-5"
+            v-motion-fade-up
+          >
+              <h3 class="mt-2.5 brand-card-title">{{ capability.title }}</h3>
+              <p class="mt-2.5 brand-card-copy">{{ capability.description }}</p>
               <div class="mt-5 flex flex-wrap gap-2">
                 <span
                   v-for="tag in capability.tags"
@@ -153,15 +140,22 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
+
 definePageMeta({
   layout: 'public'
 })
 
 usePageSeo({
-  title: 'Services | PT Havor SMART Digital',
-  description: 'Explore PT Havor SMART Digital services across web development, mobile apps, custom software, system integration, UI/UX, IT consulting, and maintenance support.',
+  title: 'Services | PT Havor Smarta Digital',
+  description: 'Explore PT Havor Smarta Digital services across web development, mobile apps, custom software, system integration, UI/UX, IT consulting, and maintenance support.',
   path: '/services'
 })
 
 const { servicesPage } = useCorporateContent()
+const { expertise, fetchExpertise } = useExpertise()
+
+onMounted(() => {
+  fetchExpertise()
+})
 </script>

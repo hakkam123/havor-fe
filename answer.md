@@ -221,7 +221,7 @@ So if CRUD still fails after login, the next place to inspect is the login/token
 
 ## CORS check
 
-I also checked CORS for `http://localhost:3000` -> `http://localhost:5000`.
+I also checked CORS for `http://localhost:3000` -> `https://tplnext.com/havor`.
 
 Result:
 
@@ -235,7 +235,7 @@ So CORS does not look like the main blocker here.
 
 These parts look healthy enough from the API side:
 
-- backend is reachable on `localhost:5000`
+- backend is reachable on `https://tplnext.com/havor`
 - `products`, `categories`, `news`, `works`, `banners` endpoints respond
 - write routes are protected properly with `401` when unauthenticated
 

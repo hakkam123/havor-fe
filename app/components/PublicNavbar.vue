@@ -31,7 +31,7 @@
             class="inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-bold transition"
             :class="isPastHero ? 'border border-slate-300 text-slate-950 hover:bg-slate-50' : 'border border-white/40 text-white hover:bg-white/10'"
           >
-            Discuss Your Project
+            Contact
           </NuxtLink>
         </div>
 
@@ -88,7 +88,7 @@ const isPastHero = ref(false)
 const navItems = [
   { label: 'About Us', to: '/about-us' },
   { label: 'Services', to: '/services' },
-  { label: 'Projects', to: '/projects' },
+  { label: 'Works', to: '/projects' },
   { label: 'Careers', to: '/careers' },
   { label: 'Media & News', to: '/media-news' }
 ]

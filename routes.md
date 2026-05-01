@@ -5,7 +5,7 @@ Dokumen ini berisi daftar endpoint backend yang sudah dikelompokkan berdasarkan 
 ## Base URL
 
 ```text
-http://localhost:5000
+https://tplnext.com/havor
 ```
 
 ## Konsep Akses

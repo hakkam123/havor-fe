@@ -11,10 +11,10 @@
     <div class="marketing-container relative flex min-h-screen items-end py-14">
       <div class="w-full pb-8 sm:pb-10 lg:pb-12">
         <div class="max-w-4xl pt-32">
-          <h1 class="mt-6 text-[clamp(3.35rem,7vw,6.2rem)] font-extrabold leading-[0.92] tracking-[-0.055em] text-white">
+          <h1 class="mt-6 text-[clamp(2.5rem,5.2vw,4.8rem)] font-extrabold leading-[0.96] tracking-[-0.045em] text-white">
             {{ title }}
           </h1>
-          <p class="mt-6 max-w-2xl text-base leading-8 text-white/82 sm:text-lg">
+          <p class="mt-6 max-w-2xl text-base leading-8 text-white/82 sm:text-sm">
             {{ subtitle }}
           </p>
 

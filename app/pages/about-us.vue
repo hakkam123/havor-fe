@@ -4,6 +4,7 @@
       :title="aboutPage.hero.title"
       :subtitle="aboutPage.hero.subtitle"
       :image="aboutPage.hero.image"
+      hero-size="half"
       image-label="Company Identity"
       image-title="A technology partner shaped by disciplined collaboration and long-term commitment."
       :side-copy="company.tagline"
@@ -14,12 +15,12 @@
     <section class="brand-section pt-12">
       <div class="marketing-container">
         <div class="grid gap-8 lg:grid-cols-[0.84fr_1.16fr]">
-          <article class="brand-panel p-8 sm:p-10">
+          <article class="brand-panel p-7 sm:p-8">
             <SectionHeading
               :title="aboutPage.journey.title"
               :description="aboutPage.journey.intro"
             />
-            <p class="mt-8 text-base leading-8 text-slate-600">
+            <p class="mt-7 text-[0.95rem] leading-7 text-slate-600">
               {{ aboutPage.journey.narrative }}
             </p>
           </article>
@@ -28,16 +29,16 @@
             <article
               v-for="item in aboutPage.journey.milestones"
               :key="item.phase"
-              class="brand-soft-panel grid gap-4 p-6 sm:grid-cols-[8.5rem_1fr] sm:items-start"
+              class="brand-soft-panel grid gap-4 p-5 sm:grid-cols-[7.25rem_1fr] sm:items-start"
               v-motion-fade-up
             >
-              <div class="rounded-[1.5rem] bg-white px-4 py-5 shadow-[0_12px_30px_rgba(18,56,122,0.06)]">
+              <div class="rounded-[1.25rem] bg-white px-3.5 py-4 shadow-[0_12px_30px_rgba(18,56,122,0.06)]">
                 <p class="text-[0.72rem] font-extrabold uppercase tracking-[0.22em] text-[#6c86ad]">Phase</p>
-                <p class="mt-3 text-xl font-extrabold text-[#0e2344]">{{ item.phase }}</p>
+                <p class="mt-2.5 text-[1.15rem] font-extrabold text-[#0e2344]">{{ item.phase }}</p>
               </div>
               <div class="pt-1">
-                <h3 class="text-2xl font-extrabold tracking-[-0.03em] text-[#0e2344]">{{ item.title }}</h3>
-                <p class="mt-3 text-sm leading-7 text-slate-600">{{ item.description }}</p>
+                <h3 class="brand-card-title">{{ item.title }}</h3>
+                <p class="mt-2.5 brand-card-copy">{{ item.description }}</p>
               </div>
             </article>
           </div>
@@ -67,11 +68,11 @@
             <article
               v-for="mission in aboutPage.visionMission.missions"
               :key="mission.title"
-              class="brand-panel p-6"
+              class="brand-panel p-5"
               v-motion-fade-up
             >
-              <h3 class="mt-3 text-2xl font-extrabold tracking-[-0.03em] text-[#0e2344]">{{ mission.title }}</h3>
-              <p class="mt-3 text-sm leading-7 text-slate-600">{{ mission.description }}</p>
+              <h3 class="mt-2.5 brand-card-title">{{ mission.title }}</h3>
+              <p class="mt-2.5 brand-card-copy">{{ mission.description }}</p>
             </article>
           </div>
         </div>

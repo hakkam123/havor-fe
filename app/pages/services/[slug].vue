@@ -89,8 +89,9 @@ definePageMeta({
 const route = useRoute()
 const { expertise, error, fetchExpertise, isLoading } = useExpertise()
 const { fetchBannerPage, useBannerPage } = useBanners()
+const { servicesPage } = useCorporateContent()
 const slug = computed(() => String(route.params.slug || ''))
-const heroImage = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80'
+const defaultHeroImage = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80'
 
 onMounted(async () => {
   await Promise.allSettled([fetchExpertise(), fetchBannerPage('services')])
@@ -101,14 +102,17 @@ const pageBanner = useBannerPage('services', 'service')
 const heroTitle = computed(() => service.value?.name || 'Service Details')
 const seoTitle = computed(() => service.value?.name ? `${service.value.name} | Services | Havor Smarta Digital` : 'Service Details | Havor Smarta Digital')
 const pageDescription = computed(() => service.value?.description || 'Explore Havor Smarta Digital service details and capability information.')
+const heroImage = computed(() => service.value?.icon_url || defaultHeroImage)
 
 usePageSeo({
   title: seoTitle,
   description: pageDescription,
   path: computed(() => `/services/${slug.value}`),
-  image: computed(() => pageBanner.value.media_url || heroImage),
+  image: computed(() => pageBanner.value.media_url || heroImage.value),
   type: 'article'
 })
 
-const relatedServices = computed(() => expertise.value.filter((item) => item.slug !== slug.value).slice(0, 4))
+const relatedServices = computed(() => {
+  return expertise.value.filter((item) => item.slug !== slug.value).slice(0, 4)
+})
 </script>

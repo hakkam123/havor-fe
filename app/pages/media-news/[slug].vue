@@ -2,8 +2,8 @@
   <div class="overflow-hidden">
     <CorporatePageHero
       :title="article?.title || 'Media & News Detail'"
-      :subtitle="article?.summary || 'Read the full story, context, and perspective from PT Havor SMART Digital.'"
-      :image="article?.image || fallbackImage"
+      :subtitle="article?.excerpt || 'Read the full story, context, and perspective from PT Havor SMART Digital.'"
+      :image="article?.image_url || fallbackImage"
     >
       <template #actions>
         <NuxtLink to="/media-news" class="btn-primary">Back to Media & News</NuxtLink>
@@ -15,30 +15,18 @@
       <div class="marketing-container">
         <div v-if="article" class="grid gap-8 lg:grid-cols-[1.08fr_0.92fr]">
           <article class="overflow-hidden rounded-[2rem] border border-[#dbe6f4] bg-white shadow-[0_18px_60px_rgba(18,56,122,0.08)]" v-motion-fade-up>
-            <img :src="article.image" :alt="article.title" class="h-80 w-full object-cover">
+            <img :src="article.image_url" :alt="article.title" class="h-80 w-full object-cover">
             <div class="p-7 sm:p-8">
               <div class="flex flex-wrap items-center gap-3">
                 <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ article.category }}</span>
-                <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ article.date }}</span>
+                <span v-if="article.createdAt" class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ new Date(article.createdAt).toLocaleDateString() }}</span>
                 <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ article.readTime }} min read</span>
               </div>
 
               <h2 class="mt-6 text-[clamp(2.2rem,4vw,3.7rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-[#0e2344]">
                 {{ article.title }}
               </h2>
-              <p class="mt-5 text-base leading-8 text-slate-600">
-                {{ article.overview }}
-              </p>
-
-              <div class="mt-8 space-y-5">
-                <p
-                  v-for="paragraph in article.body"
-                  :key="paragraph"
-                  class="text-sm leading-8 text-slate-600"
-                >
-                  {{ paragraph }}
-                </p>
-              </div>
+              <div class="mt-8 prose max-w-none text-sm leading-8 text-slate-600" v-html="article.content"></div>
             </div>
           </article>
 
@@ -92,16 +80,19 @@ const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
 const fallbackImage = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80'
 
-const { mediaArticles, getMediaArticleBySlug } = useCorporateRoutes()
+const { news, fetchNews } = useNews()
+onMounted(() => {
+  fetchNews()
+})
 
-const article = computed(() => getMediaArticleBySlug(slug.value))
-const relatedArticles = computed(() => mediaArticles.value.filter((item) => item.slug !== slug.value).slice(0, 3))
+const article = computed(() => news.value.find((item) => item.slug === slug.value) || null)
+const relatedArticles = computed(() => news.value.filter((item) => item.slug !== slug.value).slice(0, 3))
 
 usePageSeo({
   title: computed(() => article.value ? `${article.value.title} | Media & News | PT Havor SMART Digital` : 'Media & News Detail | PT Havor SMART Digital'),
-  description: computed(() => article.value?.summary || 'Read updates and insight articles from PT Havor SMART Digital.'),
+  description: computed(() => article.value?.excerpt || 'Read updates and insight articles from PT Havor SMART Digital.'),
   path: computed(() => `/media-news/${slug.value}`),
-  image: computed(() => article.value?.image || fallbackImage),
+  image: computed(() => article.value?.image_url || fallbackImage),
   type: 'article'
 })
 </script>

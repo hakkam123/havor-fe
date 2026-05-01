@@ -4,6 +4,7 @@
       :title="careersPage.hero.title"
       :subtitle="careersPage.hero.subtitle"
       :image="careersPage.hero.image"
+      hero-size="half"
       image-label="Team Culture"
       image-title="A collaborative environment for people who want to build meaningful digital work."
       side-label="Career Experience"
@@ -15,10 +16,6 @@
         { label: 'Growth', value: 'Continuous' }
       ]"
     >
-      <template #actions>
-        <NuxtLink to="#open-roles" class="btn-primary">Open Roles</NuxtLink>
-        <NuxtLink to="/about-us" class="btn-outline">About Our Company</NuxtLink>
-      </template>
 
       <template #aside>
         <p class="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-[#5374a8]">Why Careers Matter</p>
@@ -32,7 +29,7 @@
     <section class="brand-section pt-12">
       <div class="marketing-container">
         <div class="grid gap-6 lg:grid-cols-[0.94fr_1.06fr]">
-          <article class="brand-panel p-8 sm:p-10">
+          <article class="brand-panel p-7 sm:p-8">
             <SectionHeading
               :title="careersPage.culture.title"
               :description="careersPage.culture.narrative"
@@ -43,12 +40,12 @@
             <article
               v-for="value in careersPage.culture.values"
               :key="value.title"
-              class="brand-soft-panel p-6"
+              class="brand-soft-panel p-5"
               v-motion-fade-up
             >
               <p class="brand-meta">Culture Value</p>
-              <h3 class="mt-3 text-2xl font-extrabold tracking-[-0.03em] text-[#0e2344]">{{ value.title }}</h3>
-              <p class="mt-3 text-sm leading-7 text-slate-600">{{ value.description }}</p>
+              <h3 class="mt-2.5 brand-card-title">{{ value.title }}</h3>
+              <p class="mt-2.5 brand-card-copy">{{ value.description }}</p>
             </article>
           </div>
         </div>
@@ -74,12 +71,12 @@
             <article
               v-for="item in careersPage.whyWorkHere.items"
               :key="item.title"
-              class="brand-panel p-6"
+              class="brand-panel p-5"
               v-motion-fade-up
             >
               <p class="brand-meta">Benefit</p>
-              <h3 class="mt-3 text-2xl font-extrabold tracking-[-0.03em] text-[#0e2344]">{{ item.title }}</h3>
-              <p class="mt-3 text-sm leading-7 text-slate-600">{{ item.description }}</p>
+              <h3 class="mt-2.5 brand-card-title">{{ item.title }}</h3>
+              <p class="mt-2.5 brand-card-copy">{{ item.description }}</p>
             </article>
           </div>
         </div>
@@ -93,24 +90,29 @@
           description="Each role is presented as a polished corporate listing with clear team, type, location, and role summary."
         />
 
-        <div class="mt-10 grid gap-6 lg:grid-cols-2">
+        <div v-if="careers.length" class="mt-10 grid gap-6 lg:grid-cols-2">
           <article
-            v-for="role in careersPage.roles"
-            :key="role.title"
-            class="brand-panel p-7"
+            v-for="role in careers"
+            :key="role.id"
+            class="brand-panel p-6"
             v-motion-fade-up
           >
-            <div class="flex flex-wrap gap-2">
-              <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ role.team }}</span>
-              <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ role.type }}</span>
-              <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ role.location }}</span>
+            <h3 class="mt-4 text-[1.6rem] font-extrabold tracking-[-0.04em] text-[#0e2344]">{{ role.job_title }}</h3>
+            <p class="mt-3 text-[0.92rem] leading-6 text-slate-600">{{ role.excerpt }}</p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <NuxtLink :to="`/careers/${role.slug}`" class="btn-outline">
+                View Role
+              </NuxtLink>
+              <a :href="`mailto:${company.email}?subject=${encodeURIComponent(`Application - ${role.job_title}`)}`" class="btn-primary">
+                Apply Now
+              </a>
             </div>
-            <h3 class="mt-5 text-3xl font-extrabold tracking-[-0.04em] text-[#0e2344]">{{ role.title }}</h3>
-            <p class="mt-4 text-sm leading-7 text-slate-600">{{ role.summary }}</p>
-            <a :href="`mailto:${company.email}?subject=${encodeURIComponent(`Application - ${role.title}`)}`" class="btn-outline mt-6">
-              Apply Now
-            </a>
           </article>
+        </div>
+        <div v-else class="mt-10 brand-soft-panel p-16 text-center">
+          <h3 class="text-xl font-extrabold text-[#0e2344]">No open positions at the moment</h3>
+          <p class="mt-4 text-slate-600">While we don't have active roles listed right now, we are always looking for great talent. Send us your CV for future opportunities.</p>
+          <a :href="`mailto:${company.email}?subject=${encodeURIComponent('General Career Inquiry')}`" class="btn-outline mt-8 inline-flex">Send your CV</a>
         </div>
       </div>
     </section>
@@ -139,6 +141,8 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue'
+
 definePageMeta({
   layout: 'public'
 })
@@ -150,4 +154,9 @@ usePageSeo({
 })
 
 const { company, careersPage } = useCorporateContent()
+const { careers, fetchCareers } = useCareers()
+
+onMounted(() => {
+  fetchCareers()
+})
 </script>
