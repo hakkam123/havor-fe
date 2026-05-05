@@ -20,12 +20,12 @@
         <div class="flex items-center justify-between gap-3">
           <NuxtLink
             to="/admin/profile"
-            class="flex items-center gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-3 py-2 transition hover:bg-white"
+            class="flex items-center gap-3 rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-3 py-2 transition hover:bg-white"
           >
             <div class="hidden text-right sm:block">
               <p class="text-sm font-semibold text-[var(--admin-text)] leading-tight">Admin Havor</p>
             </div>
-            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--admin-accent)] text-white">
+            <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[var(--admin-accent)] text-white">
               <User class="h-5 w-5" />
             </div>
           </NuxtLink>

@@ -59,7 +59,7 @@
             <tr v-for="item in filteredNews" :key="item.id">
               <td>
                 <div class="flex items-center gap-3">
-                  <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)]">
+                  <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)]">
                     <img v-if="item.image_url" :src="item.image_url" class="h-full w-full object-cover" >
                     <ImageIcon v-else class="h-5 w-5 text-slate-400" />
                   </div>
@@ -95,98 +95,102 @@
       </div>
     </section>
 
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" v-motion-fade>
-      <div class="absolute inset-0 bg-slate-950/40" @click="closeModal"></div>
-
-      <div class="admin-modal-card max-w-4xl" v-motion-slide-visible-bottom>
-        <div class="flex items-center justify-between border-b border-[var(--admin-border)] px-6 py-4">
-          <div>
-            <p class="admin-kicker">Editorial Form</p>
-            <h2 class="mt-1 text-xl font-semibold text-slate-900">{{ form.id ? 'Edit News' : 'Create News' }}</h2>
-          </div>
-          <button @click="closeModal" class="admin-icon-btn">
-            <X class="h-4 w-4" />
-          </button>
-        </div>
-
-        <div class="custom-scrollbar flex-1 overflow-y-auto px-6 py-6">
-          <form @submit.prevent="saveForm" class="space-y-6">
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div class="space-y-4">
-                <div>
-                  <label class="mb-2 block text-sm font-medium text-slate-600">Title <span class="text-rose-500">*</span></label>
-                  <input v-model="form.title" @input="generateSlug" type="text" required class="admin-input" placeholder="Enter article title">
-                </div>
-                <div>
-                  <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
-                  <input v-model="form.slug" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-600">Category</label>
-                    <select v-model="form.category" class="admin-select">
-                      <option value="Technology">Technology</option>
-                      <option value="Company">Company Updates</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="mb-2 block text-sm font-medium text-slate-600">Publish Status</label>
-                    <select v-model="form.is_published" class="admin-select">
-                      <option :value="true">Published</option>
-                      <option :value="false">Draft</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600">Featured Image</label>
-                <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
-                  <div v-if="form.image_url" class="absolute inset-0">
-                    <img :src="form.image_url" class="h-full w-full object-cover" >
-                    <div class="absolute inset-0 flex items-center justify-center bg-white/75 opacity-0 transition group-hover:opacity-100"></div>
-                  </div>
-                  <div v-else class="text-center">
-                    <Upload class="mx-auto h-8 w-8 text-slate-400" />
-                    <p class="mt-3 text-sm text-slate-500">Click or drag image here</p>
-                  </div>
-                  <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*" @change="handleFileUpload">
-                </div>
-                <p v-if="form.imageFileName" class="mt-2 text-xs text-slate-500">{{ form.imageFileName }}</p>
-              </div>
-            </div>
-
+    <AdminModal
+      v-model="isModalOpen"
+      kicker="Editorial Form"
+      :title="form.id ? 'Edit News' : 'Create News'"
+      max-width-class="max-w-4xl"
+      :can-close="!isSaving"
+    >
+      <form @submit.prevent="saveForm" class="space-y-6">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div class="space-y-4">
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Content <span class="text-rose-500">*</span></label>
-              <div class="overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-white">
-                <Editor
-                  api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
-                  v-model="form.content"
-                  :init="editorConfig"
-                />
+              <label class="mb-2 block text-sm font-medium text-slate-600">Title <span class="text-rose-500">*</span></label>
+              <input v-model="form.title" @input="generateSlug" type="text" required class="admin-input" placeholder="Enter article title">
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
+              <input v-model="form.slug" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-600">Category</label>
+                <select v-model="form.category" class="admin-select">
+                  <option value="Technology">Technology</option>
+                  <option value="Company">Company Updates</option>
+                </select>
+              </div>
+              <div>
+                <label class="mb-2 block text-sm font-medium text-slate-600">Publish Status</label>
+                <select v-model="form.is_published" class="admin-select">
+                  <option :value="true">Published</option>
+                  <option :value="false">Draft</option>
+                </select>
               </div>
             </div>
-          </form>
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-600">Featured Image</label>
+            <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
+              <div v-if="form.image_url" class="absolute inset-0">
+                <img :src="form.image_url" class="h-full w-full object-cover" >
+                <div class="absolute inset-0 flex items-center justify-center bg-white/75 opacity-0 transition group-hover:opacity-100"></div>
+              </div>
+              <div v-else class="text-center">
+                <Upload class="mx-auto h-8 w-8 text-slate-400" />
+                <p class="mt-3 text-sm text-slate-500">Click or drag image here</p>
+              </div>
+              <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*" @change="handleFileUpload">
+            </div>
+            <p v-if="form.imageFileName" class="mt-2 text-xs text-slate-500">{{ form.imageFileName }}</p>
+          </div>
         </div>
 
-        <div class="flex justify-end gap-3 border-t border-[var(--admin-border)] px-6 py-4">
-          <button @click="closeModal" class="admin-secondary-btn">Cancel</button>
-          <button @click="saveForm" class="admin-primary-btn">Save Changes</button>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Content <span class="text-rose-500">*</span></label>
+          <div class="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-white">
+            <Editor
+              api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
+              v-model="form.content"
+              :init="editorConfig"
+            />
+          </div>
         </div>
-      </div>
-    </div>
+      </form>
+
+      <template #footer>
+        <button @click="closeModal" :disabled="isSaving" class="admin-secondary-btn">Cancel</button>
+        <button @click="saveForm" :disabled="isSaving" class="admin-primary-btn">
+          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </template>
+    </AdminModal>
+
+    <AdminSuccessModal
+      v-model="successState.open"
+      :title="successState.title"
+      :message="successState.message"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Download, Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload, X } from 'lucide-vue-next'
+import { Download, Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 import Editor from '@tinymce/tinymce-vue'
 
 const { news: newsItems, fetchNews, createNews, updateNews, deleteNews } = useNews({ includeDrafts: true })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
+const isSaving = ref(false)
+const successState = ref({
+  open: false,
+  title: '',
+  message: ''
+})
 const form = ref({
   id: null,
   title: '',
@@ -264,6 +268,7 @@ const openModal = (item = null) => {
 }
 
 const closeModal = () => {
+  if (isSaving.value) return
   isModalOpen.value = false
 }
 
@@ -281,13 +286,28 @@ const handleFileUpload = (e) => {
 }
 
 const saveForm = async () => {
-  if (form.value.id) {
-    await updateNews(form.value.id, form.value)
-  } else {
-    await createNews(form.value)
-  }
+  isSaving.value = true
 
-  closeModal()
+  try {
+    const isEditing = Boolean(form.value.id)
+
+    if (isEditing) {
+      await updateNews(form.value.id, form.value)
+    } else {
+      await createNews(form.value)
+    }
+
+    isModalOpen.value = false
+    successState.value = {
+      open: true,
+      title: isEditing ? 'News updated' : 'News created',
+      message: isEditing
+        ? 'The news article has been updated successfully.'
+        : 'The new news article has been added successfully.'
+    }
+  } finally {
+    isSaving.value = false
+  }
 }
 
 const handleDelete = async (id) => {

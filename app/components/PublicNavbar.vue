@@ -1,15 +1,21 @@
 <template>
   <header
-    class="fixed inset-x-0 top-0 z-50 transition-all duration-300"
-    :class="isPastHero ? 'bg-white shadow-[0_18px_60px_rgba(15,23,42,0.12)]' : 'bg-transparent'"
+    ref="headerRef"
+    class="fixed inset-x-0 top-0 z-50 transition-all duration-300 ease-out"
+    :class="isPastHero ? 'bg-white/96 shadow-[0_18px_60px_rgba(15,23,42,0.12)] backdrop-blur-xl' : 'bg-transparent'"
   >
     <div class="marketing-container">
       <div class="flex min-h-[92px] items-center justify-between gap-6">
         <NuxtLink to="/" class="flex items-center gap-3">
-          <img src="/logo-havor.svg" alt="PT Havor SMART Digital" class="h-11 w-11 rounded-full object-cover">
+          <span
+            class="flex h-12 w-12 items-center justify-center rounded-full border p-1 transition-all duration-300 ease-out"
+            :class="isPastHero ? 'border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]' : 'border-white/25 bg-white/[0.92] shadow-[0_12px_32px_rgba(2,6,23,0.28)]'"
+          >
+            <img src="/logo-havor.svg" alt="PT Havor SMART Digital" class="h-10 w-10 rounded-full object-cover">
+          </span>
           <div class="hidden sm:block">
-            <p class="text-sm uppercase tracking-[0.22em]" :class="isPastHero ? 'font-black text-slate-950' : 'font-extrabold text-white'">Havor</p>
-            <p class="text-xs font-semibold" :class="isPastHero ? 'text-slate-500' : 'text-white/72'">Smarta Digital</p>
+            <p class="text-sm uppercase tracking-[0.22em] transition-colors duration-300 ease-out" :class="isPastHero ? 'font-black text-slate-950' : 'font-extrabold text-white'">Havor</p>
+            <p class="text-xs font-semibold transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-500' : 'text-white/80'">Smarta Digital</p>
           </div>
         </NuxtLink>
 
@@ -18,7 +24,7 @@
             v-for="item in navItems"
             :key="item.to"
             :to="item.to"
-            class="px-2 py-3 text-sm transition"
+            class="rounded-full px-4 py-2.5 text-sm transition-all duration-300 ease-out"
             :class="navLinkClass(item.to)"
           >
             {{ item.label }}
@@ -28,8 +34,8 @@
         <div class="hidden items-center gap-3 lg:flex">
           <NuxtLink
             to="/#contact"
-            class="inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-bold transition"
-            :class="isPastHero ? 'border border-slate-300 text-slate-950 hover:bg-slate-50' : 'border border-white/40 text-white hover:bg-white/10'"
+            class="inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-bold transition-all duration-300 ease-out"
+            :class="isPastHero ? 'border-slate-950 bg-slate-950 text-white hover:border-slate-800 hover:bg-slate-800' : 'border-white/30 bg-white/10 text-white backdrop-blur-sm hover:border-white/50 hover:bg-white/20'"
           >
             Contact
           </NuxtLink>
@@ -37,8 +43,10 @@
 
         <button
           type="button"
-          class="inline-flex h-11 w-11 items-center justify-center rounded-full border lg:hidden"
-          :class="isPastHero ? 'border-slate-300 text-slate-950' : 'border-white/30 text-white'"
+          class="inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 ease-out lg:hidden"
+          :class="isPastHero ? 'border-slate-200 bg-white text-slate-950 hover:bg-slate-50' : 'border-white/25 bg-white/10 text-white backdrop-blur-sm hover:bg-white/15'"
+          :aria-expanded="isOpen"
+          aria-label="Toggle navigation menu"
           @click="isOpen = !isOpen"
         >
           <Menu v-if="!isOpen" class="h-5 w-5" />
@@ -48,7 +56,7 @@
 
       <div v-if="isOpen" class="pb-4 lg:hidden">
         <div
-          class="rounded-[1.75rem] border p-4 shadow-[0_18px_50px_rgba(0,0,0,0.12)]"
+          class="rounded-[1.75rem] border p-4 shadow-[0_18px_50px_rgba(0,0,0,0.12)] transition-all duration-300 ease-out"
           :class="isPastHero ? 'border-slate-200 bg-white' : 'border-white/14 bg-[#0a1a33]/88 backdrop-blur-xl'"
         >
           <nav class="space-y-2">
@@ -56,7 +64,7 @@
               v-for="item in navItems"
               :key="item.to"
               :to="item.to"
-              class="block rounded-[1.25rem] px-4 py-3 text-sm transition"
+              class="block rounded-[1.25rem] px-4 py-3 text-sm transition-all duration-300 ease-out"
               :class="mobileNavLinkClass(item.to)"
               @click="isOpen = false"
             >
@@ -65,8 +73,8 @@
           </nav>
           <NuxtLink
             to="/#contact"
-            class="mt-3 inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-bold transition"
-            :class="isPastHero ? 'border border-slate-300 text-slate-950 hover:bg-slate-50' : 'border border-white/30 text-white hover:bg-white/10'"
+            class="mt-3 inline-flex w-full items-center justify-center rounded-full border px-5 py-3 text-sm font-bold transition-all duration-300 ease-out"
+            :class="isPastHero ? 'border-slate-950 bg-slate-950 text-white hover:border-slate-800 hover:bg-slate-800' : 'border-white/30 bg-white/10 text-white hover:border-white/50 hover:bg-white/15'"
             @click="isOpen = false"
           >
             Discuss Your Project
@@ -82,6 +90,7 @@ import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Menu, X } from 'lucide-vue-next'
 
 const route = useRoute()
+const headerRef = ref(null)
 const isOpen = ref(false)
 const isPastHero = ref(false)
 
@@ -101,33 +110,37 @@ const isActive = (path) => {
 const navLinkClass = (path) => {
   if (isPastHero.value) {
     return isActive(path)
-      ? 'font-extrabold text-slate-950'
-      : 'font-semibold text-slate-700 hover:text-slate-950'
+      ? 'bg-slate-950 font-extrabold text-white shadow-[0_10px_24px_rgba(15,23,42,0.14)]'
+      : 'font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950'
   }
 
   return isActive(path)
-    ? 'font-extrabold text-white'
-    : 'font-semibold text-white/84 hover:text-white'
+    ? 'bg-white/15 font-extrabold text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
+    : 'font-semibold text-white/80 hover:bg-white/10 hover:text-white'
 }
 
 const mobileNavLinkClass = (path) => {
   if (isPastHero.value) {
     return isActive(path)
-      ? 'font-extrabold text-slate-950'
+      ? 'bg-slate-950 font-extrabold text-white shadow-[0_10px_24px_rgba(15,23,42,0.14)]'
       : 'font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-950'
   }
 
   return isActive(path)
-    ? 'font-extrabold text-white'
-    : 'font-semibold text-white/82 hover:bg-white/8 hover:text-white'
+    ? 'bg-white/15 font-extrabold text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
+    : 'font-semibold text-white/80 hover:bg-white/10 hover:text-white'
 }
 
 const handleScroll = () => {
-  const heroSection = document.querySelector('main section.min-h-screen')
-  const heroThreshold = heroSection instanceof HTMLElement
-    ? Math.max(heroSection.offsetHeight - 140, 220)
-    : Math.max(window.innerHeight - 140, 220)
-  isPastHero.value = window.scrollY > heroThreshold
+  const heroSection = document.querySelector('[data-public-hero="true"]')
+
+  if (!(heroSection instanceof HTMLElement)) {
+    isPastHero.value = true
+    return
+  }
+
+  const headerHeight = headerRef.value?.offsetHeight ?? 92
+  isPastHero.value = heroSection.getBoundingClientRect().bottom <= headerHeight + 16
 }
 
 onMounted(() => {

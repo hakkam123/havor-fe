@@ -4,8 +4,6 @@
 
     <div class="relative">
       <div class="mb-8 text-center">
-        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[24px] bg-[var(--admin-accent)] text-2xl font-semibold text-white shadow-sm">H</div>
-        <p class="admin-kicker mt-5">Admin Access</p>
         <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Welcome Back</h1>
         <p class="mt-2 text-sm text-slate-500">Sign in to continue managing the Havor dashboard workspace.</p>
       </div>
@@ -47,7 +45,7 @@
           </div>
         </div>
 
-        <div v-if="errorMsg" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-center text-sm text-rose-600">
+        <div v-if="errorMsg" class="rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-3 text-center text-sm text-rose-600">
           {{ errorMsg }}
         </div>
 

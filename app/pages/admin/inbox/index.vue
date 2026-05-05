@@ -69,7 +69,7 @@
                 <p class="admin-kicker">Message Detail</p>
                 <h2 class="mt-2 text-2xl font-semibold text-slate-900">{{ selectedMessage.subject }}</h2>
                 <div class="mt-4 flex items-center gap-3">
-                  <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--admin-accent)] text-sm font-semibold text-white">
+                  <div class="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[var(--admin-accent)] text-sm font-semibold text-white">
                     {{ selectedMessage.name.charAt(0) }}
                   </div>
                   <div>
@@ -94,7 +94,7 @@
               </div>
             </div>
 
-            <div class="mt-6 rounded-3xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-5">
+            <div class="mt-6 rounded-[14px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-5">
               <p class="whitespace-pre-wrap text-sm leading-7 text-slate-600">{{ selectedMessage.body }}</p>
             </div>
           </div>

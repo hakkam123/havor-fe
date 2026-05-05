@@ -46,7 +46,7 @@
             <tr v-for="item in filteredClients" :key="item.id">
               <td>
                 <div class="flex items-center gap-3">
-                  <div class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-2">
+                  <div class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-2">
                     <img v-if="item.client_icon" :src="item.client_icon" :alt="item.name" class="max-h-full max-w-full object-contain">
                     <Building2 v-else class="h-5 w-5 text-slate-400" />
                   </div>
@@ -85,73 +85,77 @@
       </div>
     </section>
 
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" v-motion-fade>
-      <div class="absolute inset-0 bg-slate-950/40" @click="closeModal"></div>
-
-      <div class="admin-modal-card max-w-3xl" v-motion-slide-visible-bottom>
-        <div class="flex items-center justify-between border-b border-[var(--admin-border)] px-6 py-4">
-          <div>
-            <p class="admin-kicker">Client Form</p>
-            <h2 class="mt-1 text-xl font-semibold text-slate-900">{{ form.id ? 'Edit Client' : 'Add Client' }}</h2>
-          </div>
-          <button @click="closeModal" class="admin-icon-btn">
-            <X class="h-4 w-4" />
-          </button>
-        </div>
-
-        <div class="custom-scrollbar flex-1 overflow-y-auto px-6 py-6">
-          <form @submit.prevent="saveClient" class="space-y-6">
-            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div class="space-y-4">
-                <div>
-                  <label class="mb-2 block text-sm font-medium text-slate-600">Client Name <span class="text-rose-500">*</span></label>
-                  <input v-model="form.name" type="text" required class="admin-input" placeholder="Client name">
-                </div>
-                <div>
-                  <label class="mb-2 block text-sm font-medium text-slate-600">Description <span class="text-rose-500">*</span></label>
-                  <textarea v-model="form.description" rows="6" required class="admin-textarea" placeholder="Long-term technology partner"></textarea>
-                </div>
-                <p v-if="formError" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
-                  {{ formError }}
-                </p>
-              </div>
-
-              <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600">Client Icon <span class="text-rose-500">*</span></label>
-                <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
-                  <div v-if="form.client_icon" class="absolute inset-0 flex items-center justify-center bg-white p-6">
-                    <img :src="form.client_icon" class="max-h-full max-w-full object-contain">
-                  </div>
-                  <div v-else class="text-center">
-                    <Upload class="mx-auto h-8 w-8 text-slate-400" />
-                    <p class="mt-3 text-sm text-slate-500">Click or drag icon here</p>
-                  </div>
-                  <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*,.svg" @change="handleClientUpload">
-                </div>
-                <p v-if="form.clientFileName" class="mt-2 text-xs text-slate-500">{{ form.clientFileName }}</p>
-              </div>
+    <AdminModal
+      v-model="isModalOpen"
+      kicker="Client Form"
+      :title="form.id ? 'Edit Client' : 'Add Client'"
+      max-width-class="max-w-3xl"
+      :can-close="!isSaving"
+    >
+      <form @submit.prevent="saveClient" class="space-y-6">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div class="space-y-4">
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Client Name <span class="text-rose-500">*</span></label>
+              <input v-model="form.name" type="text" required class="admin-input" placeholder="Client name">
             </div>
-          </form>
-        </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Description <span class="text-rose-500">*</span></label>
+              <textarea v-model="form.description" rows="6" required class="admin-textarea" placeholder="Long-term technology partner"></textarea>
+            </div>
+            <p v-if="formError" class="rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+              {{ formError }}
+            </p>
+          </div>
 
-        <div class="flex justify-end gap-3 border-t border-[var(--admin-border)] px-6 py-4">
-          <button @click="closeModal" class="admin-secondary-btn">Cancel</button>
-          <button @click="saveClient" class="admin-primary-btn">Save Client</button>
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-600">Client Icon <span class="text-rose-500">*</span></label>
+            <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
+              <div v-if="form.client_icon" class="absolute inset-0 flex items-center justify-center bg-white p-6">
+                <img :src="form.client_icon" class="max-h-full max-w-full object-contain">
+              </div>
+              <div v-else class="text-center">
+                <Upload class="mx-auto h-8 w-8 text-slate-400" />
+                <p class="mt-3 text-sm text-slate-500">Click or drag icon here</p>
+              </div>
+              <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*,.svg" @change="handleClientUpload">
+            </div>
+            <p v-if="form.clientFileName" class="mt-2 text-xs text-slate-500">{{ form.clientFileName }}</p>
+          </div>
         </div>
-      </div>
-    </div>
+      </form>
+
+      <template #footer>
+        <button @click="closeModal" :disabled="isSaving" class="admin-secondary-btn">Cancel</button>
+        <button @click="saveClient" :disabled="isSaving" class="admin-primary-btn">
+          {{ isSaving ? 'Saving...' : 'Save Client' }}
+        </button>
+      </template>
+    </AdminModal>
+
+    <AdminSuccessModal
+      v-model="successState.open"
+      :title="successState.title"
+      :message="successState.message"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Building2, Edit2, Plus, Search, Trash2, Upload, X } from 'lucide-vue-next'
+import { Building2, Edit2, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { clients, error, fetchClients, createClient, updateClient, deleteClient } = useClients()
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
 const formError = ref('')
+const isSaving = ref(false)
+const successState = ref({
+  open: false,
+  title: '',
+  message: ''
+})
 const form = ref({})
 
 const filteredClients = computed(() => {
@@ -199,6 +203,7 @@ const openModal = (item = null) => {
 }
 
 const closeModal = () => {
+  if (isSaving.value) return
   isModalOpen.value = false
 }
 
@@ -224,13 +229,28 @@ const saveClient = async () => {
     return
   }
 
-  if (form.value.id) {
-    await updateClient(form.value.id, form.value)
-  } else {
-    await createClient(form.value)
-  }
+  isSaving.value = true
 
-  closeModal()
+  try {
+    const isEditing = Boolean(form.value.id)
+
+    if (isEditing) {
+      await updateClient(form.value.id, form.value)
+    } else {
+      await createClient(form.value)
+    }
+
+    isModalOpen.value = false
+    successState.value = {
+      open: true,
+      title: isEditing ? 'Client updated' : 'Client created',
+      message: isEditing
+        ? 'The client profile has been updated successfully.'
+        : 'The new client profile has been added successfully.'
+    }
+  } finally {
+    isSaving.value = false
+  }
 }
 
 const handleDelete = async (id) => {

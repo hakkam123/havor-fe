@@ -60,68 +60,72 @@
       </article>
     </section>
 
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" v-motion-fade>
-      <div class="absolute inset-0 bg-slate-950/40" @click="closeModal"></div>
-
-      <div class="admin-modal-card max-w-xl" v-motion-slide-visible-bottom>
-        <div class="flex items-center justify-between border-b border-[var(--admin-border)] px-6 py-4">
-          <div>
-            <p class="admin-kicker">Media Form</p>
-            <h2 class="mt-1 text-xl font-semibold text-slate-900">{{ form.id ? 'Edit Banner' : 'Create Banner' }}</h2>
-          </div>
-          <button @click="closeModal" class="admin-icon-btn">
-            <X class="h-4 w-4" />
-          </button>
+    <AdminModal
+      v-model="isModalOpen"
+      kicker="Media Form"
+      :title="form.id ? 'Edit Banner' : 'Create Banner'"
+      max-width-class="max-w-xl"
+      :can-close="!isSaving"
+    >
+      <form @submit.prevent="saveBanner" class="space-y-4">
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Page Name</label>
+          <input v-model="form.page_name" type="text" class="admin-input" placeholder="home">
         </div>
-
-        <div class="custom-scrollbar flex-1 overflow-y-auto px-6 py-6">
-          <form @submit.prevent="saveBanner" class="space-y-4">
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Page Name</label>
-              <input v-model="form.page_name" type="text" class="admin-input" placeholder="home">
-            </div>
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Title</label>
-              <input v-model="form.title" type="text" class="admin-input">
-            </div>
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Subtitle</label>
-              <textarea v-model="form.subtitle" rows="3" class="admin-textarea"></textarea>
-            </div>
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Media Type</label>
-              <select v-model="form.media_type" class="admin-select">
-                <option value="image">Image</option>
-                <option value="video">Video</option>
-              </select>
-            </div>
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Upload File</label>
-              <input type="file" accept="image/*,video/*" class="admin-input py-2" @change="handleMediaUpload">
-              <p v-if="form.mediaFileName" class="mt-2 text-xs text-slate-500">{{ form.mediaFileName }}</p>
-            </div>
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Or Existing Media URL</label>
-              <input v-model="form.media_url" type="text" class="admin-input" placeholder="/uploads/banners/home-banner.jpg">
-            </div>
-          </form>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Title</label>
+          <input v-model="form.title" type="text" class="admin-input">
         </div>
-
-        <div class="flex justify-end gap-3 border-t border-[var(--admin-border)] px-6 py-4">
-          <button @click="closeModal" class="admin-secondary-btn">Cancel</button>
-          <button @click="saveBanner" class="admin-primary-btn">Save Banner</button>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Subtitle</label>
+          <textarea v-model="form.subtitle" rows="3" class="admin-textarea"></textarea>
         </div>
-      </div>
-    </div>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Media Type</label>
+          <select v-model="form.media_type" class="admin-select">
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Upload File</label>
+          <input type="file" accept="image/*,video/*" class="admin-input py-2" @change="handleMediaUpload">
+          <p v-if="form.mediaFileName" class="mt-2 text-xs text-slate-500">{{ form.mediaFileName }}</p>
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Or Existing Media URL</label>
+          <input v-model="form.media_url" type="text" class="admin-input" placeholder="/uploads/banners/home-banner.jpg">
+        </div>
+      </form>
+
+      <template #footer>
+        <button @click="closeModal" :disabled="isSaving" class="admin-secondary-btn">Cancel</button>
+        <button @click="saveBanner" :disabled="isSaving" class="admin-primary-btn">
+          {{ isSaving ? 'Saving...' : 'Save Banner' }}
+        </button>
+      </template>
+    </AdminModal>
+
+    <AdminSuccessModal
+      v-model="successState.open"
+      :title="successState.title"
+      :message="successState.message"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { BadgeInfo, Edit2, Trash2, Upload, X } from 'lucide-vue-next'
+import { BadgeInfo, Edit2, Trash2, Upload } from 'lucide-vue-next'
 
 const { banners, fetchBanners, createBanner, updateBanner, deleteBanner } = useBanners()
 const isModalOpen = ref(false)
+const isSaving = ref(false)
+const successState = ref({
+  open: false,
+  title: '',
+  message: ''
+})
 const form = ref({
   id: null,
   page_name: '',
@@ -166,6 +170,7 @@ const openModal = (item = null) => {
 }
 
 const closeModal = () => {
+  if (isSaving.value) return
   isModalOpen.value = false
 }
 
@@ -178,12 +183,28 @@ const handleMediaUpload = (e) => {
 }
 
 const saveBanner = async () => {
-  if (form.value.id) {
-    await updateBanner(form.value.id, form.value)
-  } else {
-    await createBanner(form.value)
+  isSaving.value = true
+
+  try {
+    const isEditing = Boolean(form.value.id)
+
+    if (isEditing) {
+      await updateBanner(form.value.id, form.value)
+    } else {
+      await createBanner(form.value)
+    }
+
+    isModalOpen.value = false
+    successState.value = {
+      open: true,
+      title: isEditing ? 'Banner updated' : 'Banner created',
+      message: isEditing
+        ? 'The banner has been updated successfully.'
+        : 'The new banner has been added successfully.'
+    }
+  } finally {
+    isSaving.value = false
   }
-  closeModal()
 }
 
 const handleDelete = async (id) => {

@@ -3,12 +3,12 @@
     <div class="border-b border-[var(--admin-border)] px-5 pb-5 pt-6">
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <img src="/logo-havor.svg" alt="Havor" class="h-11 w-11 rounded-2xl object-cover" >
+          <img src="/logo-havor.svg" alt="Havor" class="h-11 w-11 rounded-[12px] object-cover" >
           <div>
             <p class="text-sm font-semibold text-[var(--admin-text)]">Havor CMS</p>
           </div>
         </div>
-        <button class="admin-icon-btn h-8 w-8 rounded-xl">
+        <button class="admin-icon-btn h-8 w-8 rounded-[10px]">
           <PanelLeftClose class="h-4 w-4" />
         </button>
       </div>
@@ -30,12 +30,12 @@
             v-for="item in section.items"
             :key="item.path"
             :to="item.path"
-            class="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition"
+            class="flex items-center justify-between gap-3 rounded-[12px] px-3 py-2.5 transition"
             :class="isActive(item.path) ? 'bg-[var(--admin-surface-soft)] text-[var(--admin-text)]' : 'text-slate-500 hover:bg-slate-50 hover:text-[var(--admin-text)]'"
           >
             <div class="flex min-w-0 items-center gap-3">
               <div
-                class="flex h-9 w-9 items-center justify-center rounded-xl border text-sm transition"
+                class="flex h-9 w-9 items-center justify-center rounded-[10px] border text-sm transition"
                 :class="isActive(item.path) ? 'border-transparent bg-[var(--admin-accent)] text-white' : 'border-[var(--admin-border)] bg-white text-slate-500'"
               >
                 <component :is="item.icon" class="h-4 w-4" />
@@ -45,7 +45,7 @@
 
             <span
               v-if="item.badge"
-              class="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-500"
+              class="rounded-[8px] bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-500"
             >
               {{ item.badge }}
             </span>
@@ -58,9 +58,9 @@
 
       <button
         @click="logout"
-        class="mt-3 flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-rose-600 transition hover:bg-rose-50"
+        class="mt-3 flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-rose-600 transition hover:bg-rose-50"
       >
-        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50">
+        <div class="flex h-9 w-9 items-center justify-center rounded-[10px] bg-rose-50">
           <LogOut class="h-4 w-4" />
         </div>
         <span class="text-sm font-semibold">Log Out</span>

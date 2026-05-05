@@ -24,7 +24,7 @@
               <div class="admin-stat-value">{{ stat.value }}</div>
               <p class="admin-stat-meta">{{ stat.meta }}</p>
             </div>
-            <div class="flex h-11 w-11 items-center justify-center rounded-2xl" :class="stat.iconWrapClass">
+            <div class="flex h-11 w-11 items-center justify-center rounded-[12px]" :class="stat.iconWrapClass">
               <component :is="stat.icon" class="h-5 w-5" :class="stat.iconClass" />
             </div>
           </div>
@@ -47,7 +47,7 @@
         </div>
 
         <div v-if="isLoading" class="space-y-3 p-5">
-          <div v-for="index in 4" :key="`msg-loading-${index}`" class="animate-pulse rounded-2xl border border-[var(--admin-border)] p-4">
+          <div v-for="index in 4" :key="`msg-loading-${index}`" class="animate-pulse rounded-[12px] border border-[var(--admin-border)] p-4">
             <div class="h-4 w-1/3 rounded bg-slate-100"></div>
             <div class="mt-3 h-4 w-full rounded bg-slate-100"></div>
             <div class="mt-2 h-4 w-4/5 rounded bg-slate-100"></div>
@@ -101,22 +101,22 @@
               <p class="text-sm font-semibold text-slate-900">Landing Page Activity</p>
               <p class="mt-1 text-xs text-[var(--admin-muted)]">Tracked locally from public homepage visits on this browser.</p>
             </div>
-            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50">
+            <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-blue-50">
               <Globe class="h-5 w-5 text-blue-500" />
             </div>
           </div>
 
           <div class="mt-5 space-y-4">
-            <div class="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4">
+            <div class="rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4">
               <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Today</p>
               <p class="mt-2 text-3xl font-semibold text-slate-900">{{ analytics.todayVisits }}</p>
             </div>
             <div class="grid gap-4 sm:grid-cols-2">
-              <div class="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4">
+              <div class="rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4">
                 <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Total</p>
                 <p class="mt-2 text-xl font-semibold text-slate-900">{{ analytics.totalVisits }}</p>
               </div>
-              <div class="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4">
+              <div class="rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4">
                 <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Last Visit</p>
                 <p class="mt-2 text-sm font-semibold text-slate-900">{{ lastVisitLabel }}</p>
               </div>
@@ -130,7 +130,7 @@
               <p class="text-sm font-semibold text-slate-900">Unread Queue</p>
               <p class="mt-1 text-xs text-[var(--admin-muted)]">Latest messages waiting for follow-up.</p>
             </div>
-            <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50">
+            <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-emerald-50">
               <Inbox class="h-5 w-5 text-emerald-500" />
             </div>
           </div>
@@ -139,7 +139,7 @@
             <article
               v-for="message in unreadMessages"
               :key="message.id"
-              class="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4"
+              class="rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4"
             >
               <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0">
@@ -152,7 +152,7 @@
             </article>
           </div>
 
-          <div v-else class="mt-5 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4 text-sm text-slate-500">
+          <div v-else class="mt-5 rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4 text-sm text-slate-500">
             No unread messages right now.
           </div>
         </section>

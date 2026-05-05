@@ -15,15 +15,15 @@
     <div class="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
       <section class="admin-panel p-6">
         <div class="flex flex-col items-center text-center">
-          <div class="flex h-24 w-24 items-center justify-center rounded-[28px] bg-[var(--admin-accent)] text-2xl font-semibold text-white">AU</div>
+          <div class="flex h-24 w-24 items-center justify-center rounded-[16px] bg-[var(--admin-accent)] text-2xl font-semibold text-white">AU</div>
           <h2 class="mt-4 text-xl font-semibold text-slate-900">Admin User</h2>
           <p class="mt-1 text-sm text-slate-500">Superadmin</p>
           <div class="mt-6 grid w-full gap-3 text-left">
-            <div class="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-4 py-3">
+            <div class="rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-4 py-3">
               <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Workspace</p>
               <p class="mt-1 text-sm font-semibold text-slate-700">Havor CMS</p>
             </div>
-            <div class="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-4 py-3">
+            <div class="rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-4 py-3">
               <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Last Update</p>
               <p class="mt-1 text-sm font-semibold text-slate-700">Today</p>
             </div>
@@ -49,7 +49,7 @@
             </div>
           </div>
 
-          <div class="rounded-3xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-5">
+          <div class="rounded-[14px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-5">
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="text-sm font-semibold text-slate-900">Change Password</p>

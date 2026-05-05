@@ -1,5 +1,6 @@
 <template>
   <section
+    data-public-hero="true"
     class="relative isolate overflow-hidden text-white"
     :class="heroSize === 'half' ? 'min-h-[52vh] sm:min-h-[56vh] lg:min-h-[60vh]' : 'min-h-screen'"
   >

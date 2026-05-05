@@ -66,54 +66,58 @@
       </div>
     </section>
 
-    <div v-if="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" v-motion-fade>
-      <div class="absolute inset-0 bg-slate-950/40" @click="closeModal"></div>
-
-      <div class="admin-modal-card max-w-2xl" v-motion-slide-visible-bottom>
-        <div class="flex items-center justify-between border-b border-[var(--admin-border)] px-6 py-4">
-          <div>
-            <p class="admin-kicker">Taxonomy Form</p>
-            <h2 class="mt-1 text-xl font-semibold text-slate-900">{{ form.id ? 'Edit Category' : 'Create Category' }}</h2>
-          </div>
-          <button @click="closeModal" class="admin-icon-btn">
-            <X class="h-4 w-4" />
-          </button>
+    <AdminModal
+      v-model="isModalOpen"
+      kicker="Taxonomy Form"
+      :title="form.id ? 'Edit Category' : 'Create Category'"
+      max-width-class="max-w-2xl"
+      :can-close="!isSaving"
+    >
+      <form @submit.prevent="saveCategory" class="space-y-6">
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Name <span class="text-rose-500">*</span></label>
+          <input v-model="form.name" type="text" required class="admin-input" placeholder="Category name">
         </div>
-
-        <div class="custom-scrollbar flex-1 overflow-y-auto px-6 py-6">
-          <form @submit.prevent="saveCategory" class="space-y-6">
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Name <span class="text-rose-500">*</span></label>
-              <input v-model="form.name" type="text" required class="admin-input" placeholder="Category name">
-            </div>
-            <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
-              <input :value="toSlug(form.name)" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
-            </div>
-            <p v-if="formError" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
-              {{ formError }}
-            </p>
-          </form>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
+          <input :value="toSlug(form.name)" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
         </div>
+        <p v-if="formError" class="rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+          {{ formError }}
+        </p>
+      </form>
 
-        <div class="flex justify-end gap-3 border-t border-[var(--admin-border)] px-6 py-4">
-          <button @click="closeModal" class="admin-secondary-btn">Cancel</button>
-          <button @click="saveCategory" class="admin-primary-btn">Save Category</button>
-        </div>
-      </div>
-    </div>
+      <template #footer>
+        <button @click="closeModal" :disabled="isSaving" class="admin-secondary-btn">Cancel</button>
+        <button @click="saveCategory" :disabled="isSaving" class="admin-primary-btn">
+          {{ isSaving ? 'Saving...' : 'Save Category' }}
+        </button>
+      </template>
+    </AdminModal>
+
+    <AdminSuccessModal
+      v-model="successState.open"
+      :title="successState.title"
+      :message="successState.message"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Edit2, Plus, Search, Trash2, X } from 'lucide-vue-next'
+import { Edit2, Plus, Search, Trash2 } from 'lucide-vue-next'
 
 const { categories, error, fetchCategories, createCategory, updateCategory, deleteCategory } = useCategories()
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
 const formError = ref('')
+const isSaving = ref(false)
+const successState = ref({
+  open: false,
+  title: '',
+  message: ''
+})
 const form = ref({ id: null, name: '' })
 
 const toSlug = (value = '') =>
@@ -156,6 +160,7 @@ const openModal = (item = null) => {
 }
 
 const closeModal = () => {
+  if (isSaving.value) return
   isModalOpen.value = false
 }
 
@@ -167,13 +172,28 @@ const saveCategory = async () => {
     return
   }
 
-  if (form.value.id) {
-    await updateCategory(form.value.id, { name: form.value.name })
-  } else {
-    await createCategory({ name: form.value.name })
-  }
+  isSaving.value = true
 
-  closeModal()
+  try {
+    const isEditing = Boolean(form.value.id)
+
+    if (isEditing) {
+      await updateCategory(form.value.id, { name: form.value.name })
+    } else {
+      await createCategory({ name: form.value.name })
+    }
+
+    isModalOpen.value = false
+    successState.value = {
+      open: true,
+      title: isEditing ? 'Category updated' : 'Category created',
+      message: isEditing
+        ? 'The category changes have been saved successfully.'
+        : 'The new category has been added successfully.'
+    }
+  } finally {
+    isSaving.value = false
+  }
 }
 
 const handleDelete = async (id) => {

@@ -1,5 +1,5 @@
 <template>
-  <section class="relative isolate min-h-screen overflow-hidden text-white">
+  <section data-public-hero="true" class="relative isolate min-h-screen overflow-hidden text-white">
     <img
       v-if="image"
       :src="image"
