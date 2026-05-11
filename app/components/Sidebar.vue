@@ -89,10 +89,10 @@ import {
   Tags,
   Users
 } from 'lucide-vue-next'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const router = useRouter()
+const authStore = useAuthStore()
 
 const menuSections = [
   {
@@ -126,9 +126,7 @@ const menuSections = [
 
 const isActive = (path) => route.path === path || route.path.startsWith(`${path}/`)
 
-const logout = () => {
-  const token = useCookie('auth_token')
-  token.value = null
-  router.push('/admin/login')
+const logout = async () => {
+  await authStore.logout()
 }
 </script>
