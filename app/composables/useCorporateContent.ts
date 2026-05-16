@@ -2,10 +2,13 @@ export const useCorporateContent = () => {
   const company = {
     name: 'PT Havor SMART Digital',
     shortName: 'Havor SMART Digital',
-    email: 'hello@havorsmartdigital.com',
-    phone: '+62 21 3972 1808',
-    office: 'Jakarta, Indonesia',
-    tagline: 'Structured digital delivery for businesses, institutions, and growing organizations.'
+    website: 'www.havorsmartadigital.com',
+    email: 'bisnis@havorsmartadigital.com',
+    emails: ['mshonifm@havorsmartadigital.com', 'mshonifm@gmail.com', 'bisnis@havorsmartadigital.com'],
+    phone: '+62-813-8036-2223 / +62-815-8690-2223',
+    phones: ['+62-813-8036-2223', '+62-815-8690-2223'],
+    office: 'Rukan Andalan, Jl. Asem Baris Raya No 15C, Tebet Jakarta Selatan',
+    tagline: 'Your Digital IT Partner Solution'
   }
 
   const serviceItems = [

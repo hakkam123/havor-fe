@@ -14,16 +14,16 @@
     <section class="brand-section pt-12">
       <div class="marketing-container">
         <div v-if="article" class="grid gap-8 lg:grid-cols-[1.08fr_0.92fr]">
-          <article class="overflow-hidden rounded-[2rem] border border-[#dbe6f4] bg-white shadow-[0_18px_60px_rgba(18,56,122,0.08)]" v-motion-fade-up>
+          <article class="overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-[0_18px_60px_rgba(18,56,122,0.08)]" v-motion-fade-up>
             <img :src="article.image_url" :alt="article.title" class="h-80 w-full object-cover">
             <div class="p-7 sm:p-8">
               <div class="flex flex-wrap items-center gap-3">
-                <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ article.category }}</span>
-                <span v-if="article.createdAt" class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ new Date(article.createdAt).toLocaleDateString() }}</span>
-                <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ article.readTime }} min read</span>
+                <span class="brand-chip">{{ article.category }}</span>
+                <span v-if="article.createdAt" class="brand-chip">{{ new Date(article.createdAt).toLocaleDateString() }}</span>
+                <span class="brand-chip">{{ article.readTime }} min read</span>
               </div>
 
-              <h2 class="mt-6 text-[clamp(2.2rem,4vw,3.7rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-[#0e2344]">
+              <h2 class="mt-6 text-[clamp(2.2rem,4vw,3.7rem)] font-bold leading-tight tracking-normal text-[#0e2344]">
                 {{ article.title }}
               </h2>
               <div class="mt-8 prose max-w-none text-sm leading-8 text-slate-600" v-html="article.content"></div>
@@ -37,7 +37,7 @@
                 <span
                   v-for="tag in article.tags"
                   :key="tag"
-                  class="rounded-full border border-[#d6e5fb] bg-white px-3 py-2 text-xs font-extrabold uppercase tracking-[0.16em] text-[#31527d]"
+                  class="rounded-lg border border-[#d6e5fb] bg-white px-3 py-2 text-xs font-bold uppercase tracking-normal text-[#31527d]"
                 >
                   {{ tag }}
                 </span>
@@ -51,10 +51,10 @@
                   v-for="item in relatedArticles"
                   :key="item.slug"
                   :to="`/media-news/${item.slug}`"
-                  class="flex items-center justify-between rounded-[1.2rem] border border-[#dbe6f4] px-4 py-3 transition hover:bg-[#f7fbff]"
+                  class="flex items-center justify-between rounded-lg border border-[#dbe6f4] px-4 py-3 transition hover:bg-[#f7fbff]"
                 >
                   <span class="font-bold text-[#0e2344]">{{ item.title }}</span>
-                  <span class="text-sm font-extrabold text-[#1f5dcc]">Open</span>
+                  <span class="text-sm font-bold text-[#1f5dcc]">Open</span>
                 </NuxtLink>
               </div>
             </div>
@@ -62,7 +62,7 @@
         </div>
 
         <div v-else class="brand-panel p-8 text-center">
-          <h2 class="text-3xl font-extrabold tracking-[-0.04em] text-[#0e2344]">Article not found</h2>
+          <h2 class="text-3xl font-bold tracking-normal text-[#0e2344]">Article not found</h2>
           <p class="mt-3 text-sm leading-7 text-slate-600">The article you requested is not available in the current media library.</p>
           <NuxtLink to="/media-news" class="btn-primary mt-6 inline-flex">Back to Media & News</NuxtLink>
         </div>

@@ -14,7 +14,7 @@
             <img src="/logo-havor.svg" alt="PT Havor SMART Digital" class="h-10 w-10 rounded-full object-cover">
           </span>
           <div class="hidden sm:block">
-            <p class="text-sm uppercase tracking-[0.22em] transition-colors duration-300 ease-out" :class="isPastHero ? 'font-black text-slate-950' : 'font-extrabold text-white'">Havor</p>
+            <p class="text-sm font-bold uppercase tracking-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-950' : 'text-white'">Havor</p>
             <p class="text-xs font-semibold transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-500' : 'text-white/80'">Smarta Digital</p>
           </div>
         </NuxtLink>
@@ -27,17 +27,27 @@
             class="rounded-full px-4 py-2.5 text-sm transition-all duration-300 ease-out"
             :class="navLinkClass(item.to)"
           >
-            {{ item.label }}
+            {{ t(item.labelKey) }}
           </NuxtLink>
         </nav>
 
         <div class="hidden items-center gap-3 lg:flex">
+          <button
+            type="button"
+            class="inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-bold uppercase transition-all duration-300 ease-out"
+            :class="isPastHero ? 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50' : 'border-white/25 bg-white/10 text-white backdrop-blur-sm hover:bg-white/15'"
+            aria-label="Switch language"
+            @click="toggleLocale"
+          >
+            <Globe2 class="h-4 w-4" />
+            {{ locale === 'en' ? 'ID' : 'EN' }}
+          </button>
           <NuxtLink
             to="/#contact"
-            class="inline-flex items-center justify-center rounded-full border px-5 py-3 text-sm font-bold transition-all duration-300 ease-out"
+            class="inline-flex items-center justify-center rounded-full border px-4 py-2.5 text-xs font-bold transition-all duration-300 ease-out"
             :class="isPastHero ? 'border-slate-950 bg-slate-950 text-white hover:border-slate-800 hover:bg-slate-800' : 'border-white/30 bg-white/10 text-white backdrop-blur-sm hover:border-white/50 hover:bg-white/20'"
           >
-            Contact
+            {{ t('nav.contact') }}
           </NuxtLink>
         </div>
 
@@ -56,7 +66,7 @@
 
       <div v-if="isOpen" class="pb-4 lg:hidden">
         <div
-          class="rounded-[1.75rem] border p-4 shadow-[0_18px_50px_rgba(0,0,0,0.12)] transition-all duration-300 ease-out"
+          class="rounded-lg border p-4 shadow-[0_18px_50px_rgba(0,0,0,0.12)] transition-all duration-300 ease-out"
           :class="isPastHero ? 'border-slate-200 bg-white' : 'border-white/14 bg-[#0a1a33]/88 backdrop-blur-xl'"
         >
           <nav class="space-y-2">
@@ -64,20 +74,30 @@
               v-for="item in navItems"
               :key="item.to"
               :to="item.to"
-              class="block rounded-[1.25rem] px-4 py-3 text-sm transition-all duration-300 ease-out"
-              :class="mobileNavLinkClass(item.to)"
-              @click="isOpen = false"
-            >
-              {{ item.label }}
+              class="block rounded-lg px-4 py-3 text-sm transition-all duration-300 ease-out"
+            :class="mobileNavLinkClass(item.to)"
+            @click="isOpen = false"
+          >
+              {{ t(item.labelKey) }}
             </NuxtLink>
           </nav>
+          <button
+            type="button"
+            class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-bold transition-all duration-300 ease-out"
+            :class="isPastHero ? 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50' : 'border-white/25 bg-white/10 text-white hover:bg-white/15'"
+            aria-label="Switch language"
+            @click="toggleLocale"
+          >
+            <Globe2 class="h-4 w-4" />
+            {{ locale === 'en' ? 'Bahasa Indonesia' : 'English' }}
+          </button>
           <NuxtLink
             to="/#contact"
             class="mt-3 inline-flex w-full items-center justify-center rounded-full border px-5 py-3 text-sm font-bold transition-all duration-300 ease-out"
             :class="isPastHero ? 'border-slate-950 bg-slate-950 text-white hover:border-slate-800 hover:bg-slate-800' : 'border-white/30 bg-white/10 text-white hover:border-white/50 hover:bg-white/15'"
             @click="isOpen = false"
           >
-            Discuss Your Project
+            {{ t('nav.discuss') }}
           </NuxtLink>
         </div>
       </div>
@@ -87,19 +107,20 @@
 
 <script setup>
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { Menu, X } from 'lucide-vue-next'
+import { Globe2, Menu, X } from 'lucide-vue-next'
 
 const route = useRoute()
 const headerRef = ref(null)
 const isOpen = ref(false)
 const isPastHero = ref(false)
+const { locale, t, toggleLocale } = usePublicI18n()
 
 const navItems = [
-  { label: 'About Us', to: '/about-us' },
-  { label: 'Services', to: '/services' },
-  { label: 'Works', to: '/projects' },
-  { label: 'Careers', to: '/careers' },
-  { label: 'Media & News', to: '/media-news' }
+  { labelKey: 'nav.about', to: '/about-us' },
+  { labelKey: 'nav.services', to: '/services' },
+  { labelKey: 'nav.works', to: '/projects' },
+  { labelKey: 'nav.careers', to: '/careers' },
+  { labelKey: 'nav.media', to: '/media-news' }
 ]
 
 const isActive = (path) => {
@@ -110,24 +131,24 @@ const isActive = (path) => {
 const navLinkClass = (path) => {
   if (isPastHero.value) {
     return isActive(path)
-      ? 'bg-slate-950 font-extrabold text-white shadow-[0_10px_24px_rgba(15,23,42,0.14)]'
+      ? 'font-bold text-slate-950'
       : 'font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950'
   }
 
   return isActive(path)
-    ? 'bg-white/15 font-extrabold text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
+    ? 'font-bold text-white'
     : 'font-semibold text-white/80 hover:bg-white/10 hover:text-white'
 }
 
 const mobileNavLinkClass = (path) => {
   if (isPastHero.value) {
     return isActive(path)
-      ? 'bg-slate-950 font-extrabold text-white shadow-[0_10px_24px_rgba(15,23,42,0.14)]'
+      ? 'font-bold text-slate-950'
       : 'font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-950'
   }
 
   return isActive(path)
-    ? 'bg-white/15 font-extrabold text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.16)]'
+    ? 'font-bold text-white'
     : 'font-semibold text-white/80 hover:bg-white/10 hover:text-white'
 }
 

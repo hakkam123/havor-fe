@@ -34,13 +34,13 @@
             <p class="mt-4 text-sm leading-8 text-slate-500">{{ service.description }}</p>
 
             <div class="mt-8 grid gap-4 sm:grid-cols-2">
-              <div class="rounded-2xl border border-[#d8e1ee] bg-slate-50 p-5">
-                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Delivery Model</p>
+              <div class="rounded-lg border border-[#d8e1ee] bg-slate-50 p-5">
+                <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Delivery Model</p>
                 <p class="mt-2 font-display text-lg font-semibold text-slate-900">Discovery to launch</p>
                 <p class="mt-2 text-sm leading-7 text-slate-500">Architecture, UX, build, QA, and release support tailored to your team.</p>
               </div>
-              <div class="rounded-2xl border border-[#d8e1ee] bg-slate-50 p-5">
-                <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Outcome</p>
+              <div class="rounded-lg border border-[#d8e1ee] bg-slate-50 p-5">
+                <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Outcome</p>
                 <p class="mt-2 font-display text-lg font-semibold text-slate-900">Reliable growth</p>
                 <p class="mt-2 text-sm leading-7 text-slate-500">A service designed to reduce delivery risk and improve business velocity.</p>
               </div>

@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="to"
-    class="group block overflow-hidden rounded-[28px] border border-[var(--marketing-border)] bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(15,23,42,0.12)]"
+    class="group block overflow-hidden rounded-lg border border-[var(--marketing-border)] bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_26px_60px_rgba(15,23,42,0.12)]"
   >
     <div class="relative overflow-hidden">
       <img
@@ -15,7 +15,7 @@
     <div class="space-y-3 p-6">
       <div class="flex flex-wrap items-center gap-2 editorial-meta">
         <span v-if="category" class="text-[var(--marketing-primary)]">{{ category }}</span>
-        <span v-if="category && meta">•</span>
+        <span v-if="category && meta">/</span>
         <span v-if="meta">{{ meta }}</span>
       </div>
       <h3 class="font-display text-xl font-semibold leading-snug text-slate-900 line-clamp-2">

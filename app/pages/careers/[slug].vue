@@ -62,15 +62,15 @@
               <p class="marketing-kicker">Quick Facts</p>
               <div class="mt-4 space-y-4">
                 <div class="border-b border-slate-200 pb-4 last:border-0">
-                  <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Role</p>
+                  <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Role</p>
                   <p class="mt-1 font-medium text-slate-900">{{ careerRole.job_title }}</p>
                 </div>
                 <div class="border-b border-slate-200 pb-4 last:border-0">
-                  <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Slug</p>
+                  <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Slug</p>
                   <p class="mt-1 font-medium text-slate-900">/{{ careerRole.slug }}</p>
                 </div>
                 <div>
-                  <p class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Contact</p>
+                  <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Contact</p>
                   <p class="mt-1 font-medium text-slate-900">careers@havor.com</p>
                 </div>
               </div>

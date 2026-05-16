@@ -11,8 +11,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Nunito Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        sans: ['"Nunito Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       colors: {
         navy: {

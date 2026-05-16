@@ -213,7 +213,8 @@ const editorConfig = {
   ],
   toolbar:
     'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-  content_style: 'body { font-family: Nunito Sans, sans-serif; font-size: 14px; color: #0f172a; }'
+  content_css: '/fonts/plus-jakarta-sans.css',
+  content_style: 'body { font-family: "Plus Jakarta Sans", sans-serif; font-size: 14px; color: #0f172a; }'
 }
 
 const filteredNews = computed(() => {

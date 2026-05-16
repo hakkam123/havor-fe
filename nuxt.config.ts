@@ -14,7 +14,8 @@ export default defineNuxtConfig({
     },
     head: {
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/logo-havor.svg' }
+        { rel: 'icon', type: 'image/svg+xml', href: '/logo-havor.svg' },
+        { rel: 'stylesheet', href: '/fonts/plus-jakarta-sans.css' }
       ]
     }
   },

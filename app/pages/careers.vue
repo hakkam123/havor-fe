@@ -18,8 +18,8 @@
     >
 
       <template #aside>
-        <p class="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-[#5374a8]">Why Careers Matter</p>
-        <p class="mt-3 text-lg font-extrabold text-[#0e2344]">We build a team that can think clearly, collaborate well, and create meaningful impact.</p>
+        <p class="text-[0.7rem] font-bold uppercase tracking-normal text-[#5374a8]">Why Careers Matter</p>
+        <p class="mt-3 text-lg font-bold text-[#0e2344]">We build a team that can think clearly, collaborate well, and create meaningful impact.</p>
         <p class="mt-3 text-sm leading-7 text-slate-600">
           Havor values ownership, curiosity, and respect. The team environment is structured, supportive, and focused on quality.
         </p>
@@ -55,11 +55,11 @@
     <section class="brand-section pt-0">
       <div class="marketing-container">
         <div class="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
-          <article class="overflow-hidden rounded-[2.2rem] bg-[linear-gradient(135deg,#0f2b57_0%,#1f5dcc_55%,#79adff_140%)] px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
-            <p class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.24em] text-white/78 inline-flex">
+          <article class="overflow-hidden rounded-lg bg-[linear-gradient(135deg,#0f2b57_0%,#1f5dcc_55%,#79adff_140%)] px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
+            <p class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-normal text-white/78 inline-flex">
               Why Work With Us
             </p>
-            <h2 class="mt-6 text-[clamp(2.15rem,4vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.04em]">
+            <h2 class="mt-6 text-[clamp(2.15rem,4vw,3.8rem)] font-bold leading-[1.02] tracking-normal">
               Join a team where growth, meaningful work, and support move together.
             </h2>
             <p class="mt-6 text-base leading-8 text-white/80">
@@ -97,7 +97,7 @@
             class="brand-panel p-6"
             v-motion-fade-up
           >
-            <h3 class="mt-4 text-[1.6rem] font-extrabold tracking-[-0.04em] text-[#0e2344]">{{ role.job_title }}</h3>
+            <h3 class="mt-4 text-[1.6rem] font-bold tracking-normal text-[#0e2344]">{{ role.job_title }}</h3>
             <p class="mt-3 text-[0.92rem] leading-6 text-slate-600">{{ role.excerpt }}</p>
             <div class="mt-6 flex flex-wrap gap-3">
               <NuxtLink :to="`/careers/${role.slug}`" class="btn-outline">
@@ -110,7 +110,7 @@
           </article>
         </div>
         <div v-else class="mt-10 brand-soft-panel p-16 text-center">
-          <h3 class="text-xl font-extrabold text-[#0e2344]">No open positions at the moment</h3>
+          <h3 class="text-xl font-bold text-[#0e2344]">No open positions at the moment</h3>
           <p class="mt-4 text-slate-600">While we don't have active roles listed right now, we are always looking for great talent. Send us your CV for future opportunities.</p>
           <a :href="`mailto:${company.email}?subject=${encodeURIComponent('General Career Inquiry')}`" class="btn-outline mt-8 inline-flex">Send your CV</a>
         </div>
@@ -123,7 +123,7 @@
           <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div class="max-w-3xl">
               <p class="brand-kicker">Hiring CTA</p>
-              <h2 class="mt-5 text-[clamp(2rem,4vw,3.5rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-[#0e2344]">
+              <h2 class="mt-5 text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.02] tracking-normal text-[#0e2344]">
                 {{ careersPage.cta.title }}
               </h2>
               <p class="mt-4 text-base leading-8 text-slate-600">

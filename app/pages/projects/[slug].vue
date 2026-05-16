@@ -16,11 +16,11 @@
         <div v-if="project" class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
           <article class="brand-panel p-8 sm:p-10" v-motion-fade-up>
             <div class="flex flex-wrap gap-2">
-              <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ project.categoryName }}</span>
-              <span v-if="project.client" class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-extrabold uppercase tracking-[0.18em] text-[#1f5dcc]">{{ project.client }}</span>
+              <span class="brand-chip">{{ project.categoryName }}</span>
+              <span v-if="project.client" class="brand-chip">{{ project.client }}</span>
             </div>
 
-            <h2 class="mt-6 text-[clamp(2.2rem,4vw,3.8rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-[#0e2344]">
+            <h2 class="mt-6 text-[clamp(2.2rem,4vw,3.8rem)] font-bold leading-tight tracking-normal text-[#0e2344]">
               {{ project.title }}
             </h2>
             <p class="mt-5 text-base leading-8 text-slate-600">
@@ -29,14 +29,14 @@
           </article>
 
           <aside class="space-y-6" v-motion-fade-up>
-            <div class="overflow-hidden rounded-[2rem] border border-[#dbe6f4] bg-white shadow-[0_18px_60px_rgba(18,56,122,0.08)]">
+            <div class="overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-[0_18px_60px_rgba(18,56,122,0.08)]">
               <img :src="project.image_url" :alt="project.title" class="h-72 w-full object-cover">
               <div class="p-6">
                 <p class="brand-meta">Project Snapshot</p>
                 <div class="mt-4 space-y-4">
                   <div class="border-b border-[#dbe6f4] pb-4">
-                    <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-[#6c86ad]">Client / Year</p>
-                    <p class="mt-2 text-base font-extrabold text-[#0e2344]">{{ project.client }} {{ project.year ? `- ${project.year}` : '' }}</p>
+                    <p class="text-xs font-bold uppercase tracking-normal text-[#6c86ad]">Client / Year</p>
+                    <p class="mt-2 text-base font-bold text-[#0e2344]">{{ project.client }} {{ project.year ? `- ${project.year}` : '' }}</p>
                   </div>
                 </div>
               </div>
@@ -49,10 +49,10 @@
                   v-for="item in relatedProjects"
                   :key="item.slug"
                   :to="`/projects/${item.slug}`"
-                  class="flex items-center justify-between rounded-[1.2rem] border border-[#dbe6f4] bg-white px-4 py-3 transition hover:bg-[#f7fbff]"
+                  class="flex items-center justify-between rounded-lg border border-[#dbe6f4] bg-white px-4 py-3 transition hover:bg-[#f7fbff]"
                 >
                   <span class="font-bold text-[#0e2344]">{{ item.title }}</span>
-                  <span class="text-sm font-extrabold text-[#1f5dcc]">Open</span>
+                  <span class="text-sm font-bold text-[#1f5dcc]">Open</span>
                 </NuxtLink>
               </div>
             </div>
@@ -60,7 +60,7 @@
         </div>
 
         <div v-else class="brand-panel p-8 text-center">
-          <h2 class="text-3xl font-extrabold tracking-[-0.04em] text-[#0e2344]">Project not found</h2>
+          <h2 class="text-3xl font-bold tracking-normal text-[#0e2344]">Project not found</h2>
           <p class="mt-3 text-sm leading-7 text-slate-600">The project you requested is not available in the current showcase.</p>
           <NuxtLink to="/projects" class="btn-primary mt-6 inline-flex">Back to Projects</NuxtLink>
         </div>

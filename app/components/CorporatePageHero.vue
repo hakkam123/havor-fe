@@ -18,12 +18,12 @@
     >
       <div class="w-full pb-6 sm:pb-10 lg:pb-12">
         <div class="max-w-3xl" :class="heroSize === 'half' ? 'pt-28 sm:pt-32' : 'pt-32'">
-          <p v-if="kicker" class="inline-flex rounded-full border border-white/18 bg-white/10 px-3 py-1.5 text-[0.7rem] font-extrabold uppercase tracking-[0.24em] text-white/82">
+          <p v-if="kicker" class="inline-flex rounded-lg border border-white/18 bg-white/10 px-3 py-1.5 text-[0.7rem] font-bold uppercase tracking-normal text-white/82">
             {{ kicker }}
           </p>
           <h1
-            class="mt-6 font-extrabold leading-[0.94] tracking-[-0.05em] text-white"
-            :class="heroSize === 'half' ? 'text-[clamp(2.5rem,5.5vw,4.6rem)]' : 'text-[clamp(3.2rem,7vw,6rem)]'"
+            class="mt-6 font-bold leading-tight tracking-normal text-white"
+            :class="heroSize === 'half' ? 'text-4xl sm:text-5xl lg:text-6xl' : 'text-5xl sm:text-6xl lg:text-7xl'"
           >
             {{ title }}
           </h1>
