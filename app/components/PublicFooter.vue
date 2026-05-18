@@ -3,7 +3,7 @@
     <div class="marketing-container py-16">
       <div class="grid gap-10 lg:grid-cols-[1.2fr_0.85fr_0.85fr_0.9fr]">
         <div>
-          <div class="mb-5 inline-flex items-center gap-3 rounded-full border border-[#d8e6fb] bg-white px-3 py-2 shadow-[0_16px_40px_rgba(18,56,122,0.08)]">
+          <div class="mb-5 inline-flex items-center gap-3">
             <img src="/logo-havor.svg" alt="Havor Smarta Digital" class="h-10 w-10 rounded-full object-cover">
             <div>
               <p class="text-sm font-bold text-[#0e2344]">Havor Smarta Digital</p>
@@ -38,7 +38,7 @@
             <li>{{ company.phone }}</li>
             <li>{{ company.office }}</li>
           </ul>
-          <NuxtLink to="/#contact" class="btn-outline mt-5">
+          <NuxtLink to="/#contact" class="mt-5 inline-flex text-sm font-bold text-[#0e2344] transition hover:text-[#1f5dcc]">
             {{ t('footer.start') }}
           </NuxtLink>
         </div>

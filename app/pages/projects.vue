@@ -108,25 +108,14 @@
       </div>
     </section>
 
-    <section class="brand-section pt-0 pb-24">
-      <div class="marketing-container">
-        <div class="brand-soft-panel px-8 py-8 sm:px-10 sm:py-10">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div class="max-w-3xl">
-              <h2 class="mt-5 text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.02] tracking-normal text-[#0e2344]">
-                {{ projectsPage.cta.title }}
-              </h2>
-              <p class="mt-4 text-base leading-8 text-slate-600">
-                {{ projectsPage.cta.copy }}
-              </p>
-            </div>
-            <NuxtLink to="/#contact" class="btn-primary">
-              Discuss Your Project Idea
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-    </section>
+    <PublicImageCta
+      :title="projectsPage.cta.title"
+      :copy="projectsPage.cta.copy"
+      :image="projectsPage.hero.image"
+      image-alt="Project consultation"
+      action-label="Discuss Your Project Idea"
+      to="/#contact"
+    />
   </div>
 </template>
 

@@ -38,7 +38,7 @@
   }
 
   html {
-    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-family: Poppins, ui-sans-serif, system-ui, sans-serif;
   }
 
   body {
@@ -50,7 +50,7 @@
   input,
   select,
   textarea {
-    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-family: Poppins, ui-sans-serif, system-ui, sans-serif;
   }
 
   .page-flow-enter-active,
@@ -122,7 +122,7 @@
   .marketing-shell {
     background: linear-gradient(180deg, #ffffff 0%, var(--marketing-bg) 100%);
     @apply min-h-screen text-slate-900;
-    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    font-family: Poppins, ui-sans-serif, system-ui, sans-serif;
   }
 
   .marketing-container {

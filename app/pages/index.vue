@@ -318,39 +318,23 @@
       </div>
     </section>
 
-    <section>
-      <div class="relative isolate overflow-hidden pb-20 pt-32 text-white sm:pb-24 sm:pt-36">
-        <img
-          :src="homePage.hero.slides[4].image"
-          alt="Havor consultation"
-          class="absolute inset-0 h-full w-full object-cover"
-        >
-        <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.72)_52%,rgba(5,12,24,0.38)_100%)]"></div>
-        <div class="marketing-container relative">
-          <div class="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div>
-              <h2 id="contact" class="max-w-4xl scroll-mt-32 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                {{ t('home.cta.title') }}
-              </h2>
-              <p class="mt-5 max-w-2xl text-base leading-8 text-white/78">
-                {{ t('home.cta.copy') }}
-              </p>
-              <div class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-white/72">
-                <span>{{ company.website }}</span>
-                <span>{{ company.phone }}</span>
-                <span>{{ company.email }}</span>
-              </div>
-            </div>
-            <a
-              :href="`mailto:${company.email}?subject=${encodeURIComponent('Contact PT Havor SMART Digital')}`"
-              class="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-[#0e2344] transition hover:bg-[#edf4ff]"
-            >
-              {{ t('home.cta.button') }}
-            </a>
-          </div>
+    <PublicImageCta
+      anchor-id="contact"
+      :title="t('home.cta.title')"
+      :copy="t('home.cta.copy')"
+      :image="homePage.hero.slides[4].image"
+      image-alt="Havor consultation"
+      :action-label="t('home.cta.button')"
+      :href="`mailto:${company.email}?subject=${encodeURIComponent('Contact PT Havor SMART Digital')}`"
+    >
+      <template #meta>
+        <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-white/72">
+          <span>{{ company.website }}</span>
+          <span>{{ company.phone }}</span>
+          <span>{{ company.email }}</span>
         </div>
-      </div>
-    </section>
+      </template>
+    </PublicImageCta>
   </div>
 </template>
 

@@ -203,8 +203,8 @@ const editorConfig = {
   ],
   toolbar:
     'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-  content_css: '/fonts/plus-jakarta-sans.css',
-  content_style: 'body { font-family: "Plus Jakarta Sans", sans-serif; font-size: 14px; color: #0f172a; }'
+  content_css: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap',
+  content_style: 'body { font-family: Poppins, sans-serif; font-size: 14px; color: #0f172a; }'
 }
 
 const stripHtml = (value) => (value || '').replace(/<[^>]*>?/gm, '').trim()

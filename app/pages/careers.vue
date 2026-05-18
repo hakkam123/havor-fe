@@ -55,16 +55,24 @@
     <section class="brand-section pt-0">
       <div class="marketing-container">
         <div class="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
-          <article class="overflow-hidden rounded-lg bg-[linear-gradient(135deg,#0f2b57_0%,#1f5dcc_55%,#79adff_140%)] px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
-            <p class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-normal text-white/78 inline-flex">
-              Why Work With Us
-            </p>
-            <h2 class="mt-6 text-[clamp(2.15rem,4vw,3.8rem)] font-bold leading-[1.02] tracking-normal">
-              Join a team where growth, meaningful work, and support move together.
-            </h2>
-            <p class="mt-6 text-base leading-8 text-white/80">
-              Havor offers a professional environment that values steady development, thoughtful collaboration, and digital work that matters to real clients.
-            </p>
+          <article class="relative isolate overflow-hidden rounded-lg px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
+            <img
+              :src="careersPage.hero.image"
+              alt="Havor team culture"
+              class="absolute inset-0 h-full w-full object-cover"
+            >
+            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.68)_100%)]"></div>
+            <div class="relative">
+              <p class="inline-flex rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-normal text-white/78">
+                Why Work With Us
+              </p>
+              <h2 class="mt-6 text-[clamp(2.15rem,4vw,3.8rem)] font-bold leading-tight tracking-normal">
+                Join a team where growth, meaningful work, and support move together.
+              </h2>
+              <p class="mt-6 text-base leading-8 text-white/80">
+                Havor offers a professional environment that values steady development, thoughtful collaboration, and digital work that matters to real clients.
+              </p>
+            </div>
           </article>
 
           <div class="grid gap-4 md:grid-cols-2">
@@ -117,26 +125,14 @@
       </div>
     </section>
 
-    <section class="brand-section pt-0 pb-24">
-      <div class="marketing-container">
-        <div class="brand-soft-panel px-8 py-8 sm:px-10 sm:py-10">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div class="max-w-3xl">
-              <p class="brand-kicker">Hiring CTA</p>
-              <h2 class="mt-5 text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.02] tracking-normal text-[#0e2344]">
-                {{ careersPage.cta.title }}
-              </h2>
-              <p class="mt-4 text-base leading-8 text-slate-600">
-                {{ careersPage.cta.copy }}
-              </p>
-            </div>
-            <a :href="`mailto:${company.email}?subject=${encodeURIComponent('Career Inquiry')}`" class="btn-primary">
-              Connect With Us
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
+    <PublicImageCta
+      :title="careersPage.cta.title"
+      :copy="careersPage.cta.copy"
+      :image="careersPage.hero.image"
+      image-alt="Career inquiry"
+      action-label="Connect With Us"
+      :href="`mailto:${company.email}?subject=${encodeURIComponent('Career Inquiry')}`"
+    />
   </div>
 </template>
 

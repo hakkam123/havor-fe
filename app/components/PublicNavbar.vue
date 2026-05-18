@@ -34,18 +34,18 @@
         <div class="hidden items-center gap-3 lg:flex">
           <button
             type="button"
-            class="inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2.5 text-xs font-bold uppercase transition-all duration-300 ease-out"
-            :class="isPastHero ? 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50' : 'border-white/25 bg-white/10 text-white backdrop-blur-sm hover:bg-white/15'"
+            class="inline-flex items-center justify-center px-1 py-2 text-sm font-bold uppercase transition-colors duration-300 ease-out"
+            :class="isPastHero ? 'text-slate-800 hover:text-slate-950' : 'text-white hover:text-white/80'"
             aria-label="Switch language"
             @click="toggleLocale"
           >
-            <Globe2 class="h-4 w-4" />
+            <span aria-hidden="true">{{ locale === 'en' ? '🇮🇩' : '🇬🇧' }}</span>
             {{ locale === 'en' ? 'ID' : 'EN' }}
           </button>
           <NuxtLink
             to="/#contact"
-            class="inline-flex items-center justify-center rounded-full border px-4 py-2.5 text-xs font-bold transition-all duration-300 ease-out"
-            :class="isPastHero ? 'border-slate-950 bg-slate-950 text-white hover:border-slate-800 hover:bg-slate-800' : 'border-white/30 bg-white/10 text-white backdrop-blur-sm hover:border-white/50 hover:bg-white/20'"
+            class="inline-flex items-center justify-center px-1 py-2 text-sm font-bold transition-colors duration-300 ease-out"
+            :class="isPastHero ? 'text-slate-800 hover:text-slate-950' : 'text-white hover:text-white/80'"
           >
             {{ t('nav.contact') }}
           </NuxtLink>

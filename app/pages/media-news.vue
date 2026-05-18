@@ -136,25 +136,14 @@
       </div>
     </div>
 
-    <section class="brand-section pt-0 pb-24">
-      <div class="marketing-container">
-        <div class="brand-soft-panel px-8 py-8 sm:px-10 sm:py-10">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div class="max-w-3xl">
-              <h2 class="text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.02] tracking-normal text-[#0e2344]">
-                {{ mediaPage.cta.title }}
-              </h2>
-              <p class="mt-4 text-base leading-8 text-slate-600">
-                {{ mediaPage.cta.copy }}
-              </p>
-            </div>
-            <a :href="`mailto:${company.email}?subject=${encodeURIComponent('Stay Updated With Havor')}`" class="btn-primary">
-              Stay Updated
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
+    <PublicImageCta
+      :title="mediaPage.cta.title"
+      :copy="mediaPage.cta.copy"
+      :image="mediaPage.hero.image"
+      image-alt="Havor media updates"
+      action-label="Stay Updated"
+      :href="`mailto:${company.email}?subject=${encodeURIComponent('Stay Updated With Havor')}`"
+    />
   </div>
 </template>
 

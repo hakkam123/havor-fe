@@ -83,14 +83,22 @@
     <section class="brand-section pt-0">
       <div class="marketing-container">
         <div class="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
-          <article class="overflow-hidden rounded-lg bg-[linear-gradient(135deg,#0f2b57_0%,#1f5dcc_55%,#79adff_140%)] px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
+          <article class="relative isolate overflow-hidden rounded-lg px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
+            <img
+              :src="servicesPage.hero.image"
+              alt="Havor service capability"
+              class="absolute inset-0 h-full w-full object-cover"
+            >
+            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.68)_100%)]"></div>
+            <div class="relative">
 
-            <h2 class="mt-6 text-[clamp(2.15rem,4vw,3.8rem)] font-bold leading-[1.02] tracking-normal">
+            <h2 class="mt-6 text-[clamp(2.15rem,4vw,3.8rem)] font-bold leading-tight tracking-normal">
               Depth across platforms, operations, and long-term digital support.
             </h2>
             <p class="mt-6 text-base leading-8 text-white/80">
-              Havor’s capabilities extend beyond implementation into the practical details that make digital systems usable, maintainable, and aligned with organizational reality.
+              Havor's capabilities extend beyond implementation into the practical details that make digital systems usable, maintainable, and aligned with organizational reality.
             </p>
+            </div>
           </article>
 
           <div class="grid gap-4 md:grid-cols-2">
@@ -117,25 +125,14 @@
       </div>
     </section>
 
-    <section class="brand-section pt-0 pb-24">
-      <div class="marketing-container">
-        <div class="brand-soft-panel px-8 py-8 sm:px-10 sm:py-10">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div class="max-w-3xl">
-              <h2 class="mt-5 text-[clamp(2rem,4vw,3.5rem)] font-bold leading-[1.02] tracking-normal text-[#0e2344]">
-                {{ servicesPage.cta.title }}
-              </h2>
-              <p class="mt-4 text-base leading-8 text-slate-600">
-                {{ servicesPage.cta.copy }}
-              </p>
-            </div>
-            <NuxtLink to="/#contact" class="btn-primary">
-              {{ servicesPage.cta.button }}
-            </NuxtLink>
-          </div>
-        </div>
-      </div>
-    </section>
+    <PublicImageCta
+      :title="servicesPage.cta.title"
+      :copy="servicesPage.cta.copy"
+      :image="servicesPage.hero.image"
+      image-alt="Service consultation"
+      :action-label="servicesPage.cta.button"
+      to="/#contact"
+    />
   </div>
 </template>
 

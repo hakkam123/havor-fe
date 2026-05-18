@@ -15,7 +15,9 @@ export default defineNuxtConfig({
     head: {
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/logo-havor.svg' },
-        { rel: 'stylesheet', href: '/fonts/plus-jakarta-sans.css' }
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap' }
       ]
     }
   },

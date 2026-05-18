@@ -44,12 +44,18 @@
               </div>
             </div>
 
-            <div id="apply" class="marketing-card flex flex-col gap-6 bg-gradient-to-br from-[var(--marketing-primary-soft)] to-[var(--marketing-primary-soft)]/50 p-8">
-              <div>
-                <h3 class="font-display text-2xl font-semibold text-slate-900">Ready to apply?</h3>
-                <p class="mt-2 text-slate-600">We&apos;d love to hear from you. Send us your resume and a short note about why this role fits you.</p>
+            <div id="apply" class="relative isolate overflow-hidden rounded-lg p-8 text-white">
+              <img
+                :src="careerRole.thumbnail || heroImage"
+                :alt="`${careerRole.job_title} application`"
+                class="absolute inset-0 h-full w-full object-cover"
+              >
+              <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.68)_100%)]"></div>
+              <div class="relative">
+                <h3 class="font-display text-2xl font-bold text-white">Ready to apply?</h3>
+                <p class="mt-2 text-white/78">We&apos;d love to hear from you. Send us your resume and a short note about why this role fits you.</p>
+                <a :href="applyLink" class="mt-6 inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-[#0e2344] transition hover:bg-[#edf4ff]">Apply Now</a>
               </div>
-              <a :href="applyLink" class="btn-primary inline-flex w-fit">Apply Now</a>
             </div>
           </article>
 

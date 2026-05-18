@@ -47,19 +47,27 @@
     <section class="brand-section bg-[#f5f8fc] pt-0 pb-24">
       <div class="marketing-container">
         <div class="grid gap-6 lg:grid-cols-[0.96fr_1.04fr]">
-          <article class="overflow-hidden rounded-lg bg-[linear-gradient(135deg,#0f2b57_0%,#1f5dcc_55%,#79adff_140%)] px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
-            <h2 class="mt-6 text-[clamp(2.2rem,4vw,3.8rem)] font-bold leading-tight tracking-normal">
-              A long-term vision for dependable digital transformation.
-            </h2>
-            <div class="mt-8 rounded-lg border border-white/14 bg-white/10 p-6">
-              <p class="text-[0.72rem] font-bold uppercase tracking-normal text-white/70">Vision Statement</p>
-              <p class="mt-4 text-lg leading-8 text-white/88">
-                {{ aboutPage.visionMission.vision }}
+          <article class="relative isolate overflow-hidden rounded-lg px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
+            <img
+              :src="aboutPage.hero.image"
+              alt="Havor vision"
+              class="absolute inset-0 h-full w-full object-cover"
+            >
+            <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.68)_100%)]"></div>
+            <div class="relative">
+              <h2 class="mt-6 text-[clamp(2.2rem,4vw,3.8rem)] font-bold leading-tight tracking-normal">
+                A long-term vision for dependable digital transformation.
+              </h2>
+              <div class="mt-8 rounded-lg border border-white/14 bg-white/10 p-6">
+                <p class="text-[0.72rem] font-bold uppercase tracking-normal text-white/70">Vision Statement</p>
+                <p class="mt-4 text-lg leading-8 text-white/88">
+                  {{ aboutPage.visionMission.vision }}
+                </p>
+              </div>
+              <p class="mt-6 text-sm leading-7 text-white/78">
+                {{ aboutPage.visionMission.supportNote }}
               </p>
             </div>
-            <p class="mt-6 text-sm leading-7 text-white/78">
-              {{ aboutPage.visionMission.supportNote }}
-            </p>
           </article>
 
           <div class="space-y-4">
