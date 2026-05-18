@@ -12,7 +12,7 @@
           <div>
             <h2
               :id="anchorId"
-              class="max-w-4xl scroll-mt-32 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl"
+              class="max-w-4xl scroll-mt-32 text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl"
             >
               {{ title }}
             </h2>
@@ -29,14 +29,14 @@
             <NuxtLink
               v-if="to"
               :to="to"
-              class="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-[#0e2344] transition hover:bg-[#edf4ff]"
+              class="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0e2344] transition hover:bg-[#edf4ff]"
             >
               {{ actionLabel }}
             </NuxtLink>
             <a
               v-else-if="href"
               :href="href"
-              class="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-[#0e2344] transition hover:bg-[#edf4ff]"
+              class="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0e2344] transition hover:bg-[#edf4ff]"
             >
               {{ actionLabel }}
             </a>

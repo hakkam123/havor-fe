@@ -16,33 +16,29 @@
           description="A curated breakdown of the kinds of work Havor supports across sectors and operational needs."
         />
 
-        <div class="mt-10 grid gap-4 lg:grid-cols-[0.42fr_0.58fr]">
-          <div class="brand-soft-panel p-5" v-motion-fade-up>
+        <div class="mt-10 grid gap-5 border-y border-[#dbe6f4] py-6 lg:grid-cols-[0.42fr_0.58fr]" v-motion-fade-up>
+          <div>
             <label for="project-category" class="brand-meta">Project Category</label>
-            <div class="mt-3">
-              <select
-                id="project-category"
-                v-model="selectedCategory"
-                class="w-full rounded-lg border border-[#d6e5fb] bg-white px-4 py-3 text-[0.95rem] font-bold text-[#0e2344] outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
-              >
-                <option v-for="option in categoryOptions" :key="option" :value="option">
-                  {{ option }}
-                </option>
-              </select>
-            </div>
+            <select
+              id="project-category"
+              v-model="selectedCategory"
+              class="mt-3 w-full rounded-lg border border-[#d6e5fb] bg-white px-4 py-3 text-[0.95rem] font-medium text-[#0e2344] outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+            >
+              <option v-for="option in categoryOptions" :key="option" :value="option">
+                {{ option }}
+              </option>
+            </select>
           </div>
 
-          <div class="brand-soft-panel p-5" v-motion-fade-up>
+          <div>
             <label for="project-search" class="brand-meta">Search Project</label>
-            <div class="mt-3">
-              <input
-                id="project-search"
-                v-model="searchQuery"
-                type="text"
-                placeholder="Search project name, industry, or keyword"
-                class="w-full rounded-lg border border-[#d6e5fb] bg-white px-4 py-3 text-[0.95rem] font-medium text-[#0e2344] outline-none transition placeholder:text-slate-400 focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
-              >
-            </div>
+            <input
+              id="project-search"
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search project name, industry, or keyword"
+              class="mt-3 w-full rounded-lg border border-[#d6e5fb] bg-white px-4 py-3 text-[0.95rem] font-medium text-[#0e2344] outline-none transition placeholder:text-slate-400 focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+            >
           </div>
         </div>
       </div>
@@ -71,13 +67,13 @@
             >
             <div class="px-5 py-5 sm:px-5 sm:py-5">
               <div class="flex flex-wrap gap-2">
-                <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-normal text-[#1f5dcc]">{{ project.categoryName }}</span>
-                <span v-if="project.client" class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-normal text-[#1f5dcc]">{{ project.client }}</span>
+                <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-medium uppercase tracking-normal text-[#1f5dcc]">{{ project.categoryName }}</span>
+                <span v-if="project.client" class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-medium uppercase tracking-normal text-[#1f5dcc]">{{ project.client }}</span>
               </div>
-              <h3 class="mt-4 text-[1.28rem] font-bold leading-[1.22] tracking-normal text-[#0e2344]">{{ project.title }}</h3>
+              <h3 class="mt-4 text-[1.28rem] font-semibold leading-[1.22] tracking-normal text-[#0e2344]">{{ project.title }}</h3>
               <p class="mt-3 text-[0.92rem] leading-6 text-slate-600">{{ project.description }}</p>
 
-              <div class="mt-5 inline-flex items-center gap-2 text-[0.82rem] font-bold uppercase tracking-normal text-[#1f5dcc]">
+              <div class="mt-5 inline-flex items-center gap-2 text-[0.82rem] font-medium uppercase tracking-normal text-[#1f5dcc]">
                 View Project Detail
               </div>
             </div>
@@ -87,7 +83,7 @@
             v-if="!works.length"
             class="brand-panel px-6 py-12 text-center md:col-span-2 xl:col-span-3"
           >
-            <h3 class="text-xl font-bold text-[#0e2344]">Showcase coming soon</h3>
+            <h3 class="text-xl font-semibold text-[#0e2344]">Showcase coming soon</h3>
             <p class="mt-3 text-[0.92rem] leading-6 text-slate-600">
               We are currently preparing our project portfolio for display. Check back shortly to see our latest implementations.
             </p>
@@ -96,7 +92,7 @@
             v-else-if="!filteredProjects.length"
             class="brand-panel px-6 py-12 text-center md:col-span-2 xl:col-span-3"
           >
-            <p class="text-[1rem] font-bold text-[#0e2344]">No projects match your filter.</p>
+            <p class="text-[1rem] font-semibold text-[#0e2344]">No projects match your filter.</p>
             <p class="mt-2 text-[0.92rem] leading-6 text-slate-600">
               Try another category or broaden your search keyword.
             </p>

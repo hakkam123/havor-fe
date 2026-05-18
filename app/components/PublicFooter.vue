@@ -6,7 +6,7 @@
           <div class="mb-5 inline-flex items-center gap-3">
             <img src="/logo-havor.svg" alt="Havor Smarta Digital" class="h-10 w-10 rounded-full object-cover">
             <div>
-              <p class="text-sm font-bold text-[#0e2344]">Havor Smarta Digital</p>
+              <p class="text-sm font-semibold text-[#0e2344]">Havor Smarta Digital</p>
             </div>
           </div>
           <p class="max-w-md text-sm leading-7 text-slate-600">
@@ -15,8 +15,8 @@
         </div>
 
         <div>
-          <p class="text-sm font-bold uppercase tracking-normal text-[#5374a8]">{{ t('footer.company') }}</p>
-          <ul class="mt-4 space-y-3 text-sm font-semibold text-slate-600">
+          <p class="text-sm font-semibold uppercase tracking-normal text-[#5374a8]">{{ t('footer.company') }}</p>
+          <ul class="mt-4 space-y-3 text-sm font-normal text-slate-600">
             <li><NuxtLink to="/about-us" class="hover:text-[#1f5dcc]">{{ t('nav.about') }}</NuxtLink></li>
             <li><NuxtLink to="/services" class="hover:text-[#1f5dcc]">{{ t('nav.services') }}</NuxtLink></li>
             <li><NuxtLink to="/projects" class="hover:text-[#1f5dcc]">{{ t('nav.works') }}</NuxtLink></li>
@@ -25,26 +25,26 @@
         </div>
 
         <div>
-          <p class="text-sm font-bold uppercase tracking-normal text-[#5374a8]">{{ t('footer.capabilities') }}</p>
-          <ul class="mt-4 space-y-3 text-sm font-semibold text-slate-600">
+          <p class="text-sm font-semibold uppercase tracking-normal text-[#5374a8]">{{ t('footer.capabilities') }}</p>
+          <ul class="mt-4 space-y-3 text-sm font-normal text-slate-600">
             <li v-for="item in capabilityItems" :key="item">{{ item }}</li>
           </ul>
         </div>
 
         <div>
-          <p class="text-sm font-bold uppercase tracking-normal text-[#5374a8]">{{ t('footer.contact') }}</p>
-          <ul class="mt-4 space-y-3 text-sm font-semibold text-slate-600">
+          <p class="text-sm font-semibold uppercase tracking-normal text-[#5374a8]">{{ t('footer.contact') }}</p>
+          <ul class="mt-4 space-y-3 text-sm font-normal text-slate-600">
             <li>{{ company.email }}</li>
             <li>{{ company.phone }}</li>
             <li>{{ company.office }}</li>
           </ul>
-          <NuxtLink to="/#contact" class="mt-5 inline-flex text-sm font-bold text-[#0e2344] transition hover:text-[#1f5dcc]">
+          <NuxtLink to="/#contact" class="mt-5 inline-flex text-sm font-medium text-[#0e2344] transition hover:text-[#1f5dcc]">
             {{ t('footer.start') }}
           </NuxtLink>
         </div>
       </div>
 
-      <div class="mt-10 flex flex-col gap-3 border-t border-[#dbe6f4] pt-6 text-xs font-semibold text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+      <div class="mt-10 flex flex-col gap-3 border-t border-[#dbe6f4] pt-6 text-xs font-normal text-slate-500 sm:flex-row sm:items-center sm:justify-between">
         <p>{{ t('footer.copyright') }}</p>
         <div class="flex items-center gap-6">
           <NuxtLink to="/about-us" class="hover:text-[#1f5dcc]">{{ t('footer.privacy') }}</NuxtLink>

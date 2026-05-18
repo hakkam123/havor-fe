@@ -32,9 +32,9 @@
           <NuxtLink to="/careers" class="btn-primary mt-6 inline-flex">Back to Careers</NuxtLink>
         </div>
 
-        <div v-else class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+        <div v-else class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
           <article class="space-y-8" v-motion-fade-up>
-            <div class="marketing-card p-8">
+            <div class="border-l-2 border-[#1f5dcc] pl-5">
               <p class="marketing-kicker">Position Details</p>
               <h2 class="mt-4 font-display text-3xl font-semibold text-slate-900">{{ careerRole.job_title }}</h2>
               <p class="mt-4 text-sm leading-7 text-slate-500">{{ careerRole.excerpt }}</p>
@@ -52,44 +52,42 @@
               >
               <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.68)_100%)]"></div>
               <div class="relative">
-                <h3 class="font-display text-2xl font-bold text-white">Ready to apply?</h3>
+                <h3 class="font-display text-2xl font-semibold text-white">Ready to apply?</h3>
                 <p class="mt-2 text-white/78">We&apos;d love to hear from you. Send us your resume and a short note about why this role fits you.</p>
-                <a :href="applyLink" class="mt-6 inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold text-[#0e2344] transition hover:bg-[#edf4ff]">Apply Now</a>
+                <a :href="applyLink" class="mt-6 inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0e2344] transition hover:bg-[#edf4ff]">Apply Now</a>
               </div>
             </div>
           </article>
 
           <aside class="space-y-6" v-motion-fade-up>
-            <div class="marketing-card overflow-hidden">
-              <img :src="careerRole.thumbnail || heroImage" :alt="careerRole.job_title" class="h-64 w-full object-cover">
-            </div>
+            <img :src="careerRole.thumbnail || heroImage" :alt="careerRole.job_title" class="h-72 w-full rounded-lg object-cover">
 
-            <div class="marketing-card p-6">
+            <div>
               <p class="marketing-kicker">Quick Facts</p>
               <div class="mt-4 space-y-4">
                 <div class="border-b border-slate-200 pb-4 last:border-0">
-                  <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Role</p>
+                  <p class="text-xs font-medium uppercase tracking-normal text-slate-400">Role</p>
                   <p class="mt-1 font-medium text-slate-900">{{ careerRole.job_title }}</p>
                 </div>
                 <div class="border-b border-slate-200 pb-4 last:border-0">
-                  <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Slug</p>
+                  <p class="text-xs font-medium uppercase tracking-normal text-slate-400">Slug</p>
                   <p class="mt-1 font-medium text-slate-900">/{{ careerRole.slug }}</p>
                 </div>
                 <div>
-                  <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Contact</p>
+                  <p class="text-xs font-medium uppercase tracking-normal text-slate-400">Contact</p>
                   <p class="mt-1 font-medium text-slate-900">careers@havor.com</p>
                 </div>
               </div>
             </div>
 
-            <div class="marketing-card p-6">
+            <div>
               <p class="marketing-kicker">Other Roles</p>
-              <div class="mt-4 space-y-3">
+              <div class="mt-4 space-y-0 border-t border-slate-200">
                 <NuxtLink
                   v-for="role in relatedRoles"
                   :key="role.slug"
                   :to="`/careers/${role.slug}`"
-                  class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 transition hover:bg-slate-50"
+                  class="flex items-center justify-between border-b border-slate-200 py-4 transition hover:bg-slate-50"
                 >
                   <span class="font-medium text-slate-800">{{ role.job_title }}</span>
                   <ArrowRight class="h-4 w-4 text-[var(--marketing-primary)]" />

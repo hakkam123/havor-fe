@@ -102,7 +102,7 @@
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-bold text-white transition-colors duration-200;
+    @apply inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold text-white transition-colors duration-200;
     background-color: var(--marketing-primary);
     box-shadow: 0 18px 40px rgba(31, 93, 204, 0.18);
   }
@@ -138,11 +138,11 @@
   }
 
   .marketing-kicker {
-    @apply inline-flex rounded-lg border border-[var(--marketing-primary-pale)] bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-normal text-[var(--marketing-primary)];
+    @apply inline-flex rounded-lg border border-[var(--marketing-primary-pale)] bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-normal text-[var(--marketing-primary)];
   }
 
   .marketing-title {
-    @apply mt-5 font-display text-3xl font-bold leading-tight tracking-normal text-slate-900 sm:text-4xl;
+    @apply mt-5 font-display text-3xl font-semibold leading-tight tracking-normal text-slate-900 sm:text-4xl;
   }
 
   .marketing-copy {
@@ -150,11 +150,11 @@
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center rounded-full border border-[var(--marketing-border)] bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-[var(--marketing-primary-soft)];
+    @apply inline-flex items-center justify-center rounded-full border border-[var(--marketing-border)] bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-[var(--marketing-primary-soft)];
   }
 
   .editorial-meta {
-    @apply text-[11px] font-semibold uppercase tracking-normal text-[var(--marketing-accent-gray)];
+    @apply text-[11px] font-medium uppercase tracking-normal text-[var(--marketing-accent-gray)];
   }
 
   .listing-toolbar {
@@ -332,11 +332,11 @@
   }
 
   .brand-kicker {
-    @apply inline-flex rounded-lg border border-[#cfe0fb] bg-white px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-normal text-[#1f5dcc];
+    @apply inline-flex rounded-lg border border-[#cfe0fb] bg-white px-3 py-1.5 text-[0.68rem] font-medium uppercase tracking-normal text-[#1f5dcc];
   }
 
   .brand-heading {
-    @apply text-3xl font-bold leading-tight tracking-normal text-[#0e2344] sm:text-4xl lg:text-5xl;
+    @apply text-3xl font-semibold leading-tight tracking-normal text-[#0e2344] sm:text-4xl lg:text-5xl;
   }
 
   .brand-copy {
@@ -344,15 +344,15 @@
   }
 
   .brand-chip {
-    @apply inline-flex items-center rounded-lg border border-[#d6e5fb] bg-white px-3.5 py-1.5 text-[0.82rem] font-bold text-[#31527d];
+    @apply inline-flex items-center rounded-lg border border-[#d6e5fb] bg-white px-3.5 py-1.5 text-[0.82rem] font-medium text-[#31527d];
   }
 
   .brand-meta {
-    @apply text-[0.66rem] font-bold uppercase tracking-normal text-[#6c86ad];
+    @apply text-[0.66rem] font-medium uppercase tracking-normal text-[#6c86ad];
   }
 
   .brand-card-title {
-    @apply text-[1.18rem] font-bold leading-snug tracking-normal text-[#0e2344];
+    @apply text-[1.18rem] font-semibold leading-snug tracking-normal text-[#0e2344];
   }
 
   .brand-card-copy {
@@ -377,15 +377,15 @@
   }
 
   .brand-service-card-label {
-    @apply inline-flex rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-normal text-white/90 backdrop-blur-sm;
+    @apply inline-flex rounded-lg border border-white/20 bg-white/10 px-2.5 py-1 text-[0.62rem] font-medium uppercase tracking-normal text-white/90 backdrop-blur-sm;
   }
 
   .brand-service-card-title {
-    @apply mt-3 max-w-[14rem] text-[1.45rem] font-bold leading-tight tracking-normal text-white;
+    @apply mt-3 max-w-[14rem] text-[1.45rem] font-semibold leading-tight tracking-normal text-white;
   }
 
   .brand-service-card-link {
-    @apply mt-4 inline-flex items-center gap-2 text-[0.8rem] font-bold uppercase tracking-normal text-white/80 transition group-hover:text-white;
+    @apply mt-4 inline-flex items-center gap-2 text-[0.8rem] font-medium uppercase tracking-normal text-white/80 transition group-hover:text-white;
   }
 
   .brand-skeleton {

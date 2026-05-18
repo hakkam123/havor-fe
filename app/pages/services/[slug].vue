@@ -27,20 +27,20 @@
           </div>
         </div>
 
-        <div v-else-if="service" class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
-          <article class="marketing-card p-8" v-motion-fade-up>
+        <div v-else-if="service" class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+          <article class="border-l-2 border-[#1f5dcc] pl-5" v-motion-fade-up>
             <p class="marketing-kicker">Overview</p>
             <h2 class="mt-4 font-display text-3xl font-semibold text-slate-900">{{ service.name }}</h2>
             <p class="mt-4 text-sm leading-8 text-slate-500">{{ service.description }}</p>
 
-            <div class="mt-8 grid gap-4 sm:grid-cols-2">
-              <div class="rounded-lg border border-[#d8e1ee] bg-slate-50 p-5">
-                <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Delivery Model</p>
+            <div class="mt-8 grid gap-6 border-t border-[#dbe6f4] pt-6 sm:grid-cols-2">
+              <div>
+                <p class="text-xs font-medium uppercase tracking-normal text-slate-400">Delivery Model</p>
                 <p class="mt-2 font-display text-lg font-semibold text-slate-900">Discovery to launch</p>
                 <p class="mt-2 text-sm leading-7 text-slate-500">Architecture, UX, build, QA, and release support tailored to your team.</p>
               </div>
-              <div class="rounded-lg border border-[#d8e1ee] bg-slate-50 p-5">
-                <p class="text-xs font-semibold uppercase tracking-normal text-slate-400">Outcome</p>
+              <div>
+                <p class="text-xs font-medium uppercase tracking-normal text-slate-400">Outcome</p>
                 <p class="mt-2 font-display text-lg font-semibold text-slate-900">Reliable growth</p>
                 <p class="mt-2 text-sm leading-7 text-slate-500">A service designed to reduce delivery risk and improve business velocity.</p>
               </div>
@@ -48,17 +48,15 @@
           </article>
 
           <aside class="space-y-6" v-motion-fade-up>
-            <div class="marketing-card overflow-hidden">
-              <img :src="pageBanner.media_url || heroImage" :alt="service.name" class="h-56 w-full object-cover">
-            </div>
-            <div class="marketing-card p-6">
+            <img :src="pageBanner.media_url || heroImage" :alt="service.name" class="h-72 w-full rounded-lg object-cover">
+            <div>
               <p class="marketing-kicker">Related Services</p>
-              <div class="mt-4 space-y-3">
+              <div class="mt-4 space-y-0 border-t border-[#dbe6f4]">
                 <NuxtLink
                   v-for="item in relatedServices"
                   :key="item.slug"
                   :to="`/services/${item.slug}`"
-                  class="flex items-center justify-between rounded-xl border border-[#d8e1ee] px-4 py-3 transition hover:bg-slate-50"
+                  class="flex items-center justify-between border-b border-[#dbe6f4] py-4 transition hover:bg-[#f7fbff]"
                 >
                   <span class="font-medium text-slate-800">{{ item.name }}</span>
                   <ArrowRight class="h-4 w-4 text-[#1846a3]" />

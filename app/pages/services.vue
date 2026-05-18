@@ -17,8 +17,8 @@
     >
 
       <template #aside>
-        <p class="text-[0.7rem] font-bold uppercase tracking-normal text-[#5374a8]">Service Philosophy</p>
-        <p class="mt-3 text-lg font-bold text-[#0e2344]">Every service is designed around real organizational needs, not a one-size-fits-all package.</p>
+        <p class="text-[0.7rem] font-medium uppercase tracking-normal text-[#5374a8]">Service Philosophy</p>
+        <p class="mt-3 text-lg font-semibold text-[#0e2344]">Every service is designed around real organizational needs, not a one-size-fits-all package.</p>
         <p class="mt-3 text-sm leading-7 text-slate-600">
           Havor helps clients define the right digital scope, then supports implementation with structure, responsiveness, and long-term thinking.
         </p>
@@ -27,22 +27,22 @@
 
     <section class="brand-section pt-12">
       <div class="marketing-container">
-        <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <article class="brand-panel p-7 sm:p-8">
+        <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <article class="border-l-2 border-[#1f5dcc] pl-5">
             <SectionHeading
               :title="servicesPage.overview.title"
               :description="servicesPage.overview.intro"
             />
           </article>
 
-          <div class="grid gap-4 md:grid-cols-3">
+          <div class="grid gap-x-8 gap-y-6 md:grid-cols-3">
             <article
               v-for="point in servicesPage.overview.points"
               :key="point"
-              class="brand-soft-panel flex min-h-[220px] items-center p-5"
+              class="border-t border-[#dbe6f4] pt-5"
               v-motion-fade-up
             >
-              <p class="text-[1.2rem] leading-7 text-[#0e2344]">{{ point }}</p>
+              <p class="text-[1.05rem] font-semibold leading-7 text-[#0e2344]">{{ point }}</p>
             </article>
           </div>
         </div>
@@ -73,7 +73,7 @@
           </NuxtLink>
         </div>
         <div v-else class="mt-10 brand-soft-panel p-20 text-center">
-          <h3 class="text-2xl font-bold text-[#0e2344]">Our services are being finalized</h3>
+          <h3 class="text-2xl font-semibold text-[#0e2344]">Our services are being finalized</h3>
           <p class="mt-4 text-slate-600">We are currently updating our service offerings. Please contact us directly for inquiries regarding our technology solutions.</p>
           <NuxtLink to="/#contact" class="btn-primary mt-8 inline-flex">Get in touch</NuxtLink>
         </div>
@@ -91,30 +91,29 @@
             >
             <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.68)_100%)]"></div>
             <div class="relative">
-
-            <h2 class="mt-6 text-[clamp(2.15rem,4vw,3.8rem)] font-bold leading-tight tracking-normal">
-              Depth across platforms, operations, and long-term digital support.
-            </h2>
-            <p class="mt-6 text-base leading-8 text-white/80">
-              Havor's capabilities extend beyond implementation into the practical details that make digital systems usable, maintainable, and aligned with organizational reality.
-            </p>
+              <h2 class="mt-6 text-[clamp(2.15rem,4vw,3.8rem)] font-semibold leading-tight tracking-normal">
+                Depth across platforms, operations, and long-term digital support.
+              </h2>
+              <p class="mt-6 text-base leading-8 text-white/80">
+                Havor's capabilities extend beyond implementation into the practical details that make digital systems usable, maintainable, and aligned with organizational reality.
+              </p>
             </div>
           </article>
 
-          <div class="grid gap-4 md:grid-cols-2">
+          <div class="grid gap-x-8 gap-y-7 md:grid-cols-2">
             <article
               v-for="capability in servicesPage.capabilities.groups"
               :key="capability.title"
-            class="brand-panel p-5"
-            v-motion-fade-up
-          >
-              <h3 class="mt-2.5 brand-card-title">{{ capability.title }}</h3>
+              class="border-t border-[#dbe6f4] pt-5"
+              v-motion-fade-up
+            >
+              <h3 class="brand-card-title">{{ capability.title }}</h3>
               <p class="mt-2.5 brand-card-copy">{{ capability.description }}</p>
               <div class="mt-5 flex flex-wrap gap-2">
                 <span
                   v-for="tag in capability.tags"
                   :key="tag"
-                  class="rounded-full border border-[#d6e5fb] bg-[#f7fbff] px-3 py-2 text-xs font-bold uppercase tracking-normal text-[#31527d]"
+                  class="rounded-full border border-[#d6e5fb] bg-[#f7fbff] px-3 py-2 text-xs font-medium uppercase tracking-normal text-[#31527d]"
                 >
                   {{ tag }}
                 </span>

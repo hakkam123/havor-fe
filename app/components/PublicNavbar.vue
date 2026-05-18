@@ -14,8 +14,8 @@
             <img src="/logo-havor.svg" alt="PT Havor SMART Digital" class="h-10 w-10 rounded-full object-cover">
           </span>
           <div class="hidden sm:block">
-            <p class="text-sm font-bold uppercase tracking-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-950' : 'text-white'">Havor</p>
-            <p class="text-xs font-semibold transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-500' : 'text-white/80'">Smarta Digital</p>
+            <p class="text-sm font-semibold uppercase tracking-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-950' : 'text-white'">Havor</p>
+            <p class="text-xs font-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-500' : 'text-white/80'">Smarta Digital</p>
           </div>
         </NuxtLink>
 
@@ -34,18 +34,18 @@
         <div class="hidden items-center gap-3 lg:flex">
           <button
             type="button"
-            class="inline-flex items-center justify-center px-1 py-2 text-sm font-bold uppercase transition-colors duration-300 ease-out"
-            :class="isPastHero ? 'text-slate-800 hover:text-slate-950' : 'text-white hover:text-white/80'"
+            class="inline-flex items-center justify-center gap-2 px-1 py-2 text-sm font-medium uppercase transition-all duration-300 ease-out hover:font-semibold"
+            :class="isPastHero ? 'text-slate-700 hover:text-slate-950' : 'text-white/90 hover:text-white'"
             aria-label="Switch language"
             @click="toggleLocale"
           >
-            <span aria-hidden="true">{{ locale === 'en' ? '🇮🇩' : '🇬🇧' }}</span>
+            <Globe2 class="h-4 w-4" />
             {{ locale === 'en' ? 'ID' : 'EN' }}
           </button>
           <NuxtLink
             to="/#contact"
-            class="inline-flex items-center justify-center px-1 py-2 text-sm font-bold transition-colors duration-300 ease-out"
-            :class="isPastHero ? 'text-slate-800 hover:text-slate-950' : 'text-white hover:text-white/80'"
+            class="inline-flex items-center justify-center px-1 py-2 text-sm font-medium transition-all duration-300 ease-out hover:font-semibold"
+            :class="isPastHero ? 'text-slate-700 hover:text-slate-950' : 'text-white/90 hover:text-white'"
           >
             {{ t('nav.contact') }}
           </NuxtLink>
@@ -75,15 +75,15 @@
               :key="item.to"
               :to="item.to"
               class="block rounded-lg px-4 py-3 text-sm transition-all duration-300 ease-out"
-            :class="mobileNavLinkClass(item.to)"
-            @click="isOpen = false"
-          >
+              :class="mobileNavLinkClass(item.to)"
+              @click="isOpen = false"
+            >
               {{ t(item.labelKey) }}
             </NuxtLink>
           </nav>
           <button
             type="button"
-            class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-bold transition-all duration-300 ease-out"
+            class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition-all duration-300 ease-out"
             :class="isPastHero ? 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50' : 'border-white/25 bg-white/10 text-white hover:bg-white/15'"
             aria-label="Switch language"
             @click="toggleLocale"
@@ -93,7 +93,7 @@
           </button>
           <NuxtLink
             to="/#contact"
-            class="mt-3 inline-flex w-full items-center justify-center rounded-full border px-5 py-3 text-sm font-bold transition-all duration-300 ease-out"
+            class="mt-3 inline-flex w-full items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition-all duration-300 ease-out"
             :class="isPastHero ? 'border-slate-950 bg-slate-950 text-white hover:border-slate-800 hover:bg-slate-800' : 'border-white/30 bg-white/10 text-white hover:border-white/50 hover:bg-white/15'"
             @click="isOpen = false"
           >
@@ -131,25 +131,25 @@ const isActive = (path) => {
 const navLinkClass = (path) => {
   if (isPastHero.value) {
     return isActive(path)
-      ? 'font-bold text-slate-950'
-      : 'font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-950'
+      ? 'font-semibold text-slate-950'
+      : 'font-normal text-slate-700 hover:font-semibold hover:text-slate-950'
   }
 
   return isActive(path)
-    ? 'font-bold text-white'
-    : 'font-semibold text-white/80 hover:bg-white/10 hover:text-white'
+    ? 'font-semibold text-white'
+    : 'font-normal text-white/80 hover:font-semibold hover:text-white'
 }
 
 const mobileNavLinkClass = (path) => {
   if (isPastHero.value) {
     return isActive(path)
-      ? 'font-bold text-slate-950'
-      : 'font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-950'
+      ? 'font-semibold text-slate-950'
+      : 'font-normal text-slate-700 hover:font-semibold hover:text-slate-950'
   }
 
   return isActive(path)
-    ? 'font-bold text-white'
-    : 'font-semibold text-white/80 hover:bg-white/10 hover:text-white'
+    ? 'font-semibold text-white'
+    : 'font-normal text-white/80 hover:font-semibold hover:text-white'
 }
 
 const handleScroll = () => {

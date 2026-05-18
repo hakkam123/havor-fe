@@ -24,7 +24,7 @@
       <p class="text-sm leading-7 text-slate-500 line-clamp-3">
         {{ summary }}
       </p>
-      <div class="flex items-center gap-2 text-sm font-semibold text-[var(--marketing-primary)]">
+      <div class="flex items-center gap-2 text-sm font-medium text-[var(--marketing-primary)]">
         <span>{{ ctaLabel }}</span>
         <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
       </div>

@@ -12,10 +12,10 @@
 
     <div class="marketing-container relative flex min-h-screen items-end py-14">
       <div class="max-w-3xl pb-10 pt-32">
-        <p v-if="kicker" class="inline-flex rounded-lg border border-white/18 bg-white/10 px-3 py-1.5 text-[0.7rem] font-bold uppercase tracking-normal text-white/82">
+        <p v-if="kicker" class="inline-flex rounded-lg border border-white/18 bg-white/10 px-3 py-1.5 text-[0.7rem] font-medium uppercase tracking-normal text-white/82">
           {{ kicker }}
         </p>
-        <h1 class="mt-6 text-5xl font-bold leading-tight tracking-normal text-white sm:text-6xl lg:text-7xl">
+        <h1 class="mt-6 text-5xl font-semibold leading-tight tracking-normal text-white sm:text-6xl lg:text-7xl">
           {{ title }}
         </h1>
         <p class="mt-6 max-w-2xl text-base leading-8 text-white/82 sm:text-lg">
