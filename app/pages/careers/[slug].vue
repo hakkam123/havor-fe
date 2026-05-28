@@ -111,11 +111,14 @@ definePageMeta({
 
 const route = useRoute()
 const { careers, error, fetchCareers, getCareerBySlug, isLoading } = useCareers()
+const { fetchBannerPage, useBannerPage } = useBanners()
 const slug = computed(() => String(route.params.slug || ''))
-const heroImage = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80'
+const defaultHeroImage = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80'
+const careersBanner = useBannerPage('careers')
+const heroImage = computed(() => careersBanner.value.media_url || defaultHeroImage)
 
 onMounted(async () => {
-  await fetchCareers()
+  await Promise.allSettled([fetchCareers(), fetchBannerPage('careers')])
 
   if (!error.value && !careerRole.value) {
     showError({
@@ -139,6 +142,7 @@ const applyLink = computed(() => `mailto:careers@havor.com?subject=${encodeURICo
 usePageSeo({
   title: computed(() => careerRole.value ? `${careerRole.value.job_title} | Havor Smarta Digital` : 'Career | Havor Smarta Digital'),
   description: computed(() => careerRole.value ? careerRole.value.excerpt : 'Explore career opportunities at Havor Smarta Digital.'),
-  path: computed(() => `/careers/${slug.value}`)
+  path: computed(() => `/careers/${slug.value}`),
+  image: computed(() => careerRole.value?.thumbnail || heroImage.value)
 })
 </script>

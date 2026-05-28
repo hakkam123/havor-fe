@@ -6,11 +6,20 @@ export const useApi = () => {
     if (!path) return ''
     if (/^(https?:|data:|blob:)/i.test(path)) return path
 
-    const apiUrl = new URL(config.public.apiBase)
-    const assetBasePath = apiUrl.pathname.replace(/\/api\/?$/, '')
     const normalizedPath = path.startsWith('/') ? path : `/${path}`
+    const apiBase = String(config.public.apiBase || '')
 
-    return `${apiUrl.origin}${assetBasePath}${normalizedPath}`
+    if (/^https?:/i.test(apiBase)) {
+      const apiUrl = new URL(apiBase)
+      const assetBasePath = apiUrl.pathname.replace(/\/api\/?$/, '')
+
+      return `${apiUrl.origin}${assetBasePath}${normalizedPath}`
+    }
+
+    const normalizedApiBase = apiBase.startsWith('/') ? apiBase : `/${apiBase}`
+    const assetBasePath = normalizedApiBase.replace(/\/api\/?$/, '')
+
+    return `${assetBasePath}${normalizedPath}`
   }
 
   const withAuthHeader = (headers?: HeadersInit, accessToken?: string | null) => {

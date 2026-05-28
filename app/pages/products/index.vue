@@ -1,9 +1,9 @@
 <template>
   <div class="bg-white">
     <CorporatePageHero
-      title="Digital Products"
-      subtitle="Ready-to-adapt product packages and implementation starters managed from the Havor dashboard."
-      eyebrow="Products"
+      :title="productsBanner.title || 'Digital Products'"
+      :subtitle="productsBanner.subtitle || 'Ready-to-adapt product packages and implementation starters managed from the Havor dashboard.'"
+      kicker="Products"
       :image="heroImage"
       image-alt="Havor digital product workspace"
     />
@@ -57,7 +57,7 @@
     <PublicImageCta
       title="Need a Custom Digital Product?"
       copy="Discuss how Havor can adapt a product package into a website, dashboard, CMS, or business system that fits your workflow."
-      :image="ctaImage"
+      :image="heroImage"
       image-alt="Digital product consultation"
       action-label="Contact Us"
       href="mailto:bisnis@havorsmartadigital.com?subject=Digital%20Product%20Consultation"
@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
 definePageMeta({ layout: 'public' })
 
@@ -77,9 +77,14 @@ usePageSeo({
 })
 
 const { products, isLoading, fetchProducts } = useProducts()
-const heroImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1800&q=80'
-const ctaImage = 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80'
+const { fetchBannerPage, useBannerPage } = useBanners()
+const productsBanner = useBannerPage('products')
+const defaultHeroImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1800&q=80'
 const fallbackImage = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'
+const heroImage = computed(() => productsBanner.value.media_url || defaultHeroImage)
 
-onMounted(fetchProducts)
+onMounted(() => {
+  fetchProducts()
+  fetchBannerPage('products')
+})
 </script>

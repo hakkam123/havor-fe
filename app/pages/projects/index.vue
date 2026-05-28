@@ -1,9 +1,9 @@
 <template>
   <div class="overflow-hidden">
     <CorporatePageHero
-      :title="projectsPage.hero.title"
-      :subtitle="projectsPage.hero.subtitle"
-      :image="projectsPage.hero.image"
+      :title="projectsBanner.title || projectsPage.hero.title"
+      :subtitle="projectsBanner.subtitle || projectsPage.hero.subtitle"
+      :image="projectsHeroImage"
       hero-size="half"
     >
       
@@ -107,7 +107,7 @@
     <PublicImageCta
       :title="projectsPage.cta.title"
       :copy="projectsPage.cta.copy"
-      :image="projectsPage.hero.image"
+      :image="projectsHeroImage"
       image-alt="Project consultation"
       action-label="Discuss Your Project Idea"
       to="/#contact"
@@ -128,6 +128,9 @@ usePageSeo({
 
 const { projectsPage } = useCorporateContent()
 const { works, fetchWorks } = useWorks()
+const { fetchBannerPage, useBannerPage } = useBanners()
+const projectsBanner = useBannerPage('projects')
+const projectsHeroImage = computed(() => projectsBanner.value.media_url || projectsPage.hero.image)
 
 const selectedCategory = ref('All categories')
 const searchQuery = ref('')
@@ -135,6 +138,7 @@ const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').
 
 onMounted(() => {
   fetchWorks()
+  fetchBannerPage('projects')
 })
 
 const categoryOptions = computed(() => [

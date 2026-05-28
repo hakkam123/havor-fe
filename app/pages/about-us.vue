@@ -1,9 +1,9 @@
 <template>
   <div class="overflow-hidden bg-white">
     <CorporatePageHero
-      :title="aboutPage.hero.title"
-      :subtitle="aboutPage.hero.subtitle"
-      :image="aboutPage.hero.image"
+      :title="aboutBanner.title || aboutPage.hero.title"
+      :subtitle="aboutBanner.subtitle || aboutPage.hero.subtitle"
+      :image="aboutHeroImage"
       hero-size="half"
       image-label="Company Identity"
       image-title="A technology partner shaped by disciplined collaboration and long-term commitment."
@@ -49,7 +49,7 @@
         <div class="grid gap-6 lg:grid-cols-[0.96fr_1.04fr]">
           <article class="relative isolate overflow-hidden rounded-lg px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
             <img
-              :src="aboutPage.hero.image"
+              :src="aboutHeroImage"
               alt="Havor vision"
               class="absolute inset-0 h-full w-full object-cover"
             >
@@ -88,6 +88,8 @@
 </template>
 
 <script setup>
+import { computed, onMounted } from 'vue'
+
 definePageMeta({
   layout: 'public'
 })
@@ -99,4 +101,11 @@ usePageSeo({
 })
 
 const { company, aboutPage } = useCorporateContent()
+const { fetchBannerPage, useBannerPage } = useBanners()
+const aboutBanner = useBannerPage('about-us', 'about')
+const aboutHeroImage = computed(() => aboutBanner.value.media_url || aboutPage.hero.image)
+
+onMounted(() => {
+  fetchBannerPage('about-us')
+})
 </script>

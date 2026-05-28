@@ -1,9 +1,9 @@
 <template>
   <div class="overflow-hidden">
     <CorporatePageHero
-      :title="careersPage.hero.title"
-      :subtitle="careersPage.hero.subtitle"
-      :image="careersPage.hero.image"
+      :title="careersBanner.title || careersPage.hero.title"
+      :subtitle="careersBanner.subtitle || careersPage.hero.subtitle"
+      :image="careersHeroImage"
       hero-size="half"
       image-label="Team Culture"
       image-title="A collaborative environment for people who want to build meaningful digital work."
@@ -57,7 +57,7 @@
         <div class="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
           <article class="relative isolate overflow-hidden rounded-lg px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
             <img
-              :src="careersPage.hero.image"
+              :src="careersHeroImage"
               alt="Havor team culture"
               class="absolute inset-0 h-full w-full object-cover"
             >
@@ -128,7 +128,7 @@
     <PublicImageCta
       :title="careersPage.cta.title"
       :copy="careersPage.cta.copy"
-      :image="careersPage.hero.image"
+      :image="careersHeroImage"
       image-alt="Career inquiry"
       action-label="Connect With Us"
       :href="`mailto:${company.email}?subject=${encodeURIComponent('Career Inquiry')}`"
@@ -137,7 +137,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
 definePageMeta({
   layout: 'public'
@@ -151,8 +151,12 @@ usePageSeo({
 
 const { company, careersPage } = useCorporateContent()
 const { careers, fetchCareers } = useCareers()
+const { fetchBannerPage, useBannerPage } = useBanners()
+const careersBanner = useBannerPage('careers')
+const careersHeroImage = computed(() => careersBanner.value.media_url || careersPage.hero.image)
 
 onMounted(() => {
   fetchCareers()
+  fetchBannerPage('careers')
 })
 </script>

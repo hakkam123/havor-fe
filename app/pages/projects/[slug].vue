@@ -74,12 +74,15 @@ definePageMeta({
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
-const fallbackImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80'
+const defaultFallbackImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80'
 const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').trim()
 
 const { works, fetchWorks, error } = useWorks()
+const { fetchBannerPage, useBannerPage } = useBanners()
+const projectsBanner = useBannerPage('projects')
+const fallbackImage = computed(() => projectsBanner.value.media_url || defaultFallbackImage)
 onMounted(async () => {
-  await fetchWorks()
+  await Promise.allSettled([fetchWorks(), fetchBannerPage('projects')])
 
   if (!error.value && !project.value) {
     showError({
@@ -96,7 +99,7 @@ usePageSeo({
   title: computed(() => project.value ? `${project.value.title} | Projects | PT Havor SMART Digital` : 'Project Detail | PT Havor SMART Digital'),
   description: computed(() => stripHtml(project.value?.description) || 'Explore PT Havor SMART Digital project details and delivery outcomes.'),
   path: computed(() => `/projects/${slug.value}`),
-  image: computed(() => project.value?.image_url || fallbackImage),
+  image: computed(() => project.value?.image_url || fallbackImage.value),
   type: 'article'
 })
 </script>

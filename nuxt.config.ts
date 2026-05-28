@@ -3,6 +3,10 @@ export default defineNuxtConfig({
   ssr: false, // Disable SSR to avoid custom directive ('v-motion') errors and because this is an administrative dashboard.
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  routeRules: {
+    '/havor/api/**': { proxy: 'https://tplnext.com/havor/api/**' },
+    '/havor/uploads/**': { proxy: 'https://tplnext.com/havor/uploads/**' }
+  },
   app: {
     pageTransition: {
       name: 'page-flow',
@@ -30,7 +34,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/tailwind.css'],
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://tplnext.com/havor/api',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '/havor/api',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
     }
   }

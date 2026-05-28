@@ -1,0 +1,30 @@
+[
+  {
+    "route": "/",
+    "src": "http://127.0.0.1:3010/havor/uploads/banners/media_url-1779970720910-191567264.jpg"
+  },
+  {
+    "route": "/about-us",
+    "src": "http://127.0.0.1:3010/havor/uploads/banners/media_url-1779970721210-794511096.jpg"
+  },
+  {
+    "route": "/services",
+    "src": "http://127.0.0.1:3010/havor/uploads/banners/media_url-1779970721526-338350138.jpg"
+  },
+  {
+    "route": "/projects",
+    "src": "http://127.0.0.1:3010/havor/uploads/banners/media_url-1779970721954-694129845.jpg"
+  },
+  {
+    "route": "/media-news",
+    "src": "http://127.0.0.1:3010/havor/uploads/banners/media_url-1779970722296-287127576.jpg"
+  },
+  {
+    "route": "/careers",
+    "src": "http://127.0.0.1:3010/havor/uploads/banners/media_url-1779970722660-536763125.jpg"
+  },
+  {
+    "route": "/products",
+    "src": "http://127.0.0.1:3010/havor/uploads/banners/media_url-1779970723088-906617184.jpg"
+  }
+]

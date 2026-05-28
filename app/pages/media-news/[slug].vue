@@ -78,11 +78,14 @@ definePageMeta({
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
-const fallbackImage = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80'
+const defaultFallbackImage = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80'
 
 const { news, fetchNews, error } = useNews()
+const { fetchBannerPage, useBannerPage } = useBanners()
+const mediaBanner = useBannerPage('media-news', 'news')
+const fallbackImage = computed(() => mediaBanner.value.media_url || defaultFallbackImage)
 onMounted(async () => {
-  await fetchNews()
+  await Promise.allSettled([fetchNews(), fetchBannerPage('media-news')])
 
   if (!error.value && !article.value) {
     showError({
@@ -99,7 +102,7 @@ usePageSeo({
   title: computed(() => article.value ? `${article.value.title} | Media & News | PT Havor SMART Digital` : 'Media & News Detail | PT Havor SMART Digital'),
   description: computed(() => article.value?.excerpt || 'Read updates and insight articles from PT Havor SMART Digital.'),
   path: computed(() => `/media-news/${slug.value}`),
-  image: computed(() => article.value?.image_url || fallbackImage),
+  image: computed(() => article.value?.image_url || fallbackImage.value),
   type: 'article'
 })
 </script>

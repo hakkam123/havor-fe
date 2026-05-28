@@ -1,9 +1,9 @@
 <template>
   <div class="overflow-hidden">
     <CorporatePageHero
-      :title="servicesPage.hero.title"
-      :subtitle="servicesPage.hero.subtitle"
-      :image="servicesPage.hero.image"
+      :title="servicesBanner.title || servicesPage.hero.title"
+      :subtitle="servicesBanner.subtitle || servicesPage.hero.subtitle"
+      :image="servicesHeroImage"
       hero-size="half"
       image-label="Digital Expertise"
       image-title="Technology implementation shaped for enterprise clarity, scale, and operational fit."
@@ -85,7 +85,7 @@
         <div class="grid gap-8 lg:grid-cols-[0.82fr_1.18fr]">
           <article class="relative isolate overflow-hidden rounded-lg px-8 py-8 text-white shadow-[0_30px_90px_rgba(18,56,122,0.2)] sm:px-10 sm:py-10">
             <img
-              :src="servicesPage.hero.image"
+              :src="servicesHeroImage"
               alt="Havor service capability"
               class="absolute inset-0 h-full w-full object-cover"
             >
@@ -127,7 +127,7 @@
     <PublicImageCta
       :title="servicesPage.cta.title"
       :copy="servicesPage.cta.copy"
-      :image="servicesPage.hero.image"
+      :image="servicesHeroImage"
       image-alt="Service consultation"
       :action-label="servicesPage.cta.button"
       to="/#contact"
@@ -136,7 +136,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 
 definePageMeta({
   layout: 'public'
@@ -150,8 +150,12 @@ usePageSeo({
 
 const { servicesPage } = useCorporateContent()
 const { expertise, fetchExpertise } = useExpertise()
+const { fetchBannerPage, useBannerPage } = useBanners()
+const servicesBanner = useBannerPage('services')
+const servicesHeroImage = computed(() => servicesBanner.value.media_url || servicesPage.hero.image)
 
 onMounted(() => {
   fetchExpertise()
+  fetchBannerPage('services')
 })
 </script>

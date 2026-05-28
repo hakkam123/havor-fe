@@ -5,7 +5,7 @@
       :subtitle="t('home.hero.subtitle')"
       :primary-cta="t('home.hero.primaryCta')"
       :secondary-cta="t('home.hero.secondaryCta')"
-      :slides="homePage.hero.slides"
+      :slides="heroSlides"
     />
 
     <section class="brand-section bg-white">
@@ -13,7 +13,7 @@
         <div class="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div class="relative overflow-hidden rounded-lg">
             <img
-              :src="homePage.hero.slides[3].image"
+              :src="featuredImage"
               alt="Integrated digital platform"
               class="h-[22rem] w-full object-cover sm:h-[30rem]"
             >
@@ -56,7 +56,7 @@
 
     <section id="about" class="relative isolate overflow-hidden py-24 text-white sm:py-28">
       <img
-        :src="homePage.hero.slides[1].image"
+        :src="aboutImage"
         alt="About Havor Smarta Digital"
         class="absolute inset-0 h-full w-full object-cover"
       >
@@ -365,7 +365,7 @@
       anchor-id="contact"
       :title="t('home.cta.title')"
       :copy="t('home.cta.copy')"
-      :image="homePage.hero.slides[4].image"
+      :image="ctaImage"
       image-alt="Havor consultation"
       :action-label="t('home.cta.button')"
       :href="`mailto:${company.email}?subject=${encodeURIComponent('Contact PT Havor SMART Digital')}`"
@@ -401,10 +401,26 @@ const { expertise, isLoading: isLoadingExpertise, fetchExpertise } = useExpertis
 const { works, isLoading: isLoadingWorks, fetchWorks } = useWorks()
 const { news, isLoading: isLoadingNews, fetchNews } = useNews()
 const { clients, isLoading: isLoadingClients, fetchClients } = useClients()
+const { fetchBanners, findBannerByPage } = useBanners()
 
 const defaultServiceImage = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'
 const defaultProjectImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80'
 const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').trim()
+const homeHeroBannerPages = ['home', 'services', 'projects', 'media-news', 'careers']
+const bannerImage = (pageName: string, fallback: string) => {
+  const banner = findBannerByPage(pageName)
+  return banner?.media_url || fallback
+}
+
+const heroSlides = computed(() =>
+  homePage.hero.slides.map((slide, index) => ({
+    ...slide,
+    image: bannerImage(homeHeroBannerPages[index] || 'home', slide.image)
+  }))
+)
+const featuredImage = computed(() => bannerImage('services', homePage.hero.slides[3].image))
+const aboutImage = computed(() => bannerImage('about-us', homePage.hero.slides[1].image))
+const ctaImage = computed(() => bannerImage('careers', homePage.hero.slides[4].image))
 
 const aboutPoints = computed(() => [
   t('home.about.pointOne'),
@@ -456,5 +472,6 @@ onMounted(() => {
   fetchWorks()
   fetchNews()
   fetchClients()
+  fetchBanners()
 })
 </script>

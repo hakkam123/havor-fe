@@ -1,0 +1,55 @@
+{
+  "apiBase": "https://tplnext.com/havor/api",
+  "uploadedAt": "2026-05-28T12:18:44.817Z",
+  "banners": [
+    {
+      "page_name": "home",
+      "action": "updated",
+      "id": 1,
+      "local_file": "D:\\Hakkam\\Kuliah\\Projects\\havor-frontend\\qa-evidence-after-fix\\banner-downloads\\home.jpg",
+      "media_url": "/uploads/banners/media_url-1779970720910-191567264.jpg"
+    },
+    {
+      "page_name": "about-us",
+      "action": "created",
+      "id": 9,
+      "local_file": "D:\\Hakkam\\Kuliah\\Projects\\havor-frontend\\qa-evidence-after-fix\\banner-downloads\\about-us.jpg",
+      "media_url": "/uploads/banners/media_url-1779970721210-794511096.jpg"
+    },
+    {
+      "page_name": "services",
+      "action": "updated",
+      "id": 4,
+      "local_file": "D:\\Hakkam\\Kuliah\\Projects\\havor-frontend\\qa-evidence-after-fix\\banner-downloads\\services.jpg",
+      "media_url": "/uploads/banners/media_url-1779970721526-338350138.jpg"
+    },
+    {
+      "page_name": "projects",
+      "action": "updated",
+      "id": 5,
+      "local_file": "D:\\Hakkam\\Kuliah\\Projects\\havor-frontend\\qa-evidence-after-fix\\banner-downloads\\projects.jpg",
+      "media_url": "/uploads/banners/media_url-1779970721954-694129845.jpg"
+    },
+    {
+      "page_name": "media-news",
+      "action": "updated",
+      "id": 6,
+      "local_file": "D:\\Hakkam\\Kuliah\\Projects\\havor-frontend\\qa-evidence-after-fix\\banner-downloads\\media-news.jpg",
+      "media_url": "/uploads/banners/media_url-1779970722296-287127576.jpg"
+    },
+    {
+      "page_name": "careers",
+      "action": "updated",
+      "id": 7,
+      "local_file": "D:\\Hakkam\\Kuliah\\Projects\\havor-frontend\\qa-evidence-after-fix\\banner-downloads\\careers.jpg",
+      "media_url": "/uploads/banners/media_url-1779970722660-536763125.jpg"
+    },
+    {
+      "page_name": "products",
+      "action": "created",
+      "id": 10,
+      "local_file": "D:\\Hakkam\\Kuliah\\Projects\\havor-frontend\\qa-evidence-after-fix\\banner-downloads\\products.jpg",
+      "media_url": "/uploads/banners/media_url-1779970723088-906617184.jpg"
+    }
+  ]
+}

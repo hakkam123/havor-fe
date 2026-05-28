@@ -1,9 +1,9 @@
 <template>
   <div class="overflow-hidden">
     <CorporatePageHero
-      :title="mediaPage.hero.title"
-      :subtitle="mediaPage.hero.subtitle"
-      :image="mediaPage.hero.image"
+      :title="mediaBanner.title || mediaPage.hero.title"
+      :subtitle="mediaBanner.subtitle || mediaPage.hero.subtitle"
+      :image="mediaHeroImage"
       hero-size="half"
     >
     </CorporatePageHero>
@@ -139,7 +139,7 @@
     <PublicImageCta
       :title="mediaPage.cta.title"
       :copy="mediaPage.cta.copy"
-      :image="mediaPage.hero.image"
+      :image="mediaHeroImage"
       image-alt="Havor media updates"
       action-label="Stay Updated"
       :href="`mailto:${company.email}?subject=${encodeURIComponent('Stay Updated With Havor')}`"
@@ -160,9 +160,13 @@ usePageSeo({
 
 const { company, mediaPage } = useCorporateContent()
 const { news, fetchNews } = useNews()
+const { fetchBannerPage, useBannerPage } = useBanners()
+const mediaBanner = useBannerPage('media-news', 'news')
+const mediaHeroImage = computed(() => mediaBanner.value.media_url || mediaPage.hero.image)
 
 onMounted(() => {
   fetchNews()
+  fetchBannerPage('media-news')
 })
 
 const featuredPressRelease = computed(() => {
