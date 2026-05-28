@@ -31,7 +31,7 @@
           <article class="border-l-2 border-[#1f5dcc] pl-5" v-motion-fade-up>
             <p class="marketing-kicker">Overview</p>
             <h2 class="mt-4 font-display text-3xl font-semibold text-slate-900">{{ service.name }}</h2>
-            <p class="mt-4 text-sm leading-8 text-slate-500">{{ service.description }}</p>
+            <p class="mt-4 text-sm leading-8 text-slate-500">{{ stripHtml(service.description) }}</p>
 
             <div class="mt-8 grid gap-6 border-t border-[#dbe6f4] pt-6 sm:grid-cols-2">
               <div>
@@ -90,16 +90,24 @@ const { fetchBannerPage, useBannerPage } = useBanners()
 const { servicesPage } = useCorporateContent()
 const slug = computed(() => String(route.params.slug || ''))
 const defaultHeroImage = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80'
+const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').trim()
 
 onMounted(async () => {
   await Promise.allSettled([fetchExpertise(), fetchBannerPage('services')])
+
+  if (!error.value && !service.value) {
+    showError({
+      statusCode: 404,
+      statusMessage: 'Service not found'
+    })
+  }
 })
 
 const service = computed(() => expertise.value.find((item) => item.slug === slug.value) || null)
 const pageBanner = useBannerPage('services', 'service')
 const heroTitle = computed(() => service.value?.name || 'Service Details')
 const seoTitle = computed(() => service.value?.name ? `${service.value.name} | Services | Havor Smarta Digital` : 'Service Details | Havor Smarta Digital')
-const pageDescription = computed(() => service.value?.description || 'Explore Havor Smarta Digital service details and capability information.')
+const pageDescription = computed(() => stripHtml(service.value?.description) || 'Explore Havor Smarta Digital service details and capability information.')
 const heroImage = computed(() => service.value?.icon_url || defaultHeroImage)
 
 usePageSeo({

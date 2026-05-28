@@ -70,10 +70,10 @@
               <td class="max-w-[320px] truncate text-slate-500">{{ stripHtml(item.description) || '-' }}</td>
               <td>
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="openModal(item)" class="admin-icon-btn">
+                  <button @click="openModal(item)" class="admin-icon-btn" :aria-label="`Edit ${item.title}`">
                     <Edit2 class="h-4 w-4" />
                   </button>
-                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
+                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" :aria-label="`Delete ${item.title}`">
                     <Trash2 class="h-4 w-4" />
                   </button>
                 </div>
@@ -95,11 +95,15 @@
       :can-close="!isSaving"
     >
       <form @submit.prevent="saveWork" class="space-y-6">
+        <div v-if="formError" class="rounded-[12px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {{ formError }}
+        </div>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div class="space-y-4">
             <div>
               <label class="mb-2 block text-sm font-medium text-slate-600">Title <span class="text-rose-500">*</span></label>
-              <input v-model="form.title" type="text" required class="admin-input" placeholder="Project title">
+              <input v-model="form.title" type="text" required class="admin-input" placeholder="Project title" :aria-invalid="Boolean(fieldErrors.title)">
+              <p v-if="fieldErrors.title" class="mt-1 text-sm text-rose-600">{{ fieldErrors.title }}</p>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -108,7 +112,8 @@
               </div>
               <div>
                 <label class="mb-2 block text-sm font-medium text-slate-600">Year</label>
-                <input v-model="form.year" type="number" class="admin-input" placeholder="2026">
+                <input v-model="form.year" type="number" class="admin-input" placeholder="2026" :aria-invalid="Boolean(fieldErrors.year)">
+                <p v-if="fieldErrors.year" class="mt-1 text-sm text-rose-600">{{ fieldErrors.year }}</p>
               </div>
             </div>
             <div>
@@ -129,10 +134,12 @@
                 <Upload class="mx-auto h-8 w-8 text-slate-400" />
                 <p class="mt-3 text-sm text-slate-500">Click or drag image here</p>
               </div>
-              <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*" @change="handleImageUpload">
+              <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/jpeg,image/png,image/webp" aria-label="Upload work image" @change="handleImageUpload">
             </div>
             <p v-if="form.imageFileName" class="mt-2 text-xs text-slate-500">{{ form.imageFileName }}</p>
+            <p v-if="fieldErrors.image_url" class="mt-1 text-sm text-rose-600">{{ fieldErrors.image_url }}</p>
           </div>
+          <p v-if="fieldErrors.description" class="mt-1 text-sm text-rose-600">{{ fieldErrors.description }}</p>
         </div>
 
         <div>
@@ -174,6 +181,8 @@ const { categories, fetchCategories } = useCategories()
 const isModalOpen = ref(false)
 const searchQuery = ref('')
 const isSaving = ref(false)
+const formError = ref('')
+const fieldErrors = ref({})
 const successState = ref({
   open: false,
   title: '',
@@ -255,6 +264,19 @@ const handleImageUpload = (e) => {
 }
 
 const saveWork = async () => {
+  fieldErrors.value = {}
+  formError.value = ''
+  const errors = {}
+  if (!form.value.title?.trim()) errors.title = 'Project title is required.'
+  if (!stripHtml(form.value.description).trim()) errors.description = 'Description is required.'
+  if (form.value.year && (Number(form.value.year) < 1900 || Number(form.value.year) > 2100)) errors.year = 'Year must be between 1900 and 2100.'
+  if (!isSupportedImageFile(form.value.imageFile)) errors.image_url = 'Image must be a JPG, PNG, or WEBP file.'
+  if (Object.keys(errors).length) {
+    fieldErrors.value = errors
+    formError.value = 'Please fix the highlighted fields before saving.'
+    return
+  }
+
   isSaving.value = true
 
   try {
@@ -274,6 +296,9 @@ const saveWork = async () => {
         ? 'The work entry has been updated successfully.'
         : 'The new work entry has been added successfully.'
     }
+  } catch (error) {
+    fieldErrors.value = getApiFieldErrors(error)
+    formError.value = getApiErrorMessage(error)
   } finally {
     isSaving.value = false
   }

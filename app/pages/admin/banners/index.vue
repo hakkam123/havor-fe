@@ -48,10 +48,10 @@
               {{ banner.media_type }}
             </div>
             <div class="flex items-center gap-2">
-              <button @click="openModal(banner)" class="admin-icon-btn">
+              <button @click="openModal(banner)" class="admin-icon-btn" :aria-label="`Edit ${banner.page_name} banner`">
                 <Edit2 class="h-4 w-4" />
               </button>
-              <button @click="handleDelete(banner.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
+              <button @click="handleDelete(banner.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" :aria-label="`Delete ${banner.page_name} banner`">
                 <Trash2 class="h-4 w-4" />
               </button>
             </div>
@@ -68,9 +68,13 @@
       :can-close="!isSaving"
     >
       <form @submit.prevent="saveBanner" class="space-y-4">
+        <div v-if="formError" class="rounded-[12px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {{ formError }}
+        </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Page Name</label>
-          <input v-model="form.page_name" type="text" class="admin-input" placeholder="home">
+          <input v-model="form.page_name" type="text" class="admin-input" placeholder="home" :aria-invalid="Boolean(fieldErrors.page_name)">
+          <p v-if="fieldErrors.page_name" class="mt-1 text-sm text-rose-600">{{ fieldErrors.page_name }}</p>
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Title</label>
@@ -89,8 +93,9 @@
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Upload File</label>
-          <input type="file" accept="image/*,video/*" class="admin-input py-2" @change="handleMediaUpload">
+          <input type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/x-msvideo" class="admin-input py-2" aria-label="Upload banner media" @change="handleMediaUpload">
           <p v-if="form.mediaFileName" class="mt-2 text-xs text-slate-500">{{ form.mediaFileName }}</p>
+          <p v-if="fieldErrors.media_url" class="mt-1 text-sm text-rose-600">{{ fieldErrors.media_url }}</p>
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Or Existing Media URL</label>
@@ -121,6 +126,8 @@ import { BadgeInfo, Edit2, Trash2, Upload } from 'lucide-vue-next'
 const { banners, fetchBanners, createBanner, updateBanner, deleteBanner } = useBanners()
 const isModalOpen = ref(false)
 const isSaving = ref(false)
+const formError = ref('')
+const fieldErrors = ref({})
 const successState = ref({
   open: false,
   title: '',
@@ -182,7 +189,25 @@ const handleMediaUpload = (e) => {
   }
 }
 
+const isSupportedMediaFile = (file) => {
+  if (!file) return true
+  return ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/quicktime', 'video/x-msvideo'].includes(file.type)
+}
+
 const saveBanner = async () => {
+  formError.value = ''
+  fieldErrors.value = {}
+  const errors = {}
+  if (!form.value.page_name?.trim()) errors.page_name = 'Page name is required.'
+  if (!form.value.mediaFile && !form.value.media_url?.trim()) errors.media_url = 'Upload a media file or provide a media URL.'
+  if (!isSupportedMediaFile(form.value.mediaFile)) errors.media_url = 'Media must be JPG, PNG, WEBP, MP4, MOV, or AVI.'
+  if (form.value.media_url && !form.value.media_url.startsWith('/') && !isValidHttpUrl(form.value.media_url)) errors.media_url = 'Media URL must start with /uploads or use a valid http or https URL.'
+  if (Object.keys(errors).length) {
+    fieldErrors.value = errors
+    formError.value = 'Please fix the highlighted fields before saving.'
+    return
+  }
+
   isSaving.value = true
 
   try {
@@ -202,6 +227,9 @@ const saveBanner = async () => {
         ? 'The banner has been updated successfully.'
         : 'The new banner has been added successfully.'
     }
+  } catch (error) {
+    fieldErrors.value = getApiFieldErrors(error)
+    formError.value = getApiErrorMessage(error)
   } finally {
     isSaving.value = false
   }

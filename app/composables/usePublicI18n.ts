@@ -7,6 +7,7 @@ const messages = {
     nav: {
       about: 'About Us',
       services: 'Services',
+      products: 'Products',
       works: 'Works',
       careers: 'Careers',
       media: 'Media & News',
@@ -69,6 +70,12 @@ const messages = {
             description: 'E-commerce, LMS, dashboards, corporate websites, and apps.'
           }
         ]
+      },
+      clients: {
+        label: 'Trusted By',
+        title: 'Companies and teams that build with Havor',
+        intro: 'Client data is managed from the dashboard and displayed here as a public trust signal for the landing page.',
+        empty: 'Client information is not available yet.'
       },
       approach: {
         kicker: 'Delivery Approach',
@@ -183,6 +190,7 @@ const messages = {
     nav: {
       about: 'Tentang Kami',
       services: 'Layanan',
+      products: 'Produk',
       works: 'Project',
       careers: 'Karier',
       media: 'Media & Berita',
@@ -245,6 +253,12 @@ const messages = {
             description: 'E-commerce, LMS, dashboard, corporate website, dan aplikasi.'
           }
         ]
+      },
+      clients: {
+        label: 'Dipercaya Oleh',
+        title: 'Perusahaan dan tim yang membangun bersama Havor',
+        intro: 'Data client dikelola dari dashboard dan ditampilkan sebagai trust signal pada landing page.',
+        empty: 'Informasi client belum tersedia.'
       },
       approach: {
         kicker: 'Alur Delivery',

@@ -2,7 +2,7 @@
   <div class="overflow-hidden">
     <CorporatePageHero
       :title="project?.title || 'Project Detail'"
-      :subtitle="project?.description || 'Explore the objectives, delivery structure, and outcomes behind this implementation.'"
+      :subtitle="project ? stripHtml(project.description) : 'Explore the objectives, delivery structure, and outcomes behind this implementation.'"
       :image="project?.image_url || fallbackImage"
     >
       <template #actions>
@@ -24,7 +24,7 @@
               {{ project.title }}
             </h2>
             <p class="mt-5 text-base leading-8 text-slate-600">
-              {{ project.description }}
+              {{ stripHtml(project.description) }}
             </p>
           </article>
 
@@ -75,10 +75,18 @@ definePageMeta({
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
 const fallbackImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80'
+const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').trim()
 
-const { works, fetchWorks } = useWorks()
-onMounted(() => {
-  fetchWorks()
+const { works, fetchWorks, error } = useWorks()
+onMounted(async () => {
+  await fetchWorks()
+
+  if (!error.value && !project.value) {
+    showError({
+      statusCode: 404,
+      statusMessage: 'Project not found'
+    })
+  }
 })
 
 const project = computed(() => works.value.find((item) => item.slug === slug.value) || null)
@@ -86,7 +94,7 @@ const relatedProjects = computed(() => works.value.filter((item) => item.slug !=
 
 usePageSeo({
   title: computed(() => project.value ? `${project.value.title} | Projects | PT Havor SMART Digital` : 'Project Detail | PT Havor SMART Digital'),
-  description: computed(() => project.value?.description || 'Explore PT Havor SMART Digital project details and delivery outcomes.'),
+  description: computed(() => stripHtml(project.value?.description) || 'Explore PT Havor SMART Digital project details and delivery outcomes.'),
   path: computed(() => `/projects/${slug.value}`),
   image: computed(() => project.value?.image_url || fallbackImage),
   type: 'article'

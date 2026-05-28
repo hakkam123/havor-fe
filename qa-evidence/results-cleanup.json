@@ -1,0 +1,59 @@
+{
+  "phase": "cleanup",
+  "apiBase": "https://tplnext.com/havor/api",
+  "timestamp": "20260528070154",
+  "modules": {},
+  "validation": {},
+  "cleanup": {
+    "contact": {
+      "result": "PASS",
+      "status": 200
+    },
+    "news": {
+      "result": "PASS",
+      "status": 200
+    },
+    "career": {
+      "result": "PASS",
+      "status": 200
+    },
+    "product": {
+      "result": "PASS",
+      "status": 200
+    },
+    "work": {
+      "result": "PASS",
+      "status": 200
+    },
+    "service": {
+      "result": "PASS",
+      "status": 200
+    },
+    "client": {
+      "result": "PASS",
+      "status": 200
+    },
+    "banner": {
+      "result": "PASS",
+      "status": 200
+    },
+    "secondaryCategory": {
+      "result": "PASS",
+      "status": 200
+    },
+    "category": {
+      "result": "PASS",
+      "status": 200
+    },
+    "publicAbsence": {
+      "service": "PASS",
+      "work": "PASS",
+      "news": "PASS",
+      "career": "PASS",
+      "product": "PASS",
+      "client": "PASS",
+      "category": "PASS"
+    }
+  },
+  "notes": []
+}

@@ -1,0 +1,128 @@
+[
+  {
+    "moduleName": "banners",
+    "route": "/admin/banners",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out Banners Admin Havor MEDIA Hero B"
+  },
+  {
+    "moduleName": "categories",
+    "route": "/admin/categories",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out Categories Admin Havor TAXONOMY "
+  },
+  {
+    "moduleName": "clients",
+    "route": "/admin/clients",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out Clients Admin Havor TRUST SIGNAL"
+  },
+  {
+    "moduleName": "services",
+    "route": "/admin/expertises",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out Expertise Admin Havor CAPABILITI"
+  },
+  {
+    "moduleName": "works",
+    "route": "/admin/works",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out Works Admin Havor PORTFOLIO Work"
+  },
+  {
+    "moduleName": "news",
+    "route": "/admin/news",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out News Admin Havor EDITORIAL News "
+  },
+  {
+    "moduleName": "products",
+    "route": "/admin/products",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out Product Admin Havor CATALOG Prod"
+  },
+  {
+    "moduleName": "careers",
+    "route": "/admin/careers",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out Careers Admin Havor HIRING Caree"
+  },
+  {
+    "moduleName": "contact",
+    "route": "/admin/inbox",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out Inbox Admin Havor CONVERSATIONS "
+  },
+  {
+    "moduleName": "profile",
+    "route": "/admin/profile",
+    "file": "08-after-delete.png",
+    "title": "",
+    "hasExpected": true,
+    "has404": false,
+    "sample": "Havor CMS MAIN MENU Dashboard Product Works Career Message OTHER MENU Clients News Banners Expertise Categories WORKSPACE Campaign Settings Log Out Profile Admin Havor ACCOUNT Admi"
+  },
+  {
+    "moduleName": "services",
+    "route": "/services/qa-updated-service-20260528065019",
+    "file": "08-public-after-delete.png",
+    "title": "404 - Service not found | Nuxt",
+    "hasExpected": false,
+    "has404": true,
+    "sample": "404 Service not found Service not found Go back home"
+  },
+  {
+    "moduleName": "works",
+    "route": "/projects/qa-updated-work-20260528065019",
+    "file": "08-public-after-delete.png",
+    "title": "404 - Project not found | Nuxt",
+    "hasExpected": false,
+    "has404": true,
+    "sample": "404 Project not found Project not found Go back home"
+  },
+  {
+    "moduleName": "news",
+    "route": "/media-news/qa-updated-news-20260528065019",
+    "file": "08-public-after-delete.png",
+    "title": "404 - Article not found | Nuxt",
+    "hasExpected": false,
+    "has404": true,
+    "sample": "404 Article not found Article not found Go back home"
+  },
+  {
+    "moduleName": "careers",
+    "route": "/careers/qa-updated-career-20260528065019",
+    "file": "08-public-after-delete.png",
+    "title": "404 - Position not found | Nuxt",
+    "hasExpected": false,
+    "has404": true,
+    "sample": "404 Position not found Position not found Go back home"
+  }
+]

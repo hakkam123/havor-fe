@@ -1,0 +1,18 @@
+[
+  {
+    "route": "/media-news",
+    "file": "06-public-after-update.png",
+    "title": "Media & News | PT Havor SMART Digital",
+    "hasExpected": false,
+    "has404": false,
+    "sample": "HAVOR Smarta Digital About Us Services Works Careers Media & News ID Contact Media & News Company updates, industry perspectives, and thought leadership from PT Havor SMART Digital. Press Release Official announcements, "
+  },
+  {
+    "route": "/media-news/qa-updated-news-20260528065019",
+    "file": "06-detail-after-unpublish.png",
+    "title": "404 - Article not found | Nuxt",
+    "hasExpected": false,
+    "has404": true,
+    "sample": "404 Article not found Article not found Go back home"
+  }
+]

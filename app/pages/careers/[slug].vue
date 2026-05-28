@@ -40,7 +40,7 @@
               <p class="mt-4 text-sm leading-7 text-slate-500">{{ careerRole.excerpt }}</p>
 
               <div class="mt-6 border-t border-slate-200 pt-6">
-                <div class="prose prose-slate max-w-none prose-headings:font-display prose-headings:text-slate-900 prose-a:text-[var(--marketing-primary)]" v-html="careerRole.job_description"></div>
+                <div class="prose prose-slate max-w-none prose-headings:font-display prose-headings:text-slate-900 prose-a:text-[var(--marketing-primary)]" v-html="sanitizeHtml(careerRole.job_description)"></div>
               </div>
             </div>
 
@@ -114,8 +114,15 @@ const { careers, error, fetchCareers, getCareerBySlug, isLoading } = useCareers(
 const slug = computed(() => String(route.params.slug || ''))
 const heroImage = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80'
 
-onMounted(() => {
-  fetchCareers()
+onMounted(async () => {
+  await fetchCareers()
+
+  if (!error.value && !careerRole.value) {
+    showError({
+      statusCode: 404,
+      statusMessage: 'Position not found'
+    })
+  }
 })
 
 const careerRole = computed(() => getCareerBySlug(slug.value))

@@ -47,10 +47,10 @@
               <td><span class="admin-badge">{{ item.slug }}</span></td>
               <td>
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="openModal(item)" class="admin-icon-btn">
+                  <button @click="openModal(item)" class="admin-icon-btn" :aria-label="`Edit ${item.name}`">
                     <Edit2 class="h-4 w-4" />
                   </button>
-                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
+                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" :aria-label="`Delete ${item.name}`">
                     <Trash2 class="h-4 w-4" />
                   </button>
                 </div>
@@ -191,6 +191,9 @@ const saveCategory = async () => {
         ? 'The category changes have been saved successfully.'
         : 'The new category has been added successfully.'
     }
+  } catch (error) {
+    const fieldErrors = getApiFieldErrors(error)
+    formError.value = fieldErrors.name || getApiErrorMessage(error)
   } finally {
     isSaving.value = false
   }

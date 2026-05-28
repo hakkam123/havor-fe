@@ -23,6 +23,7 @@
             <button
               class="admin-icon-btn"
               :disabled="!canClose"
+              aria-label="Close modal"
               @click="close"
             >
               <X class="h-4 w-4" />

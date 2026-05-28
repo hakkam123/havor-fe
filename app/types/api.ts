@@ -172,3 +172,37 @@ export type ContactMessage = {
   createdAt: string | null
   dateLabel: string
 }
+
+export type ApiCompanyProfile = {
+  id?: ApiId
+  company_name?: string | null
+  tagline?: string | null
+  short_description?: string | null
+  long_description?: string | null
+  email?: string | null
+  phone?: string | null
+  website?: string | null
+  address?: string | null
+  linkedin_url?: string | null
+  instagram_url?: string | null
+  logo_url?: string | null
+  seo_title?: string | null
+  seo_description?: string | null
+}
+
+export type CompanyProfile = {
+  id: number
+  company_name: string
+  tagline: string
+  short_description: string
+  long_description: string
+  email: string
+  phone: string
+  website: string
+  address: string
+  linkedin_url: string
+  instagram_url: string
+  logo_url: string
+  seo_title: string
+  seo_description: string
+}

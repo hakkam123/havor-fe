@@ -60,10 +60,10 @@
               </td>
               <td>
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="openModal(item)" class="admin-icon-btn">
+                  <button @click="openModal(item)" class="admin-icon-btn" :aria-label="`Edit ${item.job_title}`">
                     <Edit2 class="h-4 w-4" />
                   </button>
-                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
+                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" :aria-label="`Delete ${item.job_title}`">
                     <Trash2 class="h-4 w-4" />
                   </button>
                 </div>
@@ -107,7 +107,7 @@
                   <Upload class="mx-auto h-8 w-8 text-slate-400" />
                   <p class="mt-3 text-sm text-slate-500">Click or drag thumbnail here</p>
                 </div>
-                <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*" @change="handleThumbnailUpload">
+                <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/jpeg,image/png,image/webp" aria-label="Upload career thumbnail" @change="handleThumbnailUpload">
               </div>
               <p v-if="form.thumbnailFileName" class="mt-2 text-xs text-slate-500">{{ form.thumbnailFileName }}</p>
             </div>
@@ -257,6 +257,11 @@ const saveForm = async () => {
     return
   }
 
+  if (!isSupportedImageFile(form.value.thumbnailFile)) {
+    formError.value = 'Thumbnail must be a JPG, PNG, or WEBP image.'
+    return
+  }
+
   isSaving.value = true
 
   try {
@@ -276,6 +281,9 @@ const saveForm = async () => {
         ? 'The career position has been updated successfully.'
         : 'The new career position has been added successfully.'
     }
+  } catch (error) {
+    const fieldErrors = getApiFieldErrors(error)
+    formError.value = fieldErrors.job_title || fieldErrors.job_description || fieldErrors.thumbnail || getApiErrorMessage(error)
   } finally {
     isSaving.value = false
   }

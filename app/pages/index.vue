@@ -104,6 +104,49 @@
       </div>
     </section>
 
+    <section class="brand-section bg-[#f5f8fc]">
+      <div class="marketing-container">
+        <div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+          <div>
+            <p class="brand-meta">{{ t('home.clients.label') }}</p>
+            <h2 class="mt-3 text-3xl font-bold leading-tight text-[#0e2344] sm:text-4xl">
+              {{ t('home.clients.title') }}
+            </h2>
+            <p class="mt-4 text-[0.98rem] leading-8 text-slate-600">
+              {{ t('home.clients.intro') }}
+            </p>
+          </div>
+
+          <div v-if="isLoadingClients && !clients.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div v-for="item in 6" :key="item" class="brand-skeleton h-28"></div>
+          </div>
+
+          <div v-else-if="clients.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <article
+              v-for="client in clients.slice(0, 6)"
+              :key="client.id"
+              class="flex min-h-28 items-center gap-4 rounded-lg border border-[#dbe6f4] bg-white p-4 shadow-sm"
+              v-motion-fade-up
+            >
+              <img
+                :src="client.client_icon || '/logo-havor.svg'"
+                :alt="`${client.name} logo`"
+                class="h-12 w-12 shrink-0 rounded-md object-contain"
+              >
+              <div>
+                <h3 class="text-sm font-semibold leading-6 text-[#0e2344]">{{ client.name }}</h3>
+                <p class="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">{{ client.excerpt }}</p>
+              </div>
+            </article>
+          </div>
+
+          <div v-else class="brand-soft-panel p-8 text-center">
+            <p class="font-medium text-slate-500">{{ t('home.clients.empty') }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="services" class="brand-section bg-[#f5f8fc]">
       <div class="marketing-container">
         <SectionHeading
@@ -154,7 +197,7 @@
               <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,14,31,0.12)_0%,rgba(4,14,31,0.88)_100%)]"></div>
               <div class="absolute inset-x-0 bottom-0 p-5">
                 <h3 class="text-xl font-bold leading-tight text-white">{{ service.name }}</h3>
-                <p v-if="service.description" class="mt-2 line-clamp-2 text-sm leading-6 text-white/76">{{ service.description }}</p>
+                <p v-if="service.description" class="mt-2 line-clamp-2 text-sm leading-6 text-white/76">{{ stripHtml(service.description) }}</p>
               </div>
             </NuxtLink>
           </div>
@@ -202,7 +245,7 @@
                   <span v-if="project.client" class="brand-chip">{{ project.client }}</span>
                 </div>
                 <h3 class="mt-5 text-2xl font-bold leading-tight text-[#0e2344]">{{ project.title }}</h3>
-                <p class="mt-3 text-[0.94rem] leading-7 text-slate-600">{{ project.description }}</p>
+                <p class="mt-3 text-[0.94rem] leading-7 text-slate-600">{{ stripHtml(project.description) }}</p>
                 <div class="mt-6">
                   <NuxtLink :to="`/projects/${project.slug}`" class="btn-outline px-4 py-2.5 text-xs">
                     {{ t('home.projects.detail') }}
@@ -357,9 +400,11 @@ const { t, tm } = usePublicI18n()
 const { expertise, isLoading: isLoadingExpertise, fetchExpertise } = useExpertise()
 const { works, isLoading: isLoadingWorks, fetchWorks } = useWorks()
 const { news, isLoading: isLoadingNews, fetchNews } = useNews()
+const { clients, isLoading: isLoadingClients, fetchClients } = useClients()
 
 const defaultServiceImage = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'
 const defaultProjectImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80'
+const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').trim()
 
 const aboutPoints = computed(() => [
   t('home.about.pointOne'),
@@ -410,5 +455,6 @@ onMounted(() => {
   fetchExpertise()
   fetchWorks()
   fetchNews()
+  fetchClients()
 })
 </script>

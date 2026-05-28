@@ -118,6 +118,7 @@ const { locale, t, toggleLocale } = usePublicI18n()
 const navItems = [
   { labelKey: 'nav.about', to: '/about-us' },
   { labelKey: 'nav.services', to: '/services' },
+  { labelKey: 'nav.products', to: '/products' },
   { labelKey: 'nav.works', to: '/projects' },
   { labelKey: 'nav.careers', to: '/careers' },
   { labelKey: 'nav.media', to: '/media-news' }

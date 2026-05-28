@@ -1,0 +1,234 @@
+{
+  "apiBase": "https://tplnext.com/havor/api",
+  "frontendBase": "http://localhost:3000",
+  "timestamp": "20260528065019",
+  "created": {
+    "category": {
+      "id": 4,
+      "name": "QA Test - Category - 20260528065019"
+    },
+    "secondaryCategory": {
+      "id": 5,
+      "name": "QA Test - Secondary Category - 20260528065019"
+    },
+    "banner": {
+      "id": 3,
+      "page_name": "qa-test-banner-20260528065019",
+      "title": "QA Test - Banner - 20260528065019",
+      "subtitle": "QA banner subtitle before update",
+      "media_url": "/uploads/banners/media_url-1779951019814-368141705.png",
+      "media_type": "image"
+    },
+    "client": {
+      "id": 3,
+      "name": "QA Test - Client - 20260528065019",
+      "client_icon": "/uploads/clients/client_icon-1779951020046-441559497.png",
+      "description": "QA client description before update"
+    },
+    "service": {
+      "id": 3,
+      "name": "QA Test - Service - 20260528065019",
+      "description": "<p>QA service description before update</p>",
+      "icon_url": "/uploads/expertise/icon_url-1779951020262-833098274.png"
+    },
+    "work": {
+      "id": 4,
+      "title": "QA Test - Work - 20260528065019",
+      "description": "<p>QA work description before update</p>",
+      "client": "QA Client Before",
+      "year": "2026",
+      "image_url": "/uploads/works/image_url-1779951020501-391576465.png",
+      "categoryId": "4"
+    },
+    "news": {
+      "id": 4,
+      "title": "QA Test - News - 20260528065019",
+      "slug": "qa-test-news-20260528065019",
+      "content": "<p>QA news content before update</p>",
+      "category": "Technology",
+      "is_published": true,
+      "image_url": "/uploads/news/image_url-1779951020733-14120632.png"
+    },
+    "product": {
+      "id": 4,
+      "name": "QA Test - Product - 20260528065019",
+      "description": "<p>QA product description before update</p>",
+      "image_url": "/uploads/products/image_url-1779951020962-460641573.png",
+      "external_link": "https://example.com/qa-product-before",
+      "categoryId": "4"
+    },
+    "career": {
+      "id": 4,
+      "thumbnail": "/uploads/careers/thumbnail-1779951021289-743480608.png",
+      "job_title": "QA Test - Career - 20260528065019",
+      "job_description": "<p>QA career description before update</p>"
+    },
+    "contact": {
+      "id": 3,
+      "name": "QA Test - Contact - 20260528065019",
+      "email": "qa-20260528065019@example.com",
+      "subject": "QA Test - Subject - 20260528065019",
+      "message": "QA contact message before mark as read."
+    }
+  },
+  "updated": {
+    "category": {
+      "id": 4,
+      "name": "QA Updated - Category - 20260528065019",
+      "createdAt": "2026-05-28T06:50:19.000Z",
+      "updatedAt": "2026-05-28T06:50:19.000Z"
+    },
+    "banner": {
+      "id": 3,
+      "page_name": "qa-test-banner-20260528065019",
+      "title": "QA Updated - Banner - 20260528065019",
+      "subtitle": "QA banner subtitle after update",
+      "media_url": "/uploads/banners/media_url-1779951019906-656421651.png",
+      "media_type": "image",
+      "createdAt": "2026-05-28T06:50:19.000Z",
+      "updatedAt": "2026-05-28T06:50:19.000Z"
+    },
+    "client": {
+      "id": 3,
+      "name": "QA Updated - Client - 20260528065019",
+      "client_icon": "/uploads/clients/client_icon-1779951020179-451688846.png",
+      "description": "QA client description after update",
+      "createdAt": "2026-05-28T06:50:20.000Z",
+      "updatedAt": "2026-05-28T06:50:20.000Z"
+    },
+    "service": {
+      "id": 3,
+      "name": "QA Updated - Service - 20260528065019",
+      "description": "<p>QA service description after update</p>",
+      "icon_url": "/uploads/expertise/icon_url-1779951020323-785918407.png",
+      "createdAt": "2026-05-28T06:50:20.000Z",
+      "updatedAt": "2026-05-28T06:50:20.000Z"
+    },
+    "work": {
+      "id": 4,
+      "title": "QA Updated - Work - 20260528065019",
+      "description": "<p>QA work description after update</p>",
+      "image_url": "/uploads/works/image_url-1779951020612-87749449.png",
+      "client": "QA Client After",
+      "year": 2027,
+      "categoryId": 5,
+      "createdAt": "2026-05-28T06:50:20.000Z",
+      "updatedAt": "2026-05-28T06:50:20.000Z",
+      "category_name": "QA Test - Secondary Category - 20260528065019"
+    },
+    "news": {
+      "id": 4,
+      "title": "QA Updated - News - 20260528065019",
+      "slug": "qa-updated-news-20260528065019",
+      "content": "<p>QA news content after update</p>",
+      "image_url": "/uploads/news/image_url-1779951020821-876844282.png",
+      "category": "Company",
+      "is_published": 1,
+      "createdAt": "2026-05-28T06:50:20.000Z",
+      "updatedAt": "2026-05-28T06:50:20.000Z"
+    },
+    "product": {
+      "id": 4,
+      "name": "QA Updated - Product - 20260528065019",
+      "description": "<p>QA product description after update</p>",
+      "image_url": "/uploads/products/image_url-1779951021159-581192256.png",
+      "external_link": "https://example.com/qa-product-after",
+      "categoryId": 5,
+      "createdAt": "2026-05-28T06:50:20.000Z",
+      "updatedAt": "2026-05-28T06:50:21.000Z",
+      "category_name": "QA Test - Secondary Category - 20260528065019"
+    },
+    "career": {
+      "id": 4,
+      "thumbnail": "/uploads/careers/thumbnail-1779951021351-86163907.png",
+      "job_title": "QA Updated - Career - 20260528065019",
+      "job_description": "<p>QA career description after update</p>",
+      "createdAt": "2026-05-28T06:50:21.000Z",
+      "updatedAt": "2026-05-28T06:50:21.000Z"
+    },
+    "contact": {
+      "id": 3,
+      "name": "QA Test - Contact - 20260528065019",
+      "email": "qa-20260528065019@example.com",
+      "subject": "QA Test - Subject - 20260528065019",
+      "message": "QA contact message before mark as read.",
+      "is_read": 0,
+      "createdAt": "2026-05-28T06:50:21.000Z",
+      "updatedAt": "2026-05-28T06:50:21.000Z"
+    },
+    "contactAfterRead": {
+      "id": 3,
+      "name": "QA Test - Contact - 20260528065019",
+      "email": "qa-20260528065019@example.com",
+      "subject": "QA Test - Subject - 20260528065019",
+      "message": "QA contact message before mark as read.",
+      "is_read": 1,
+      "createdAt": "2026-05-28T06:50:21.000Z",
+      "updatedAt": "2026-05-28T06:50:21.000Z"
+    },
+    "newsAfterUnpublish": {
+      "status": 200,
+      "body": {
+        "id": "4",
+        "title": "QA Updated - News - 20260528065019",
+        "slug": "qa-updated-news-20260528065019",
+        "content": "<p>QA news content after unpublish</p>",
+        "category": "Company",
+        "is_published": false,
+        "image_url": "/uploads/news/image_url-1779951020821-876844282.png"
+      },
+      "apiDetailStatus": 200,
+      "apiDetail": {
+        "id": 4,
+        "title": "QA Updated - News - 20260528065019",
+        "slug": "qa-updated-news-20260528065019",
+        "content": "<p>QA news content after unpublish</p>",
+        "image_url": "/uploads/news/image_url-1779951020821-876844282.png",
+        "category": "Company",
+        "is_published": 0,
+        "createdAt": "2026-05-28T06:50:20.000Z",
+        "updatedAt": "2026-05-28T07:01:11.000Z"
+      }
+    }
+  },
+  "slugs": {
+    "service": "qa-updated-service-20260528065019",
+    "work": "qa-updated-work-20260528065019",
+    "news": "qa-updated-news-20260528065019",
+    "career": "qa-updated-career-20260528065019"
+  },
+  "publicExpectations": {
+    "newsDetail": {
+      "status": 200,
+      "title": "QA Updated - News - 20260528065019"
+    },
+    "service": {
+      "id": 3,
+      "name": "QA Updated - Service - 20260528065019",
+      "description": "<p>QA service description after update</p>",
+      "icon_url": "/uploads/expertise/icon_url-1779951020323-785918407.png",
+      "createdAt": "2026-05-28T06:50:20.000Z",
+      "updatedAt": "2026-05-28T06:50:20.000Z"
+    },
+    "work": {
+      "id": 4,
+      "title": "QA Updated - Work - 20260528065019",
+      "description": "<p>QA work description after update</p>",
+      "image_url": "/uploads/works/image_url-1779951020612-87749449.png",
+      "client": "QA Client After",
+      "year": 2027,
+      "categoryId": 5,
+      "createdAt": "2026-05-28T06:50:20.000Z",
+      "updatedAt": "2026-05-28T06:50:20.000Z",
+      "category_name": "QA Test - Secondary Category - 20260528065019"
+    },
+    "career": {
+      "id": 4,
+      "thumbnail": "/uploads/careers/thumbnail-1779951021351-86163907.png",
+      "job_title": "QA Updated - Career - 20260528065019",
+      "job_description": "<p>QA career description after update</p>",
+      "createdAt": "2026-05-28T06:50:21.000Z",
+      "updatedAt": "2026-05-28T06:50:21.000Z"
+    }
+  }
+}

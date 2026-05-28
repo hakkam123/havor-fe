@@ -88,10 +88,10 @@
               </td>
               <td>
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="openModal(item)" class="admin-icon-btn">
+                  <button @click="openModal(item)" class="admin-icon-btn" :aria-label="`Edit ${item.name}`">
                     <Edit2 class="h-4 w-4" />
                   </button>
-                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
+                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" :aria-label="`Delete ${item.name}`">
                     <Trash2 class="h-4 w-4" />
                   </button>
                 </div>
@@ -113,11 +113,15 @@
       :can-close="!isSaving"
     >
       <form @submit.prevent="saveProduct" class="space-y-6">
+        <div v-if="formError" class="rounded-[12px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {{ formError }}
+        </div>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div class="space-y-4">
             <div>
               <label class="mb-2 block text-sm font-medium text-slate-600">Name <span class="text-rose-500">*</span></label>
-              <input v-model="form.name" type="text" required class="admin-input" placeholder="Product name">
+              <input v-model="form.name" type="text" required class="admin-input" placeholder="Product name" :aria-invalid="Boolean(fieldErrors.name)">
+              <p v-if="fieldErrors.name" class="mt-1 text-sm text-rose-600">{{ fieldErrors.name }}</p>
             </div>
             <div>
               <label class="mb-2 block text-sm font-medium text-slate-600">Category <span class="text-rose-500">*</span></label>
@@ -127,7 +131,8 @@
             </div>
             <div>
               <label class="mb-2 block text-sm font-medium text-slate-600">External Link</label>
-              <input v-model="form.external_link" type="url" class="admin-input" placeholder="https://...">
+              <input v-model="form.external_link" type="url" class="admin-input" placeholder="https://..." :aria-invalid="Boolean(fieldErrors.external_link)">
+              <p v-if="fieldErrors.external_link" class="mt-1 text-sm text-rose-600">{{ fieldErrors.external_link }}</p>
             </div>
           </div>
 
@@ -141,9 +146,10 @@
                 <Upload class="mx-auto h-8 w-8 text-slate-400" />
                 <p class="mt-3 text-sm text-slate-500">Click or drag image here</p>
               </div>
-              <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*" @change="handleImageUpload">
+              <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/jpeg,image/png,image/webp" aria-label="Upload product image" @change="handleImageUpload">
             </div>
             <p v-if="form.imageFileName" class="mt-2 text-xs text-slate-500">{{ form.imageFileName }}</p>
+            <p v-if="fieldErrors.image_url" class="mt-1 text-sm text-rose-600">{{ fieldErrors.image_url }}</p>
           </div>
         </div>
 
@@ -156,6 +162,7 @@
               :init="editorConfig"
             />
           </div>
+          <p v-if="fieldErrors.description" class="mt-1 text-sm text-rose-600">{{ fieldErrors.description }}</p>
         </div>
       </form>
 
@@ -186,6 +193,8 @@ const { categories, fetchCategories } = useCategories()
 const isModalOpen = ref(false)
 const searchQuery = ref('')
 const isSaving = ref(false)
+const formError = ref('')
+const fieldErrors = ref({})
 const successState = ref({
   open: false,
   title: '',
@@ -266,6 +275,19 @@ const handleImageUpload = (e) => {
 }
 
 const saveProduct = async () => {
+  fieldErrors.value = {}
+  formError.value = ''
+  const errors = {}
+  if (!form.value.name?.trim()) errors.name = 'Product name is required.'
+  if (!stripHtml(form.value.description).trim()) errors.description = 'Description is required.'
+  if (!isValidHttpUrl(form.value.external_link)) errors.external_link = 'External link must be a valid http or https URL.'
+  if (!isSupportedImageFile(form.value.imageFile)) errors.image_url = 'Image must be a JPG, PNG, or WEBP file.'
+  if (Object.keys(errors).length) {
+    fieldErrors.value = errors
+    formError.value = 'Please fix the highlighted fields before saving.'
+    return
+  }
+
   isSaving.value = true
 
   try {
@@ -285,6 +307,9 @@ const saveProduct = async () => {
         ? 'The product entry has been updated successfully.'
         : 'The new product entry has been added successfully.'
     }
+  } catch (error) {
+    fieldErrors.value = getApiFieldErrors(error)
+    formError.value = getApiErrorMessage(error)
   } finally {
     isSaving.value = false
   }

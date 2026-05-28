@@ -1,0 +1,52 @@
+[
+  {
+    "moduleName": "works",
+    "route": "/projects/qa-updated-work-20260528065019",
+    "file": "04-detail-slug.png",
+    "title": "QA Updated - Work - 20260528065019 | Projects | PT Havor SMART Digital",
+    "body": "HAVOR Smarta Digital About Us Services Works Careers Media & News ID Contact QA Updated - Work - 20260528065019 QA work description after update Back to Projects Discuss a Similar Project QA Test - Secondary Category - 20260528065019 QA Client After QA Updated",
+    "has404": false,
+    "scrollWidth": 1425,
+    "innerWidth": 1440
+  },
+  {
+    "moduleName": "news",
+    "route": "/media-news",
+    "file": "03-public-display.png",
+    "title": "Media & News | PT Havor SMART Digital",
+    "body": "HAVOR Smarta Digital About Us Services Works Careers Media & News ID Contact Media & News Company updates, industry perspectives, and thought leadership from PT Havor SMART Digital. Press Release Official announcements, company initiatives, and institutional u",
+    "has404": false,
+    "scrollWidth": 1425,
+    "innerWidth": 1440
+  },
+  {
+    "moduleName": "news",
+    "route": "/media-news/qa-updated-news-20260528065019",
+    "file": "04-detail-slug.png",
+    "title": "QA Updated - News - 20260528065019 | Media & News | PT Havor SMART Digital",
+    "body": "HAVOR Smarta Digital About Us Services Works Careers Media & News ID Contact QA Updated - News - 20260528065019 QA news content after update Back to Media & News See Projects Company 5/28/2026 1 min read QA Updated - News - 20260528065019 QA news content after",
+    "has404": false,
+    "scrollWidth": 1425,
+    "innerWidth": 1440
+  },
+  {
+    "moduleName": "careers",
+    "route": "/careers",
+    "file": "03-public-display.png",
+    "title": "Careers | PT Havor SMART Digital",
+    "body": "HAVOR Smarta Digital About Us Services Works Careers Media & News ID Contact Careers Join a team that builds meaningful digital solutions, works collaboratively, and grows through disciplined delivery. Company Culture At Havor, we value clear thinking, respect",
+    "has404": false,
+    "scrollWidth": 1425,
+    "innerWidth": 1440
+  },
+  {
+    "moduleName": "careers",
+    "route": "/careers/qa-updated-career-20260528065019",
+    "file": "04-detail-slug.png",
+    "title": "QA Updated - Career - 20260528065019 | Havor Smarta Digital",
+    "body": "HAVOR Smarta Digital About Us Services Works Careers Media & News ID Contact QA Updated - Career - 20260528065019 QA career description after update Back to Careers Apply Now POSITION DETAILS QA Updated - Career - 20260528065019 QA career description after upd",
+    "has404": false,
+    "scrollWidth": 1425,
+    "innerWidth": 1440
+  }
+]

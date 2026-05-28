@@ -78,10 +78,10 @@
               <td class="text-slate-400">{{ formatDate(item.createdAt) }}</td>
               <td>
                 <div class="flex items-center justify-end gap-2">
-                  <button @click="openModal(item)" class="admin-icon-btn">
+                  <button @click="openModal(item)" class="admin-icon-btn" :aria-label="`Edit ${item.title}`">
                     <Edit2 class="h-4 w-4" />
                   </button>
-                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600">
+                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" :aria-label="`Delete ${item.title}`">
                     <Trash2 class="h-4 w-4" />
                   </button>
                 </div>
@@ -103,11 +103,15 @@
       :can-close="!isSaving"
     >
       <form @submit.prevent="saveForm" class="space-y-6">
+        <div v-if="formError" class="rounded-[12px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {{ formError }}
+        </div>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div class="space-y-4">
             <div>
               <label class="mb-2 block text-sm font-medium text-slate-600">Title <span class="text-rose-500">*</span></label>
-              <input v-model="form.title" @input="generateSlug" type="text" required class="admin-input" placeholder="Enter article title">
+              <input v-model="form.title" @input="generateSlug" type="text" required class="admin-input" placeholder="Enter article title" :aria-invalid="Boolean(fieldErrors.title)">
+              <p v-if="fieldErrors.title" class="mt-1 text-sm text-rose-600">{{ fieldErrors.title }}</p>
             </div>
             <div>
               <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
@@ -142,10 +146,12 @@
                 <Upload class="mx-auto h-8 w-8 text-slate-400" />
                 <p class="mt-3 text-sm text-slate-500">Click or drag image here</p>
               </div>
-              <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/*" @change="handleFileUpload">
+              <input type="file" class="absolute inset-0 cursor-pointer opacity-0" accept="image/jpeg,image/png,image/webp" aria-label="Upload news featured image" @change="handleFileUpload">
             </div>
             <p v-if="form.imageFileName" class="mt-2 text-xs text-slate-500">{{ form.imageFileName }}</p>
+            <p v-if="fieldErrors.image_url" class="mt-1 text-sm text-rose-600">{{ fieldErrors.image_url }}</p>
           </div>
+          <p v-if="fieldErrors.content" class="mt-1 text-sm text-rose-600">{{ fieldErrors.content }}</p>
         </div>
 
         <div>
@@ -186,6 +192,8 @@ const { news: newsItems, fetchNews, createNews, updateNews, deleteNews } = useNe
 const isModalOpen = ref(false)
 const searchQuery = ref('')
 const isSaving = ref(false)
+const formError = ref('')
+const fieldErrors = ref({})
 const successState = ref({
   open: false,
   title: '',
@@ -245,6 +253,8 @@ const formatDate = (value) => {
   }).format(new Date(value))
 }
 
+const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').trim()
+
 const openModal = (item = null) => {
   if (item) {
     form.value = {
@@ -287,6 +297,18 @@ const handleFileUpload = (e) => {
 }
 
 const saveForm = async () => {
+  fieldErrors.value = {}
+  formError.value = ''
+  const errors = {}
+  if (!form.value.title?.trim()) errors.title = 'Article title is required.'
+  if (!stripHtml(form.value.content).trim()) errors.content = 'Article content is required.'
+  if (!isSupportedImageFile(form.value.imageFile)) errors.image_url = 'Image must be a JPG, PNG, or WEBP file.'
+  if (Object.keys(errors).length) {
+    fieldErrors.value = errors
+    formError.value = 'Please fix the highlighted fields before saving.'
+    return
+  }
+
   isSaving.value = true
 
   try {
@@ -306,6 +328,9 @@ const saveForm = async () => {
         ? 'The news article has been updated successfully.'
         : 'The new news article has been added successfully.'
     }
+  } catch (error) {
+    fieldErrors.value = getApiFieldErrors(error)
+    formError.value = getApiErrorMessage(error)
   } finally {
     isSaving.value = false
   }

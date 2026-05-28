@@ -71,7 +71,7 @@
                 <span v-if="project.client" class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-medium uppercase tracking-normal text-[#1f5dcc]">{{ project.client }}</span>
               </div>
               <h3 class="mt-4 text-[1.28rem] font-semibold leading-[1.22] tracking-normal text-[#0e2344]">{{ project.title }}</h3>
-              <p class="mt-3 text-[0.92rem] leading-6 text-slate-600">{{ project.description }}</p>
+              <p class="mt-3 text-[0.92rem] leading-6 text-slate-600">{{ stripHtml(project.description) }}</p>
 
               <div class="mt-5 inline-flex items-center gap-2 text-[0.82rem] font-medium uppercase tracking-normal text-[#1f5dcc]">
                 View Project Detail
@@ -131,6 +131,7 @@ const { works, fetchWorks } = useWorks()
 
 const selectedCategory = ref('All categories')
 const searchQuery = ref('')
+const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').trim()
 
 onMounted(() => {
   fetchWorks()
@@ -149,7 +150,7 @@ const filteredProjects = computed(() => {
     const matchesKeyword =
       !keyword ||
       project.title.toLowerCase().includes(keyword) ||
-      project.description?.toLowerCase().includes(keyword) ||
+      stripHtml(project.description).toLowerCase().includes(keyword) ||
       project.client?.toLowerCase().includes(keyword) ||
       project.categoryName?.toLowerCase().includes(keyword)
 

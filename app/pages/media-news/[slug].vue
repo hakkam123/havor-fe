@@ -26,7 +26,7 @@
               <h2 class="mt-6 text-[clamp(2.2rem,4vw,3.7rem)] font-semibold leading-tight tracking-normal text-[#0e2344]">
                 {{ article.title }}
               </h2>
-              <div class="mt-8 prose max-w-none text-sm leading-8 text-slate-600" v-html="article.content"></div>
+              <div class="mt-8 prose max-w-none text-sm leading-8 text-slate-600" v-html="sanitizeHtml(article.content)"></div>
             </div>
           </article>
 
@@ -80,9 +80,16 @@ const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
 const fallbackImage = 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80'
 
-const { news, fetchNews } = useNews()
-onMounted(() => {
-  fetchNews()
+const { news, fetchNews, error } = useNews()
+onMounted(async () => {
+  await fetchNews()
+
+  if (!error.value && !article.value) {
+    showError({
+      statusCode: 404,
+      statusMessage: 'Article not found'
+    })
+  }
 })
 
 const article = computed(() => news.value.find((item) => item.slug === slug.value) || null)
