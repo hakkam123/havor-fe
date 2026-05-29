@@ -392,6 +392,14 @@
     @apply animate-pulse rounded-lg border border-[#dbe6f4] bg-[linear-gradient(90deg,#eef4fb_0%,#f8fbff_50%,#eef4fb_100%)] shadow-[0_12px_34px_rgba(18,56,122,0.05)];
   }
 
+  .brand-carousel-scroll {
+    scrollbar-width: none;
+  }
+
+  .brand-carousel-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
   .detail-content {
     @apply text-[0.93rem] leading-8 text-slate-600;
   }

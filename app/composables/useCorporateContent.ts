@@ -284,30 +284,70 @@ export const useCorporateContent = () => {
           'PT Havor SMART Digital is built around the belief that technology delivery should be strategic, disciplined, and genuinely useful for the organizations it serves.',
         image: 'https://images.unsplash.com/photo-1573167243872-43c6433b9d40?auto=format&fit=crop&w=1600&q=80'
       },
+      profile: {
+        label: 'ABOUT HAVOR SMARTA DIGITAL',
+        title: 'Your Digital IT Partner Solution for scalable business growth.',
+        description:
+          'Havor Smarta Digital is an Information Technology company specializing in digital solutions and application development. Since its early project journey in 2010 and official establishment as an IT startup in 2019, Havor has delivered scalable technology solutions for businesses across various industries.',
+        caption:
+          'Practical digital delivery across websites, applications, dashboards, mobile apps, and intelligent systems.',
+        points: [
+          'Started from early project delivery in 2010.',
+          'Officially established and developed as an IT startup in 2019.',
+          'Focused on scalable digital solutions for corporate and business clients.'
+        ]
+      },
+      highlights: {
+        title: 'Company Highlights',
+        description:
+          'A concise view of Havor\'s foundation, formal growth, service focus, and cross-industry delivery experience.',
+        items: [
+          {
+            value: '2010',
+            label: 'Early Project Journey',
+            description: 'The starting point of Havor\'s practical delivery experience through digital project work.'
+          },
+          {
+            value: '2019',
+            label: 'Official IT Startup',
+            description: 'The year Havor formally developed as an IT startup with a clearer technology service focus.'
+          },
+          {
+            value: '4',
+            label: 'Core Service Areas',
+            description: 'Enterprise IT solution, website development, mobile apps, and AI or intelligent solutions.'
+          },
+          {
+            value: 'Cross-industry',
+            label: 'Project Experience',
+            description: 'Delivery exposure across e-commerce, LMS, dashboards, corporate websites, and mobile apps.'
+          }
+        ]
+      },
       journey: {
         title: 'Our Journey',
         intro:
-          'Havor grew from a practical delivery mindset: understand the organization, design what matters, and build systems that can be trusted over time.',
+          'Havor grew from early project work into a structured IT company with a practical delivery mindset: understand the organization, design what matters, and build systems that can be trusted over time.',
         narrative:
-          'The company began by helping clients establish stronger digital foundations through web platforms and business applications. As client needs became broader and more complex, Havor expanded into mobile development, custom software, system integration, design systems, and consulting support. Today, the company operates as a structured digital partner for organizations that need both strong execution and clear strategic guidance.',
+          'The company began its project journey in 2010 by helping clients establish stronger digital foundations through web platforms and business applications. In 2019, Havor officially grew as an IT startup and continued expanding into enterprise systems, mobile development, intelligent solutions, dashboards, and long-term digital support.',
         milestones: [
           {
-            phase: 'Foundation',
-            title: 'Early delivery focus',
-            description: 'Initial projects centered on corporate websites, internal portals, and dependable web implementation.'
+            phase: '2010',
+            title: 'Early project journey',
+            description: 'Havor started building delivery experience through practical digital projects, websites, and business application needs.'
           },
           {
-            phase: 'Expansion',
-            title: 'Broader technical capability',
-            description: 'Service lines expanded into mobile products, custom software, UI/UX design, and integration work.'
+            phase: '2019',
+            title: 'Official IT startup development',
+            description: 'Havor formally developed as an IT startup with a clearer focus on scalable digital solutions and application development.'
           },
           {
-            phase: 'Maturity',
-            title: 'Structured enterprise collaboration',
-            description: 'The team refined its delivery model to support more formal organizations, governance needs, and phased transformation programs.'
+            phase: 'Now',
+            title: 'Integrated digital solution partner',
+            description: 'The team supports enterprise IT solution, website development, mobile apps, AI and intelligent solution, dashboards, and CMS platforms.'
           },
           {
-            phase: 'Today',
+            phase: 'Long-term',
             title: 'Long-term digital partner',
             description: 'Havor now supports clients across planning, delivery, maintenance, and continuous improvement.'
           }
@@ -337,6 +377,33 @@ export const useCorporateContent = () => {
         ],
         supportNote:
           'Our work combines strategy, design, engineering, and maintenance so clients gain continuity instead of fragmented project handoffs.'
+      },
+      culture: {
+        title: 'Company Culture',
+        narrative:
+          'At Havor, we value clear thinking, respectful collaboration, and a steady commitment to quality. Our culture is built for people who enjoy solving real client problems and improving how digital work gets done.',
+        values: [
+          {
+            title: 'Collaboration',
+            description: 'We work across roles with transparency, shared context, and practical decision-making.'
+          },
+          {
+            title: 'Learning',
+            description: 'We keep growing through project experience, evolving tools, and thoughtful review.'
+          },
+          {
+            title: 'Practical Improvement',
+            description: 'We explore better ways of solving problems without losing discipline or clarity.'
+          },
+          {
+            title: 'Ownership',
+            description: 'We take responsibility for quality, communication, and the impact of what we deliver.'
+          },
+          {
+            title: 'Impact',
+            description: 'We focus on work that improves systems, services, and outcomes for real organizations.'
+          }
+        ]
       }
     },
     servicesPage: {
@@ -454,33 +521,6 @@ export const useCorporateContent = () => {
           'Join a team that builds meaningful digital solutions, works collaboratively, and grows through disciplined delivery.',
         image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80'
       },
-      culture: {
-        title: 'Company Culture',
-        narrative:
-          'At Havor, we value clear thinking, respectful collaboration, and a steady commitment to quality. Our culture is built for people who enjoy solving real client problems and improving how digital work gets done.',
-        values: [
-          {
-            title: 'Collaboration',
-            description: 'We work across roles with transparency, shared context, and practical decision-making.'
-          },
-          {
-            title: 'Learning',
-            description: 'We keep growing through project experience, evolving tools, and thoughtful review.'
-          },
-          {
-            title: 'Innovation',
-            description: 'We explore better ways of solving problems without losing discipline or clarity.'
-          },
-          {
-            title: 'Ownership',
-            description: 'We take responsibility for quality, communication, and the impact of what we deliver.'
-          },
-          {
-            title: 'Impact',
-            description: 'We focus on work that improves systems, services, and outcomes for real organizations.'
-          }
-        ]
-      },
       whyWorkHere: {
         title: 'Why Work With Us',
         items: [
@@ -497,7 +537,7 @@ export const useCorporateContent = () => {
             description: 'Work with teammates who value respect, structure, and constructive collaboration.'
           },
           {
-            title: 'Innovation-driven team',
+            title: 'Continuous improvement team',
             description: 'Be part of a company that embraces better tools, smarter workflows, and modern implementation approaches.'
           }
         ]

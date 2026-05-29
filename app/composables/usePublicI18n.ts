@@ -29,7 +29,7 @@ const messages = {
         metricThree: 'AI & intelligent solution'
       },
       featured: {
-        label: 'Featured Solution',
+        label: 'Digital Solution',
         title: 'Integrated Digital Solutions for Scalable Business Growth',
         description: 'Havor Smarta Digital helps businesses design, build, and scale digital platforms across web, mobile, enterprise systems, dashboards, and intelligent solutions.',
         caption: 'Web platforms, enterprise systems, dashboards, mobile apps, and intelligent workflows.',
@@ -212,7 +212,7 @@ const messages = {
         metricThree: 'Solusi AI cerdas'
       },
       featured: {
-        label: 'Solusi Unggulan',
+        label: 'Solusi Digital',
         title: 'Solusi Digital Terintegrasi untuk Pertumbuhan Bisnis',
         description: 'Havor Smarta Digital membantu bisnis merancang, membangun, dan mengembangkan platform digital melalui web, mobile, enterprise system, dashboard, dan solusi cerdas.',
         caption: 'Web platform, enterprise system, dashboard, mobile app, dan intelligent workflow.',

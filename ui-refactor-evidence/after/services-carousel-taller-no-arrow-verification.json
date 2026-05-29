@@ -1,0 +1,9 @@
+{
+  "serviceCards": 7,
+  "firstCardHeight": 480,
+  "firstCardWidth": 342,
+  "decorativeCardArrow": false,
+  "carouselControlButtons": 2,
+  "removedProjectTermsPresent": [],
+  "overflowX": false
+}

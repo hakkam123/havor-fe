@@ -10,7 +10,7 @@
 
     <div class="marketing-container relative flex min-h-screen items-end py-14 sm:py-16 lg:py-20">
       <div class="max-w-3xl pb-8 pt-32 sm:pb-10 lg:pb-12">
-        <h1 class="text-[clamp(2.65rem,4.7vw,4rem)] font-bold leading-[1.04] text-white">
+        <h1 class="text-[clamp(2.65rem,4.7vw,4rem)] font-semibold leading-[1.04] text-white">
           {{ title }}
         </h1>
         <p class="mt-5 max-w-[40rem] text-[0.98rem] leading-7 text-white/82 sm:text-base">

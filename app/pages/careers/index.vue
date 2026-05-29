@@ -9,50 +9,15 @@
       image-title="A collaborative environment for people who want to build meaningful digital work."
       side-label="Career Experience"
       side-title="Professional growth through serious projects, supportive teamwork, and structured delivery."
-      :side-copy="careersPage.culture.narrative"
+      side-copy="Explore opportunities to grow through structured digital delivery and meaningful client work."
       :highlights="[
         { label: 'Open Roles', value: String(careersPage.roles.length) },
         { label: 'Work Style', value: 'Collaborative' },
         { label: 'Growth', value: 'Continuous' }
       ]"
-    >
-
-      <template #aside>
-        <p class="text-[0.7rem] font-medium uppercase tracking-normal text-[#5374a8]">Why Careers Matter</p>
-        <p class="mt-3 text-lg font-semibold text-[#0e2344]">We build a team that can think clearly, collaborate well, and create meaningful impact.</p>
-        <p class="mt-3 text-sm leading-7 text-slate-600">
-          Havor values ownership, curiosity, and respect. The team environment is structured, supportive, and focused on quality.
-        </p>
-      </template>
-    </CorporatePageHero>
+    />
 
     <section class="brand-section pt-12">
-      <div class="marketing-container">
-        <div class="grid gap-8 lg:grid-cols-[0.94fr_1.06fr] lg:items-start">
-          <article class="border-l-2 border-[#1f5dcc] pl-5">
-            <SectionHeading
-              :title="careersPage.culture.title"
-              :description="careersPage.culture.narrative"
-            />
-          </article>
-
-          <div class="grid gap-x-8 gap-y-6 md:grid-cols-2 xl:grid-cols-3">
-            <article
-              v-for="value in careersPage.culture.values"
-              :key="value.title"
-              class="border-t border-[#dbe6f4] pt-5"
-              v-motion-fade-up
-            >
-              <p class="brand-meta">Culture Value</p>
-              <h3 class="mt-2.5 brand-card-title">{{ value.title }}</h3>
-              <p class="mt-2.5 brand-card-copy">{{ value.description }}</p>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="brand-section pt-0">
       <div class="marketing-container">
         <div class="grid gap-7 lg:grid-cols-[0.82fr_1.18fr]">
           <article class="relative isolate overflow-hidden rounded-lg px-6 py-7 text-white shadow-[0_24px_70px_rgba(18,56,122,0.18)] sm:px-8 sm:py-8">
@@ -82,8 +47,7 @@
               class="border-t border-[#dbe6f4] pt-5"
               v-motion-fade-up
             >
-              <p class="brand-meta">Benefit</p>
-              <h3 class="mt-2.5 brand-card-title">{{ item.title }}</h3>
+              <h3 class="brand-card-title">{{ item.title }}</h3>
               <p class="mt-2.5 brand-card-copy">{{ item.description }}</p>
             </article>
           </div>

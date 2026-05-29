@@ -24,8 +24,7 @@
           </div>
 
           <div class="lg:pl-8">
-            <p class="brand-meta">{{ t('home.featured.label') }}</p>
-            <h2 class="mt-4 max-w-3xl text-[clamp(1.9rem,3vw,2.65rem)] font-bold leading-tight text-[#0e2344]">
+            <h2 class="max-w-3xl text-[clamp(1.9rem,3vw,2.65rem)] font-semibold leading-tight text-[#0e2344]">
               {{ t('home.featured.title') }}
             </h2>
             <p class="mt-4 max-w-2xl text-[0.9rem] leading-7 text-slate-600">
@@ -61,18 +60,17 @@
       <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,14,31,0.88)_0%,rgba(4,14,31,0.62)_48%,rgba(4,14,31,0.18)_100%)]"></div>
       <div class="marketing-container">
         <div class="relative max-w-3xl">
-          <p class="text-xs font-bold uppercase text-white/68">{{ t('home.about.kicker') }}</p>
-          <h2 class="mt-4 text-[clamp(1.9rem,3.2vw,2.8rem)] font-bold leading-tight">
+          <h2 class="text-[clamp(1.9rem,3.2vw,2.8rem)] font-semibold leading-tight">
             {{ t('home.about.title') }}
           </h2>
           <p class="mt-4 max-w-2xl text-[0.94rem] leading-7 text-white/82">
             {{ t('home.about.intro') }}
           </p>
           <div class="mt-7 flex flex-wrap gap-3">
-            <NuxtLink to="/services" class="inline-flex rounded-full bg-white px-5 py-2.5 text-[0.84rem] font-bold text-[#0e2344] transition hover:bg-[#edf4ff]">
+            <NuxtLink to="/services" class="inline-flex rounded-full bg-white px-5 py-2.5 text-[0.84rem] font-semibold text-[#0e2344] transition hover:bg-[#edf4ff]">
               {{ t('home.about.servicesCta') }}
             </NuxtLink>
-            <NuxtLink to="/projects" class="inline-flex rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-[0.84rem] font-bold text-white backdrop-blur-sm transition hover:bg-white/18">
+            <NuxtLink to="/projects" class="inline-flex rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-[0.84rem] font-semibold text-white backdrop-blur-sm transition hover:bg-white/18">
               {{ t('home.about.projectsCta') }}
             </NuxtLink>
           </div>
@@ -94,8 +92,8 @@
             class="border-t border-[#dbe6f4] pt-5"
             v-motion-fade-up
           >
-            <p class="text-3xl font-bold leading-none text-[#1f5dcc] sm:text-4xl">{{ item.value }}</p>
-            <h3 class="mt-3 text-[1rem] font-bold leading-tight text-[#0e2344]">{{ item.label }}</h3>
+            <p class="text-3xl font-semibold leading-none text-[#1f5dcc] sm:text-4xl">{{ item.value }}</p>
+            <h3 class="mt-3 text-[1rem] font-semibold leading-tight text-[#0e2344]">{{ item.label }}</h3>
             <p class="mt-3 text-sm leading-6 text-slate-600">{{ item.description }}</p>
           </article>
         </div>
@@ -107,7 +105,7 @@
         <div class="grid gap-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
             <p class="brand-meta">{{ t('home.clients.label') }}</p>
-            <h2 class="mt-3 text-[clamp(1.85rem,3vw,2.4rem)] font-bold leading-tight text-[#0e2344]">
+            <h2 class="mt-3 text-[clamp(1.85rem,3vw,2.4rem)] font-semibold leading-tight text-[#0e2344]">
               {{ t('home.clients.title') }}
             </h2>
             <p class="mt-3 text-[0.9rem] leading-7 text-slate-600">
@@ -145,7 +143,7 @@
       </div>
     </section>
 
-    <section id="services" class="brand-section bg-[#f5f8fc]">
+    <section id="services" class="bg-[#f5f8fc] pt-12 sm:pt-14 lg:pt-16">
       <div class="marketing-container">
         <SectionHeading
           :title="t('home.services.title')"
@@ -155,53 +153,71 @@
             <NuxtLink to="/services" class="btn-outline">{{ t('home.services.all') }}</NuxtLink>
           </template>
         </SectionHeading>
+      </div>
 
-        <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <article
-            v-for="item in serviceFocus"
-            :key="item.title"
-            class="group relative min-h-[16.5rem] overflow-hidden rounded-lg bg-[#08162e]"
-            v-motion-fade-up
-          >
-            <img :src="item.image" :alt="item.title" class="absolute inset-0 h-full w-full object-cover opacity-74 transition duration-500 group-hover:scale-[1.04]">
-            <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,14,31,0.08)_0%,rgba(4,14,31,0.9)_100%)]"></div>
-            <div class="absolute inset-x-0 bottom-0 p-5 text-white">
-              <component :is="item.icon" class="h-6 w-6 text-[#8dbdff]" />
-              <h3 class="mt-3 text-[1.08rem] font-bold leading-tight">{{ item.title }}</h3>
-              <p class="mt-2 line-clamp-3 text-[0.82rem] leading-5 text-white/76">{{ item.description }}</p>
-              <span class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-bold uppercase text-white/82">
-                {{ t('home.services.explore') }}
-                <ArrowRight class="h-4 w-4" />
-              </span>
-            </div>
-          </article>
+      <div class="mt-8" v-motion-fade-up>
+        <div class="marketing-container">
+          <div v-if="isLoadingExpertise && !expertise.length" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div v-for="item in 4" :key="item" class="brand-skeleton h-[30rem]"></div>
+          </div>
         </div>
 
-        <div class="mt-10 border-t border-[#dbe6f4] pt-8">
-          <div v-if="isLoadingExpertise && !expertise.length" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div v-for="item in 4" :key="item" class="brand-skeleton h-48"></div>
-          </div>
+        <div v-if="!isLoadingExpertise || expertise.length" class="relative">
+          <template v-if="serviceCarouselItems.length">
+            <div class="absolute right-4 top-4 z-20 flex items-center gap-2 sm:right-6 lg:right-8">
+              <button
+                type="button"
+                class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/45 bg-white/12 text-white backdrop-blur-sm transition hover:border-white hover:bg-white hover:text-[#0e2344] focus:outline-none focus:ring-4 focus:ring-white/30"
+                aria-label="Previous service"
+                @click="goToPreviousService"
+              >
+                <ArrowLeft class="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/45 bg-[#1f5dcc] text-white shadow-[0_14px_34px_rgba(31,93,204,0.28)] transition hover:bg-[#164ca9] focus:outline-none focus:ring-4 focus:ring-white/30"
+                aria-label="Next service"
+                @click="goToNextService"
+              >
+                <ArrowRight class="h-4 w-4" />
+              </button>
+            </div>
 
-          <div v-else-if="expertise.length" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <NuxtLink
-              v-for="service in expertise.slice(0, 4)"
-              :key="service.id"
-              :to="`/services/${service.slug}`"
-              class="group relative min-h-[14.5rem] overflow-hidden rounded-lg"
-              :aria-label="`Open ${service.name} service detail`"
-              v-motion-fade-up
+            <div
+              ref="serviceCarouselRef"
+              class="brand-carousel-scroll w-full overflow-x-auto scroll-smooth"
+              @mouseenter="pauseServiceCarousel"
+              @mouseleave="resumeServiceCarousel"
+              @focusin="pauseServiceCarousel"
+              @focusout="resumeServiceCarousel"
             >
-              <img :src="service.icon_url || defaultServiceImage" :alt="service.name" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]">
-              <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,14,31,0.12)_0%,rgba(4,14,31,0.88)_100%)]"></div>
-              <div class="absolute inset-x-0 bottom-0 p-5">
-                <h3 class="text-[1.08rem] font-bold leading-tight text-white">{{ service.name }}</h3>
-                <p v-if="service.description" class="mt-2 line-clamp-2 text-[0.82rem] leading-5 text-white/76">{{ stripHtml(service.description) }}</p>
+              <div class="flex">
+                <NuxtLink
+                  v-for="service in serviceCarouselItems"
+                  :key="service.key"
+                  :to="service.href"
+                  data-service-card
+                  class="group relative h-[30rem] w-full shrink-0 overflow-hidden bg-[#08162e] sm:w-1/2 lg:w-1/4"
+                  :aria-label="`Open service detail: ${service.title}`"
+                >
+                  <img :src="service.image" :alt="service.title" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]">
+                  <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,14,31,0.04)_0%,rgba(4,14,31,0.36)_43%,rgba(4,14,31,0.82)_100%)]"></div>
+                  <div class="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
+                    <p class="mb-3 max-w-[15rem] truncate text-[0.72rem] font-medium uppercase tracking-normal text-white/78">
+                      {{ service.shortLabel }}
+                    </p>
+                    <h3 class="line-clamp-2 max-w-[17rem] text-[1.28rem] font-semibold leading-tight">{{ service.title }}</h3>
+                    <p class="mt-3 line-clamp-2 max-w-[17rem] text-[0.82rem] leading-5 text-white/76">{{ service.description }}</p>
+                  </div>
+                </NuxtLink>
               </div>
-            </NuxtLink>
-          </div>
+            </div>
+          </template>
 
-          <div v-else class="brand-soft-panel p-6 text-center">
-            <p class="font-medium text-slate-500">{{ t('home.services.empty') }}</p>
+          <div v-else class="marketing-container pb-12">
+            <div class="brand-soft-panel p-6 text-center">
+              <p class="font-medium text-slate-500">{{ t('home.services.empty') }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -223,50 +239,39 @@
         </div>
 
         <div v-else-if="works.length" class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <NuxtLink
-            v-for="project in works.slice(0, 4)"
-            :key="project.id"
-            :to="`/projects/${project.slug}`"
-            class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-[0_12px_32px_rgba(18,56,122,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.11)]"
-            :aria-label="`Open project detail: ${project.title}`"
-            v-motion-fade-up
-          >
-            <img
-              :src="project.image_url || defaultProjectImage"
-              :alt="project.title"
-              class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+            <NuxtLink
+              v-for="project in works.slice(0, 4)"
+              :key="project.id"
+              :to="`/projects/${project.slug}`"
+              class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-[0_12px_32px_rgba(18,56,122,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.11)]"
+              :aria-label="`Open project detail: ${project.title}`"
+              v-motion-fade-up
             >
-            <div class="p-4">
-              <div class="flex flex-wrap gap-2">
-                <span v-if="project.categoryName" class="brand-chip">{{ project.categoryName }}</span>
-                <span v-if="project.client" class="brand-chip">{{ project.client }}</span>
+              <img
+                :src="project.image_url || defaultProjectImage"
+                :alt="project.title"
+                class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+              >
+              <div class="p-4">
+                <div class="flex flex-wrap gap-2">
+                  <span v-if="project.categoryName" class="brand-chip">{{ project.categoryName }}</span>
+                  <span v-if="project.client" class="brand-chip">{{ project.client }}</span>
+                </div>
+                <h3 class="mt-4 line-clamp-2 text-[1.08rem] font-semibold leading-tight text-[#0e2344]">{{ project.title }}</h3>
+                <p class="mt-2 line-clamp-3 text-[0.84rem] leading-6 text-slate-600">{{ stripHtml(project.description) }}</p>
+                <div class="mt-4">
+                  <span class="btn-outline px-4 py-2 text-xs">
+                    {{ t('home.projects.detail') }}
+                  </span>
+                </div>
               </div>
-              <h3 class="mt-4 line-clamp-2 text-[1.08rem] font-bold leading-tight text-[#0e2344]">{{ project.title }}</h3>
-              <p class="mt-2 line-clamp-3 text-[0.84rem] leading-6 text-slate-600">{{ stripHtml(project.description) }}</p>
-              <div class="mt-4">
-                <span class="btn-outline px-4 py-2 text-xs">
-                  {{ t('home.projects.detail') }}
-                </span>
-              </div>
-            </div>
-          </NuxtLink>
-        </div>
+            </NuxtLink>
+          </div>
 
         <div v-else class="mt-8 brand-soft-panel p-6 text-center">
           <p class="font-medium text-slate-500">{{ t('home.projects.empty') }}</p>
         </div>
 
-        <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <article
-            v-for="project in projectExperience"
-            :key="project.name"
-            class="border-t border-[#dbe6f4] pt-4"
-            v-motion-fade-up
-          >
-            <p class="brand-meta">{{ project.category }}</p>
-            <p class="mt-2 text-[0.92rem] font-bold leading-6 text-[#0e2344]">{{ project.name }}</p>
-          </article>
-        </div>
       </div>
     </section>
 
@@ -274,7 +279,7 @@
       <div class="marketing-container">
         <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <article>
-            <h2 class="text-[clamp(1.85rem,3vw,2.45rem)] font-bold leading-tight text-[#0e2344]">
+            <h2 class="text-[clamp(1.85rem,3vw,2.45rem)] font-semibold leading-tight text-[#0e2344]">
               {{ t('home.whyHavor.title') }}
             </h2>
             <p class="mt-4 text-[0.9rem] leading-7 text-slate-600">
@@ -282,7 +287,7 @@
             </p>
 
             <div class="mt-6 border-l-4 border-[#1f5dcc] pl-5">
-              <p class="text-[1rem] font-bold leading-7 text-[#0e2344]">
+              <p class="text-[1rem] font-semibold leading-7 text-[#0e2344]">
                 {{ t('home.whyHavor.highlight') }}
               </p>
             </div>
@@ -332,7 +337,7 @@
             <img :src="article.image_url" :alt="article.title" class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]">
             <div class="p-4">
               <p class="brand-meta">{{ article.category }}</p>
-              <h3 class="mt-2 line-clamp-2 text-[1.02rem] font-bold leading-snug text-[#0e2344]">{{ article.title }}</h3>
+              <h3 class="mt-2 line-clamp-2 text-[1.02rem] font-semibold leading-snug text-[#0e2344]">{{ article.title }}</h3>
               <p class="mt-2 line-clamp-2 text-[0.84rem] leading-6 text-slate-600">{{ article.excerpt }}</p>
             </div>
           </NuxtLink>
@@ -365,8 +370,8 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowRight, BrainCircuit, CheckCircle2, Globe2, MonitorSmartphone, ServerCog } from 'lucide-vue-next'
-import { computed, onMounted } from 'vue'
+import { ArrowLeft, ArrowRight, BrainCircuit, CheckCircle2, Globe2, MonitorSmartphone, ServerCog } from 'lucide-vue-next'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 definePageMeta({
   layout: 'public'
@@ -430,9 +435,134 @@ const serviceFocus = computed(() =>
   }))
 )
 
-const projectExperience = computed(() =>
-  tm<Array<{ name: string, category: string }>>('home.projects.examples') || []
-)
+const serviceShortLabel = (title: string) => {
+  const text = title.toLowerCase()
+
+  if (text.includes('dashboard') || text.includes('data')) return 'Dashboard'
+  if (text.includes('website') || text.includes('web')) return 'Website'
+  if (text.includes('cms')) return 'CMS'
+  if (text.includes('mobile')) return 'Mobile'
+  if (text.includes('api') || text.includes('backend')) return 'Integration'
+  if (text.includes('ai')) return 'AI'
+  if (text.includes('enterprise')) return 'Enterprise'
+
+  return 'Service'
+}
+
+const serviceCarouselRef = ref<HTMLElement | null>(null)
+const activeServiceIndex = ref(0)
+const isServiceCarouselPaused = ref(false)
+let serviceCarouselTimer: ReturnType<typeof setInterval> | null = null
+
+const serviceCarouselItems = computed(() => {
+  if (expertise.value.length) {
+    return expertise.value.map((service, index) => ({
+      key: `api-${service.id}`,
+      title: service.name,
+      description: stripHtml(service.description),
+      image: service.icon_url || serviceImages[index % serviceImages.length] || defaultServiceImage,
+      href: `/services/${service.slug}`,
+      icon: null,
+      shortLabel: serviceShortLabel(service.name)
+    }))
+  }
+
+  return serviceFocus.value.map((service, index) => ({
+    key: `focus-${service.title}`,
+    title: service.title,
+    description: service.description,
+    image: service.image,
+    href: '/services',
+    icon: service.icon || serviceIcons[index] || ServerCog,
+    shortLabel: serviceShortLabel(service.title)
+  }))
+})
+
+const stopServiceCarousel = () => {
+  if (!serviceCarouselTimer) return
+  clearInterval(serviceCarouselTimer)
+  serviceCarouselTimer = null
+}
+
+const serviceCardStep = () => {
+  const container = serviceCarouselRef.value
+  if (!container) return 0
+
+  const card = container.querySelector<HTMLElement>('[data-service-card]')
+  if (!card) return container.clientWidth
+
+  return card.offsetWidth
+}
+
+const currentServiceCarouselIndex = () => {
+  const container = serviceCarouselRef.value
+  const step = serviceCardStep()
+  if (!container || !step) return activeServiceIndex.value
+
+  return Math.round(container.scrollLeft / step)
+}
+
+const serviceCarouselMaxScroll = () => {
+  const container = serviceCarouselRef.value
+  if (!container) return 0
+
+  return Math.max(container.scrollWidth - container.clientWidth, 0)
+}
+
+const scrollServiceCarousel = async (index: number) => {
+  const itemCount = serviceCarouselItems.value.length
+  if (!import.meta.client || !itemCount) return
+
+  await nextTick()
+
+  const container = serviceCarouselRef.value
+  if (!container) return
+
+  const normalizedIndex = ((index % itemCount) + itemCount) % itemCount
+  const maxScroll = serviceCarouselMaxScroll()
+  const targetScroll = Math.min(serviceCardStep() * normalizedIndex, maxScroll)
+
+  activeServiceIndex.value = normalizedIndex
+  container.scrollTo({ left: targetScroll, behavior: 'smooth' })
+}
+
+const startServiceCarousel = () => {
+  stopServiceCarousel()
+  if (!import.meta.client || serviceCarouselItems.value.length <= 1) return
+
+  serviceCarouselTimer = setInterval(() => {
+    if (isServiceCarouselPaused.value) return
+    goToNextService()
+  }, 4200)
+}
+
+const goToNextService = () => {
+  const container = serviceCarouselRef.value
+  if (container && container.scrollLeft >= serviceCarouselMaxScroll() - 2) {
+    scrollServiceCarousel(0)
+    return
+  }
+
+  scrollServiceCarousel(currentServiceCarouselIndex() + 1)
+}
+
+const goToPreviousService = () => {
+  const container = serviceCarouselRef.value
+  if (container && container.scrollLeft <= 2) {
+    scrollServiceCarousel(serviceCarouselItems.value.length - 1)
+    return
+  }
+
+  scrollServiceCarousel(currentServiceCarouselIndex() - 1)
+}
+
+const pauseServiceCarousel = () => {
+  isServiceCarouselPaused.value = true
+}
+
+const resumeServiceCarousel = () => {
+  isServiceCarouselPaused.value = false
+}
 
 const whyPoints = computed(() =>
   tm<Array<{ title: string, description: string }>>('home.whyHavor.points') || []
@@ -457,5 +587,14 @@ onMounted(() => {
   fetchNews()
   fetchClients()
   fetchBanners()
+  startServiceCarousel()
+})
+
+onBeforeUnmount(stopServiceCarousel)
+
+watch(() => serviceCarouselItems.value.length, async () => {
+  activeServiceIndex.value = 0
+  await scrollServiceCarousel(0)
+  startServiceCarousel()
 })
 </script>
