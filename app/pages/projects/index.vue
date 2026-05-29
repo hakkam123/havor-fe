@@ -16,7 +16,7 @@
           description="A curated breakdown of the kinds of work Havor supports across sectors and operational needs."
         />
 
-        <div class="mt-10 grid gap-5 border-y border-[#dbe6f4] py-6 lg:grid-cols-[0.42fr_0.58fr]" v-motion-fade-up>
+        <div class="mt-8 grid gap-5 border-y border-[#dbe6f4] py-5 lg:grid-cols-[0.42fr_0.58fr]" v-motion-fade-up>
           <div>
             <label for="project-category" class="brand-meta">Project Category</label>
             <select
@@ -51,7 +51,7 @@
           description="Each project combines a real organizational challenge, a structured delivery response, and a clear digital outcome."
         />
 
-        <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <NuxtLink
             v-for="project in filteredProjects"
             :key="project.title"
@@ -63,17 +63,17 @@
             <img
               :src="project.image_url"
               :alt="project.title"
-              class="h-56 w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+              class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
             >
-            <div class="px-5 py-5 sm:px-5 sm:py-5">
+            <div class="p-4">
               <div class="flex flex-wrap gap-2">
                 <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-medium uppercase tracking-normal text-[#1f5dcc]">{{ project.categoryName }}</span>
                 <span v-if="project.client" class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-medium uppercase tracking-normal text-[#1f5dcc]">{{ project.client }}</span>
               </div>
-              <h3 class="mt-4 text-[1.28rem] font-semibold leading-[1.22] tracking-normal text-[#0e2344]">{{ project.title }}</h3>
-              <p class="mt-3 text-[0.92rem] leading-6 text-slate-600">{{ stripHtml(project.description) }}</p>
+              <h3 class="mt-3 line-clamp-2 text-[1.08rem] font-semibold leading-tight tracking-normal text-[#0e2344]">{{ project.title }}</h3>
+              <p class="mt-2 line-clamp-3 text-[0.84rem] leading-6 text-slate-600">{{ stripHtml(project.description) }}</p>
 
-              <div class="mt-5 inline-flex items-center gap-2 text-[0.82rem] font-medium uppercase tracking-normal text-[#1f5dcc]">
+              <div class="mt-4 inline-flex items-center gap-2 text-[0.74rem] font-medium uppercase tracking-normal text-[#1f5dcc]">
                 View Project Detail
               </div>
             </div>
@@ -81,7 +81,7 @@
 
           <div
             v-if="!works.length"
-            class="brand-panel px-6 py-12 text-center md:col-span-2 xl:col-span-3"
+            class="brand-panel px-6 py-8 text-center md:col-span-2 xl:col-span-3"
           >
             <h3 class="text-xl font-semibold text-[#0e2344]">Showcase coming soon</h3>
             <p class="mt-3 text-[0.92rem] leading-6 text-slate-600">
@@ -90,7 +90,7 @@
           </div>
           <div
             v-else-if="!filteredProjects.length"
-            class="brand-panel px-6 py-12 text-center md:col-span-2 xl:col-span-3"
+            class="brand-panel px-6 py-8 text-center md:col-span-2 xl:col-span-3"
           >
             <p class="text-[1rem] font-semibold text-[#0e2344]">No projects match your filter.</p>
             <p class="mt-2 text-[0.92rem] leading-6 text-slate-600">

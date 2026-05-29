@@ -1,22 +1,22 @@
 <template>
   <footer class="border-t border-[#dbe6f4] bg-[linear-gradient(180deg,#ffffff_0%,#f5f9ff_100%)]">
-    <div class="marketing-container py-16">
-      <div class="grid gap-10 lg:grid-cols-[1.2fr_0.85fr_0.85fr_0.9fr]">
+    <div class="marketing-container py-12">
+      <div class="grid gap-8 lg:grid-cols-[1.2fr_0.85fr_0.85fr_0.9fr]">
         <div>
-          <div class="mb-5 inline-flex items-center gap-3">
-            <img src="/logo-havor.svg" alt="Havor Smarta Digital" class="h-10 w-10 rounded-full object-cover">
+          <div class="mb-4 inline-flex items-center gap-3">
+            <img src="/logo-havor.svg" alt="Havor Smarta Digital" class="h-9 w-9 rounded-full object-cover">
             <div>
               <p class="text-sm font-semibold text-[#0e2344]">Havor Smarta Digital</p>
             </div>
           </div>
-          <p class="max-w-md text-sm leading-7 text-slate-600">
+          <p class="max-w-md text-[0.86rem] leading-6 text-slate-600">
             {{ t('footer.description') }}
           </p>
         </div>
 
         <div>
           <p class="text-sm font-semibold uppercase tracking-normal text-[#5374a8]">{{ t('footer.company') }}</p>
-          <ul class="mt-4 space-y-3 text-sm font-normal text-slate-600">
+          <ul class="mt-4 space-y-2.5 text-[0.86rem] font-normal text-slate-600">
             <li><NuxtLink to="/about-us" class="hover:text-[#1f5dcc]">{{ t('nav.about') }}</NuxtLink></li>
             <li><NuxtLink to="/services" class="hover:text-[#1f5dcc]">{{ t('nav.services') }}</NuxtLink></li>
             <li><NuxtLink to="/projects" class="hover:text-[#1f5dcc]">{{ t('nav.works') }}</NuxtLink></li>
@@ -26,14 +26,14 @@
 
         <div>
           <p class="text-sm font-semibold uppercase tracking-normal text-[#5374a8]">{{ t('footer.capabilities') }}</p>
-          <ul class="mt-4 space-y-3 text-sm font-normal text-slate-600">
+          <ul class="mt-4 space-y-2.5 text-[0.86rem] font-normal text-slate-600">
             <li v-for="item in capabilityItems" :key="item">{{ item }}</li>
           </ul>
         </div>
 
         <div>
           <p class="text-sm font-semibold uppercase tracking-normal text-[#5374a8]">{{ t('footer.contact') }}</p>
-          <ul class="mt-4 space-y-3 text-sm font-normal text-slate-600">
+          <ul class="mt-4 space-y-2.5 text-[0.86rem] font-normal text-slate-600">
             <li>{{ company.email }}</li>
             <li>{{ company.phone }}</li>
             <li>{{ company.office }}</li>
@@ -44,7 +44,7 @@
         </div>
       </div>
 
-      <div class="mt-10 flex flex-col gap-3 border-t border-[#dbe6f4] pt-6 text-xs font-normal text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+      <div class="mt-8 flex flex-col gap-3 border-t border-[#dbe6f4] pt-5 text-xs font-normal text-slate-500 sm:flex-row sm:items-center sm:justify-between">
         <p>{{ t('footer.copyright') }}</p>
         <div class="flex items-center gap-6">
           <NuxtLink to="/about-us" class="hover:text-[#1f5dcc]">{{ t('footer.privacy') }}</NuxtLink>

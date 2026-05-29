@@ -7,7 +7,7 @@
       <img
         :src="image"
         :alt="imageAlt || title"
-        class="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
+        class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105"
       >
       <div class="absolute inset-0 bg-gradient-to-t from-slate-900/45 via-transparent to-transparent opacity-80 transition-opacity group-hover:opacity-100"></div>
     </div>

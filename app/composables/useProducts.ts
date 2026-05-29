@@ -1,4 +1,5 @@
 import type { ApiProduct, Product } from '~/types/api'
+import { toSlug } from '~/composables/useSlug'
 
 export const useProducts = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
@@ -9,6 +10,7 @@ export const useProducts = () => {
   const normalizeProduct = (item: ApiProduct): Product => ({
     id: Number(item.id),
     name: String(item.name || ''),
+    slug: String(item.slug || toSlug(item.name)),
     description: String(item.description || ''),
     image_url: resolveAssetUrl(item.image_url),
     external_link: String(item.external_link || ''),

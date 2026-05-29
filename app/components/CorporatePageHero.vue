@@ -1,8 +1,7 @@
 <template>
   <section
     data-public-hero="true"
-    class="relative isolate overflow-hidden text-white"
-    :class="heroSize === 'half' ? 'min-h-[52vh] sm:min-h-[56vh] lg:min-h-[60vh]' : 'min-h-screen'"
+    class="relative isolate min-h-screen overflow-hidden text-white"
   >
     <img
       :src="image"
@@ -14,7 +13,7 @@
 
     <div
       class="marketing-container relative flex items-end"
-      :class="heroSize === 'half' ? 'min-h-[52vh] py-10 sm:min-h-[56vh] sm:py-12 lg:min-h-[60vh]' : 'min-h-screen py-14'"
+      :class="heroSize === 'half' ? 'min-h-screen py-12 sm:py-14 lg:py-16' : 'min-h-screen py-14 sm:py-16 lg:py-20'"
     >
       <div class="w-full pb-6 sm:pb-10 lg:pb-12">
         <div class="max-w-3xl" :class="heroSize === 'half' ? 'pt-28 sm:pt-32' : 'pt-32'">
@@ -23,13 +22,13 @@
           </p>
           <h1
             class="mt-6 font-semibold leading-tight tracking-normal text-white"
-            :class="heroSize === 'half' ? 'text-4xl sm:text-5xl lg:text-6xl' : 'text-5xl sm:text-6xl lg:text-7xl'"
+            :class="heroSize === 'half' ? 'text-[clamp(2.35rem,4vw,3.5rem)]' : 'text-[clamp(2.75rem,4.8vw,4.25rem)]'"
           >
             {{ title }}
           </h1>
           <p
             class="mt-5 max-w-2xl text-white/82"
-            :class="heroSize === 'half' ? 'text-[0.96rem] leading-7 sm:text-[1.02rem]' : 'text-base leading-8 sm:text-lg'"
+            :class="heroSize === 'half' ? 'text-[0.9rem] leading-6 sm:text-[0.96rem]' : 'text-[0.98rem] leading-7 sm:text-base'"
           >
             {{ subtitle }}
           </p>

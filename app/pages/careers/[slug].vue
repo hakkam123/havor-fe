@@ -15,24 +15,24 @@
     <section class="marketing-section pt-0">
       <div class="marketing-container">
         <div v-if="isLoading" class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div class="marketing-card animate-pulse p-8">
+          <div class="marketing-card animate-pulse p-6">
             <div class="h-5 w-24 rounded bg-slate-100"></div>
             <div class="mt-4 h-10 w-3/4 rounded bg-slate-100"></div>
             <div class="mt-4 h-4 w-full rounded bg-slate-100"></div>
             <div class="mt-2 h-4 w-5/6 rounded bg-slate-100"></div>
           </div>
-          <div class="marketing-card animate-pulse p-8">
-            <div class="h-56 rounded bg-slate-100"></div>
+          <div class="marketing-card animate-pulse p-6">
+            <div class="h-48 rounded bg-slate-100"></div>
           </div>
         </div>
 
-        <div v-else-if="!careerRole" class="marketing-card p-8 text-center">
+        <div v-else-if="!careerRole" class="marketing-card p-6 text-center">
           <h2 class="font-display text-2xl font-semibold text-slate-900">Position not found</h2>
           <p class="mt-3 text-sm text-slate-500">{{ error || 'The requested career opportunity is not available.' }}</p>
           <NuxtLink to="/careers" class="btn-primary mt-6 inline-flex">Back to Careers</NuxtLink>
         </div>
 
-        <div v-else class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+        <div v-else class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <article class="space-y-8" v-motion-fade-up>
             <div class="border-l-2 border-[#1f5dcc] pl-5">
               <p class="marketing-kicker">Position Details</p>
@@ -44,7 +44,7 @@
               </div>
             </div>
 
-            <div id="apply" class="relative isolate overflow-hidden rounded-lg p-8 text-white">
+            <div id="apply" class="relative isolate overflow-hidden rounded-lg p-6 text-white">
               <img
                 :src="careerRole.thumbnail || heroImage"
                 :alt="`${careerRole.job_title} application`"
@@ -60,7 +60,7 @@
           </article>
 
           <aside class="space-y-6" v-motion-fade-up>
-            <img :src="careerRole.thumbnail || heroImage" :alt="careerRole.job_title" class="h-72 w-full rounded-lg object-cover">
+            <img :src="careerRole.thumbnail || heroImage" :alt="careerRole.job_title" class="h-56 w-full rounded-lg object-cover">
 
             <div>
               <p class="marketing-kicker">Quick Facts</p>

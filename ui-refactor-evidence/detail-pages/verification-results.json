@@ -1,0 +1,58 @@
+{
+  "productHref": "",
+  "results": [
+    {
+      "name": "media-news-detail",
+      "route": "/media-news/improving-user-experience-through-structured-content-and-responsive-design",
+      "title": "Improving User Experience Through Structured Content and Responsive Design | Media & News | PT Havor SMART Digital",
+      "heroHeight": 768,
+      "viewportHeight": 768,
+      "hasHeroImage": true,
+      "articleTitle": "Improving User Experience Through Structured Content and Responsive Design",
+      "hasDetailContent": true,
+      "sideLinkCount": 8,
+      "relatedLinkCount": 12,
+      "horizontalOverflow": 0
+    },
+    {
+      "name": "project-detail",
+      "route": "/projects/marketplace-admin-management-dashboard",
+      "title": "Marketplace Admin Management Dashboard | Projects | PT Havor SMART Digital",
+      "heroHeight": 768,
+      "viewportHeight": 768,
+      "hasHeroImage": true,
+      "articleTitle": "Marketplace Admin Management Dashboard",
+      "hasDetailContent": true,
+      "sideLinkCount": 6,
+      "relatedLinkCount": 10,
+      "horizontalOverflow": 0
+    },
+    {
+      "name": "service-detail",
+      "route": "/services/api-integration-and-backend-development",
+      "title": "API Integration and Backend Development | Services | Havor Smarta Digital",
+      "heroHeight": 768,
+      "viewportHeight": 768,
+      "hasHeroImage": true,
+      "articleTitle": "API Integration and Backend Development",
+      "hasDetailContent": true,
+      "sideLinkCount": 6,
+      "relatedLinkCount": 10,
+      "horizontalOverflow": 0
+    },
+    {
+      "name": "product-detail",
+      "route": "/products/havor-cms-starter",
+      "title": "Havor CMS Starter | Products | PT Havor SMART Digital",
+      "heroHeight": 768,
+      "viewportHeight": 768,
+      "hasHeroImage": true,
+      "articleTitle": "Havor CMS Starter",
+      "hasDetailContent": true,
+      "sideLinkCount": 7,
+      "relatedLinkCount": 11,
+      "horizontalOverflow": 0
+    }
+  ],
+  "problematicConsole": []
+}

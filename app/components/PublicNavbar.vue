@@ -5,16 +5,16 @@
     :class="isPastHero ? 'bg-white/96 shadow-[0_18px_60px_rgba(15,23,42,0.12)] backdrop-blur-xl' : 'bg-transparent'"
   >
     <div class="marketing-container">
-      <div class="flex min-h-[92px] items-center justify-between gap-6">
+      <div class="flex min-h-[76px] items-center justify-between gap-5">
         <NuxtLink to="/" class="flex items-center gap-3">
           <span
-            class="flex h-12 w-12 items-center justify-center rounded-full border p-1 transition-all duration-300 ease-out"
+            class="flex h-10 w-10 items-center justify-center rounded-full border p-1 transition-all duration-300 ease-out"
             :class="isPastHero ? 'border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]' : 'border-white/25 bg-white/[0.92] shadow-[0_12px_32px_rgba(2,6,23,0.28)]'"
           >
-            <img src="/logo-havor.svg" alt="PT Havor SMART Digital" class="h-10 w-10 rounded-full object-cover">
+            <img src="/logo-havor.svg" alt="PT Havor SMART Digital" class="h-8 w-8 rounded-full object-cover">
           </span>
           <div class="hidden sm:block">
-            <p class="text-sm font-semibold uppercase tracking-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-950' : 'text-white'">Havor</p>
+            <p class="text-[0.82rem] font-semibold uppercase tracking-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-950' : 'text-white'">Havor</p>
             <p class="text-xs font-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-500' : 'text-white/80'">Smarta Digital</p>
           </div>
         </NuxtLink>
@@ -24,7 +24,7 @@
             v-for="item in navItems"
             :key="item.to"
             :to="item.to"
-            class="rounded-full px-4 py-2.5 text-sm transition-all duration-300 ease-out"
+            class="rounded-full px-3 py-2 text-[0.86rem] transition-all duration-300 ease-out"
             :class="navLinkClass(item.to)"
           >
             {{ t(item.labelKey) }}
@@ -34,7 +34,7 @@
         <div class="hidden items-center gap-3 lg:flex">
           <button
             type="button"
-            class="inline-flex items-center justify-center gap-2 px-1 py-2 text-sm font-medium uppercase transition-all duration-300 ease-out hover:font-semibold"
+            class="inline-flex items-center justify-center gap-2 px-1 py-2 text-[0.86rem] font-medium uppercase transition-all duration-300 ease-out hover:font-semibold"
             :class="isPastHero ? 'text-slate-700 hover:text-slate-950' : 'text-white/90 hover:text-white'"
             aria-label="Switch language"
             @click="toggleLocale"
@@ -44,7 +44,7 @@
           </button>
           <NuxtLink
             to="/#contact"
-            class="inline-flex items-center justify-center px-1 py-2 text-sm font-medium transition-all duration-300 ease-out hover:font-semibold"
+            class="inline-flex items-center justify-center px-1 py-2 text-[0.86rem] font-medium transition-all duration-300 ease-out hover:font-semibold"
             :class="isPastHero ? 'text-slate-700 hover:text-slate-950' : 'text-white/90 hover:text-white'"
           >
             {{ t('nav.contact') }}
@@ -53,7 +53,7 @@
 
         <button
           type="button"
-          class="inline-flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 ease-out lg:hidden"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-300 ease-out lg:hidden"
           :class="isPastHero ? 'border-slate-200 bg-white text-slate-950 hover:bg-slate-50' : 'border-white/25 bg-white/10 text-white backdrop-blur-sm hover:bg-white/15'"
           :aria-expanded="isOpen"
           aria-label="Toggle navigation menu"
@@ -161,7 +161,7 @@ const handleScroll = () => {
     return
   }
 
-  const headerHeight = headerRef.value?.offsetHeight ?? 92
+  const headerHeight = headerRef.value?.offsetHeight ?? 76
   isPastHero.value = heroSection.getBoundingClientRect().bottom <= headerHeight + 16
 }
 

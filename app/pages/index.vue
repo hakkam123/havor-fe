@@ -3,19 +3,17 @@
     <LandingHeroCarousel
       :title="t('home.hero.title')"
       :subtitle="t('home.hero.subtitle')"
-      :primary-cta="t('home.hero.primaryCta')"
-      :secondary-cta="t('home.hero.secondaryCta')"
       :slides="heroSlides"
     />
 
     <section class="brand-section bg-white">
       <div class="marketing-container">
-        <div class="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div class="relative overflow-hidden rounded-lg">
             <img
               :src="featuredImage"
               alt="Integrated digital platform"
-              class="h-[22rem] w-full object-cover sm:h-[30rem]"
+              class="h-[18rem] w-full object-cover sm:h-[24rem]"
             >
             <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,11,24,0)_34%,rgba(3,11,24,0.72)_100%)]"></div>
             <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -27,18 +25,18 @@
 
           <div class="lg:pl-8">
             <p class="brand-meta">{{ t('home.featured.label') }}</p>
-            <h2 class="mt-4 max-w-3xl text-3xl font-bold leading-tight text-[#0e2344] sm:text-4xl lg:text-5xl">
+            <h2 class="mt-4 max-w-3xl text-[clamp(1.9rem,3vw,2.65rem)] font-bold leading-tight text-[#0e2344]">
               {{ t('home.featured.title') }}
             </h2>
-            <p class="mt-5 max-w-2xl text-[0.98rem] leading-8 text-slate-600">
+            <p class="mt-4 max-w-2xl text-[0.9rem] leading-7 text-slate-600">
               {{ t('home.featured.description') }}
             </p>
 
-            <div class="mt-8 space-y-4">
+            <div class="mt-6 space-y-3">
               <div
                 v-for="item in aboutPoints"
                 :key="item"
-                class="flex gap-3 border-t border-[#e2eaf5] pt-4"
+                class="flex gap-3 border-t border-[#e2eaf5] pt-3"
                 v-motion-fade-up
               >
                 <CheckCircle2 class="mt-0.5 h-5 w-5 shrink-0 text-[#1f5dcc]" />
@@ -46,7 +44,7 @@
               </div>
             </div>
 
-            <NuxtLink to="/about-us" class="btn-outline mt-8">
+            <NuxtLink to="/about-us" class="btn-outline mt-6">
               {{ t('home.featured.button') }}
             </NuxtLink>
           </div>
@@ -54,7 +52,7 @@
       </div>
     </section>
 
-    <section id="about" class="relative isolate overflow-hidden py-24 text-white sm:py-28">
+    <section id="about" class="relative isolate overflow-hidden py-16 text-white sm:py-20">
       <img
         :src="aboutImage"
         alt="About Havor Smarta Digital"
@@ -64,17 +62,17 @@
       <div class="marketing-container">
         <div class="relative max-w-3xl">
           <p class="text-xs font-bold uppercase text-white/68">{{ t('home.about.kicker') }}</p>
-          <h2 class="mt-4 text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
+          <h2 class="mt-4 text-[clamp(1.9rem,3.2vw,2.8rem)] font-bold leading-tight">
             {{ t('home.about.title') }}
           </h2>
-          <p class="mt-5 max-w-2xl text-base leading-8 text-white/82">
+          <p class="mt-4 max-w-2xl text-[0.94rem] leading-7 text-white/82">
             {{ t('home.about.intro') }}
           </p>
-          <div class="mt-8 flex flex-wrap gap-3">
-            <NuxtLink to="/services" class="inline-flex rounded-full bg-white px-5 py-3 text-sm font-bold text-[#0e2344] transition hover:bg-[#edf4ff]">
+          <div class="mt-7 flex flex-wrap gap-3">
+            <NuxtLink to="/services" class="inline-flex rounded-full bg-white px-5 py-2.5 text-[0.84rem] font-bold text-[#0e2344] transition hover:bg-[#edf4ff]">
               {{ t('home.about.servicesCta') }}
             </NuxtLink>
-            <NuxtLink to="/projects" class="inline-flex rounded-full border border-white/30 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur-sm transition hover:bg-white/18">
+            <NuxtLink to="/projects" class="inline-flex rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-[0.84rem] font-bold text-white backdrop-blur-sm transition hover:bg-white/18">
               {{ t('home.about.projectsCta') }}
             </NuxtLink>
           </div>
@@ -89,15 +87,15 @@
           :description="t('home.highlights.intro')"
         />
 
-        <div class="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <article
             v-for="item in highlightItems"
             :key="item.label"
             class="border-t border-[#dbe6f4] pt-5"
             v-motion-fade-up
           >
-            <p class="text-4xl font-bold leading-none text-[#1f5dcc] sm:text-5xl">{{ item.value }}</p>
-            <h3 class="mt-4 text-lg font-bold leading-tight text-[#0e2344]">{{ item.label }}</h3>
+            <p class="text-3xl font-bold leading-none text-[#1f5dcc] sm:text-4xl">{{ item.value }}</p>
+            <h3 class="mt-3 text-[1rem] font-bold leading-tight text-[#0e2344]">{{ item.label }}</h3>
             <p class="mt-3 text-sm leading-6 text-slate-600">{{ item.description }}</p>
           </article>
         </div>
@@ -106,13 +104,13 @@
 
     <section class="brand-section bg-[#f5f8fc]">
       <div class="marketing-container">
-        <div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+        <div class="grid gap-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
             <p class="brand-meta">{{ t('home.clients.label') }}</p>
-            <h2 class="mt-3 text-3xl font-bold leading-tight text-[#0e2344] sm:text-4xl">
+            <h2 class="mt-3 text-[clamp(1.85rem,3vw,2.4rem)] font-bold leading-tight text-[#0e2344]">
               {{ t('home.clients.title') }}
             </h2>
-            <p class="mt-4 text-[0.98rem] leading-8 text-slate-600">
+            <p class="mt-3 text-[0.9rem] leading-7 text-slate-600">
               {{ t('home.clients.intro') }}
             </p>
           </div>
@@ -140,7 +138,7 @@
             </article>
           </div>
 
-          <div v-else class="brand-soft-panel p-8 text-center">
+          <div v-else class="brand-soft-panel p-6 text-center">
             <p class="font-medium text-slate-500">{{ t('home.clients.empty') }}</p>
           </div>
         </div>
@@ -158,20 +156,20 @@
           </template>
         </SectionHeading>
 
-        <div class="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <article
             v-for="item in serviceFocus"
             :key="item.title"
-            class="group relative min-h-[20rem] overflow-hidden rounded-lg bg-[#08162e]"
+            class="group relative min-h-[16.5rem] overflow-hidden rounded-lg bg-[#08162e]"
             v-motion-fade-up
           >
             <img :src="item.image" :alt="item.title" class="absolute inset-0 h-full w-full object-cover opacity-74 transition duration-500 group-hover:scale-[1.04]">
             <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,14,31,0.08)_0%,rgba(4,14,31,0.9)_100%)]"></div>
             <div class="absolute inset-x-0 bottom-0 p-5 text-white">
               <component :is="item.icon" class="h-6 w-6 text-[#8dbdff]" />
-              <h3 class="mt-4 text-xl font-bold leading-tight">{{ item.title }}</h3>
-              <p class="mt-3 line-clamp-4 text-sm leading-6 text-white/76">{{ item.description }}</p>
-              <span class="mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase text-white/82">
+              <h3 class="mt-3 text-[1.08rem] font-bold leading-tight">{{ item.title }}</h3>
+              <p class="mt-2 line-clamp-3 text-[0.82rem] leading-5 text-white/76">{{ item.description }}</p>
+              <span class="mt-4 inline-flex items-center gap-2 text-[0.68rem] font-bold uppercase text-white/82">
                 {{ t('home.services.explore') }}
                 <ArrowRight class="h-4 w-4" />
               </span>
@@ -179,9 +177,9 @@
           </article>
         </div>
 
-        <div class="mt-12 border-t border-[#dbe6f4] pt-10">
+        <div class="mt-10 border-t border-[#dbe6f4] pt-8">
           <div v-if="isLoadingExpertise && !expertise.length" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div v-for="item in 4" :key="item" class="brand-skeleton h-56"></div>
+            <div v-for="item in 4" :key="item" class="brand-skeleton h-48"></div>
           </div>
 
           <div v-else-if="expertise.length" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -189,20 +187,20 @@
               v-for="service in expertise.slice(0, 4)"
               :key="service.id"
               :to="`/services/${service.slug}`"
-              class="group relative min-h-[18rem] overflow-hidden rounded-lg"
+              class="group relative min-h-[14.5rem] overflow-hidden rounded-lg"
               :aria-label="`Open ${service.name} service detail`"
               v-motion-fade-up
             >
               <img :src="service.icon_url || defaultServiceImage" :alt="service.name" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]">
               <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,14,31,0.12)_0%,rgba(4,14,31,0.88)_100%)]"></div>
               <div class="absolute inset-x-0 bottom-0 p-5">
-                <h3 class="text-xl font-bold leading-tight text-white">{{ service.name }}</h3>
-                <p v-if="service.description" class="mt-2 line-clamp-2 text-sm leading-6 text-white/76">{{ stripHtml(service.description) }}</p>
+                <h3 class="text-[1.08rem] font-bold leading-tight text-white">{{ service.name }}</h3>
+                <p v-if="service.description" class="mt-2 line-clamp-2 text-[0.82rem] leading-5 text-white/76">{{ stripHtml(service.description) }}</p>
               </div>
             </NuxtLink>
           </div>
 
-          <div v-else class="brand-soft-panel p-8 text-center">
+          <div v-else class="brand-soft-panel p-6 text-center">
             <p class="font-medium text-slate-500">{{ t('home.services.empty') }}</p>
           </div>
         </div>
@@ -220,47 +218,45 @@
           </template>
         </SectionHeading>
 
-        <div v-if="isLoadingWorks && !works.length" class="mt-10 grid gap-5 lg:grid-cols-2">
-          <div v-for="item in 4" :key="item" class="brand-skeleton h-80"></div>
+        <div v-if="isLoadingWorks && !works.length" class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div v-for="item in 4" :key="item" class="brand-skeleton h-72"></div>
         </div>
 
-        <div v-else-if="works.length" class="mt-10 grid gap-5 lg:grid-cols-2">
-          <article
-            v-for="(project, index) in works.slice(0, 4)"
+        <div v-else-if="works.length" class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <NuxtLink
+            v-for="project in works.slice(0, 4)"
             :key="project.id"
-            class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-[0_14px_42px_rgba(18,56,122,0.07)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(18,56,122,0.12)]"
-            :class="index === 0 ? 'lg:col-span-2' : ''"
+            :to="`/projects/${project.slug}`"
+            class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-[0_12px_32px_rgba(18,56,122,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.11)]"
+            :aria-label="`Open project detail: ${project.title}`"
             v-motion-fade-up
           >
-            <div class="grid gap-0" :class="index === 0 ? 'lg:grid-cols-[1.05fr_0.95fr]' : ''">
-              <img
-                :src="project.image_url || defaultProjectImage"
-                :alt="project.title"
-                class="h-72 w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-                :class="index === 0 ? 'lg:h-full' : ''"
-              >
-              <div class="p-6 sm:p-7">
-                <div class="flex flex-wrap gap-2">
-                  <span v-if="project.categoryName" class="brand-chip">{{ project.categoryName }}</span>
-                  <span v-if="project.client" class="brand-chip">{{ project.client }}</span>
-                </div>
-                <h3 class="mt-5 text-2xl font-bold leading-tight text-[#0e2344]">{{ project.title }}</h3>
-                <p class="mt-3 text-[0.94rem] leading-7 text-slate-600">{{ stripHtml(project.description) }}</p>
-                <div class="mt-6">
-                  <NuxtLink :to="`/projects/${project.slug}`" class="btn-outline px-4 py-2.5 text-xs">
-                    {{ t('home.projects.detail') }}
-                  </NuxtLink>
-                </div>
+            <img
+              :src="project.image_url || defaultProjectImage"
+              :alt="project.title"
+              class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+            >
+            <div class="p-4">
+              <div class="flex flex-wrap gap-2">
+                <span v-if="project.categoryName" class="brand-chip">{{ project.categoryName }}</span>
+                <span v-if="project.client" class="brand-chip">{{ project.client }}</span>
+              </div>
+              <h3 class="mt-4 line-clamp-2 text-[1.08rem] font-bold leading-tight text-[#0e2344]">{{ project.title }}</h3>
+              <p class="mt-2 line-clamp-3 text-[0.84rem] leading-6 text-slate-600">{{ stripHtml(project.description) }}</p>
+              <div class="mt-4">
+                <span class="btn-outline px-4 py-2 text-xs">
+                  {{ t('home.projects.detail') }}
+                </span>
               </div>
             </div>
-          </article>
+          </NuxtLink>
         </div>
 
-        <div v-else class="mt-10 brand-soft-panel p-8 text-center">
+        <div v-else class="mt-8 brand-soft-panel p-6 text-center">
           <p class="font-medium text-slate-500">{{ t('home.projects.empty') }}</p>
         </div>
 
-        <div class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <article
             v-for="project in projectExperience"
             :key="project.name"
@@ -268,7 +264,7 @@
             v-motion-fade-up
           >
             <p class="brand-meta">{{ project.category }}</p>
-            <p class="mt-2 text-[1.02rem] font-bold leading-6 text-[#0e2344]">{{ project.name }}</p>
+            <p class="mt-2 text-[0.92rem] font-bold leading-6 text-[#0e2344]">{{ project.name }}</p>
           </article>
         </div>
       </div>
@@ -276,17 +272,17 @@
 
     <section class="brand-section bg-[#f5f8fc]">
       <div class="marketing-container">
-        <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+        <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
           <article>
-            <h2 class="text-3xl font-bold leading-tight text-[#0e2344] sm:text-4xl">
+            <h2 class="text-[clamp(1.85rem,3vw,2.45rem)] font-bold leading-tight text-[#0e2344]">
               {{ t('home.whyHavor.title') }}
             </h2>
-            <p class="mt-5 text-[0.98rem] leading-8 text-slate-600">
+            <p class="mt-4 text-[0.9rem] leading-7 text-slate-600">
               {{ t('home.whyHavor.intro') }}
             </p>
 
-            <div class="mt-8 border-l-4 border-[#1f5dcc] pl-5">
-              <p class="text-[1.12rem] font-bold leading-8 text-[#0e2344]">
+            <div class="mt-6 border-l-4 border-[#1f5dcc] pl-5">
+              <p class="text-[1rem] font-bold leading-7 text-[#0e2344]">
                 {{ t('home.whyHavor.highlight') }}
               </p>
             </div>
@@ -296,11 +292,11 @@
             <article
               v-for="point in whyPoints"
               :key="point.title"
-              class="rounded-lg border border-[#dbe6f4] bg-white p-5 shadow-sm"
+              class="rounded-lg border border-[#dbe6f4] bg-white p-4 shadow-sm"
               v-motion-fade-up
             >
               <h3 class="brand-card-title">{{ point.title }}</h3>
-              <p class="mt-3 brand-card-copy">{{ point.description }}</p>
+              <p class="mt-2.5 brand-card-copy">{{ point.description }}</p>
             </article>
           </div>
         </div>
@@ -309,7 +305,7 @@
 
     <section class="brand-section bg-white">
       <div class="marketing-container">
-        <div class="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+        <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <SectionHeading
             :title="t('home.insights.title')"
             :description="t('home.insights.intro')"
@@ -320,42 +316,29 @@
           </div>
         </div>
 
-        <div v-if="isLoadingNews && !news.length" class="mt-10 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-          <div class="brand-skeleton h-[28rem]"></div>
-          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
-            <div v-for="item in 3" :key="item" class="brand-skeleton h-40"></div>
-          </div>
+        <div v-if="isLoadingNews && !news.length" class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div v-for="item in 3" :key="item" class="brand-skeleton h-72"></div>
         </div>
 
-        <div v-else-if="displayNews.length" class="mt-10 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-          <article class="group relative min-h-[30rem] overflow-hidden rounded-lg" v-motion-fade-up>
-            <img :src="displayNews[0].image_url" :alt="displayNews[0].title" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]">
-            <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,14,31,0.05)_0%,rgba(4,14,31,0.88)_100%)]"></div>
-            <div class="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
-              <p class="text-xs font-semibold uppercase text-white/70">{{ displayNews[0].category }}</p>
-              <h3 class="mt-3 max-w-2xl text-2xl font-bold leading-tight sm:text-3xl">{{ displayNews[0].title }}</h3>
-              <p class="mt-3 max-w-xl text-sm leading-6 text-white/74">{{ displayNews[0].excerpt }}</p>
+        <div v-else-if="displayNews.length" class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <NuxtLink
+            v-for="article in displayNews.slice(0, 6)"
+            :key="article.id"
+            :to="article.slug ? `/media-news/${article.slug}` : '/media-news'"
+            class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.1)]"
+            :aria-label="`Open news detail: ${article.title}`"
+            v-motion-fade-up
+          >
+            <img :src="article.image_url" :alt="article.title" class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]">
+            <div class="p-4">
+              <p class="brand-meta">{{ article.category }}</p>
+              <h3 class="mt-2 line-clamp-2 text-[1.02rem] font-bold leading-snug text-[#0e2344]">{{ article.title }}</h3>
+              <p class="mt-2 line-clamp-2 text-[0.84rem] leading-6 text-slate-600">{{ article.excerpt }}</p>
             </div>
-          </article>
-
-          <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
-            <article
-              v-for="article in displayNews.slice(1, 5)"
-              :key="article.id"
-              class="grid overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-sm sm:grid-cols-[0.8fr_1.2fr] lg:min-h-[9.4rem]"
-              v-motion-fade-up
-            >
-              <img :src="article.image_url" :alt="article.title" class="h-44 w-full object-cover sm:h-full">
-              <div class="p-4">
-                <p class="brand-meta">{{ article.category }}</p>
-                <h3 class="mt-2 text-[1rem] font-bold leading-snug text-[#0e2344]">{{ article.title }}</h3>
-                <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{{ article.excerpt }}</p>
-              </div>
-            </article>
-          </div>
+          </NuxtLink>
         </div>
 
-        <div v-else class="mt-10 brand-soft-panel p-8 text-center">
+        <div v-else class="mt-8 brand-soft-panel p-6 text-center">
           <p class="font-medium text-slate-500">{{ t('home.insights.empty') }}</p>
         </div>
       </div>
@@ -371,7 +354,7 @@
       :href="`mailto:${company.email}?subject=${encodeURIComponent('Contact PT Havor SMART Digital')}`"
     >
       <template #meta>
-        <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-white/72">
+        <div class="flex flex-wrap gap-x-5 gap-y-2 text-[0.84rem] font-semibold text-white/72">
           <span>{{ company.website }}</span>
           <span>{{ company.phone }}</span>
           <span>{{ company.email }}</span>
@@ -463,7 +446,8 @@ const displayNews = computed(() => {
     title: item.title,
     category: item.category,
     excerpt: item.summary,
-    image_url: item.image
+    image_url: item.image,
+    slug: ''
   }))
 })
 

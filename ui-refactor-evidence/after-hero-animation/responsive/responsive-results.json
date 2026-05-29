@@ -1,0 +1,22 @@
+[
+  {
+    "route": "/",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "heroHeight": 844,
+    "isFullScreen": true,
+    "horizontalOverflow": 0
+  },
+  {
+    "route": "/services",
+    "viewport": {
+      "width": 768,
+      "height": 1024
+    },
+    "heroHeight": 1024,
+    "isFullScreen": true,
+    "horizontalOverflow": 0
+  }
+]

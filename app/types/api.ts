@@ -107,6 +107,7 @@ export type NewsItem = {
 export type ApiProduct = {
   id: ApiId
   name?: string | null
+  slug?: string | null
   description?: string | null
   image_url?: string | null
   external_link?: string | null
@@ -118,6 +119,7 @@ export type ApiProduct = {
 export type Product = {
   id: number
   name: string
+  slug: string
   description: string
   image_url: string
   external_link: string

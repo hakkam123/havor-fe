@@ -8,30 +8,14 @@
     <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,11,24,0.84)_0%,rgba(3,11,24,0.56)_46%,rgba(3,11,24,0.3)_100%)]"></div>
     <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,11,24,0.38)_0%,rgba(3,11,24,0.12)_30%,rgba(3,11,24,0.72)_100%)]"></div>
 
-    <div class="marketing-container relative flex min-h-screen items-end py-16 sm:py-20 lg:py-24">
-      <div class="max-w-4xl pb-8 pt-32 sm:pb-10 lg:pb-12">
-        <h1 class="text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-7xl">
+    <div class="marketing-container relative flex min-h-screen items-end py-14 sm:py-16 lg:py-20">
+      <div class="max-w-3xl pb-8 pt-32 sm:pb-10 lg:pb-12">
+        <h1 class="text-[clamp(2.65rem,4.7vw,4rem)] font-bold leading-[1.04] text-white">
           {{ title }}
         </h1>
-        <p class="mt-6 max-w-2xl text-base leading-8 text-white/82 sm:text-lg">
+        <p class="mt-5 max-w-[40rem] text-[0.98rem] leading-7 text-white/82 sm:text-base">
           {{ subtitle }}
         </p>
-        <div v-if="primaryCta || secondaryCta" class="mt-8 flex flex-wrap gap-3">
-          <NuxtLink
-            v-if="primaryCta"
-            to="/#contact"
-            class="inline-flex items-center justify-center rounded-full bg-[#1f5dcc] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#164ca9]"
-          >
-            {{ primaryCta }}
-          </NuxtLink>
-          <NuxtLink
-            v-if="secondaryCta"
-            to="/#services"
-            class="inline-flex items-center justify-center rounded-full border border-white/35 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur-sm transition hover:bg-white/18"
-          >
-            {{ secondaryCta }}
-          </NuxtLink>
-        </div>
       </div>
     </div>
   </section>
@@ -43,8 +27,6 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 const props = defineProps<{
   title: string
   subtitle: string
-  primaryCta?: string
-  secondaryCta?: string
   slides: Array<{
     title: string
     description: string
