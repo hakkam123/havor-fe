@@ -1,37 +1,68 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+
 export const useCollection = (collectionPath: string) => {
   const { apiFetch } = useApi()
-  const items = ref<any[]>([])
-  const isLoading = ref(false)
+  const queryClient = useQueryClient()
+  const activeQuery = ref('')
+  const error = ref<string | null>(null)
+  const collectionQueryKey = computed(() => ['collection', collectionPath, activeQuery.value])
+
+  const loadItems = async () => {
+    return await apiFetch<any[]>(`/${collectionPath}${activeQuery.value}`)
+  }
+
+  const collectionQuery = useQuery({
+    queryKey: collectionQueryKey,
+    queryFn: loadItems
+  })
+
+  const items = computed(() => collectionQuery.data.value || [])
+  const isLoading = computed(() => collectionQuery.isLoading.value || collectionQuery.isFetching.value)
+
+  const invalidateCollection = () => queryClient.invalidateQueries({ queryKey: ['collection', collectionPath] })
 
   const fetchItems = async (query = '') => {
-    isLoading.value = true
+    activeQuery.value = query
+    error.value = null
     try {
-      const res = await apiFetch<any[]>(`/${collectionPath}${query}`)
-      items.value = res
-    } catch (e) {
-      console.error(`Failed to fetch ${collectionPath}`, e)
-    } finally {
-      isLoading.value = false
+      return await queryClient.ensureQueryData({
+        queryKey: collectionQueryKey.value,
+        queryFn: loadItems
+      })
+    } catch (fetchError) {
+      console.error(`Failed to fetch ${collectionPath}`, fetchError)
+      error.value = `Unable to load ${collectionPath} right now.`
+      return []
     }
   }
 
+  const createItemMutation = useMutation({
+    mutationFn: (payload: any) => apiFetch(`/${collectionPath}`, { method: 'POST', body: payload }),
+    onSuccess: () => invalidateCollection()
+  })
+
+  const updateItemMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number, payload: any }) =>
+      apiFetch(`/${collectionPath}/${id}`, { method: 'PUT', body: payload }),
+    onSuccess: () => invalidateCollection()
+  })
+
+  const deleteItemMutation = useMutation({
+    mutationFn: (id: number) => apiFetch(`/${collectionPath}/${id}`, { method: 'DELETE' }),
+    onSettled: () => invalidateCollection()
+  })
+
   const createItem = async (payload: any) => {
-    const res = await apiFetch(`/${collectionPath}`, { method: 'POST', body: payload })
-    await fetchItems()
-    return res
+    return createItemMutation.mutateAsync(payload)
   }
 
   const updateItem = async (id: number, payload: any) => {
-    const res = await apiFetch(`/${collectionPath}/${id}`, { method: 'PUT', body: payload })
-    await fetchItems()
-    return res
+    return updateItemMutation.mutateAsync({ id, payload })
   }
 
   const deleteItem = async (id: number) => {
-    const res = await apiFetch(`/${collectionPath}/${id}`, { method: 'DELETE' })
-    await fetchItems()
-    return res
+    return deleteItemMutation.mutateAsync(id)
   }
 
-  return { items, isLoading, fetchItems, createItem, updateItem, deleteItem }
+  return { items, isLoading, error, fetchItems, createItem, updateItem, deleteItem }
 }

@@ -1,11 +1,13 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiExpertise, Expertise } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
 
+const EXPERTISE_QUERY_KEY = ['expertise'] as const
+
 export const useExpertise = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const expertise = ref<Expertise[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const queryClient = useQueryClient()
+  const mutationError = ref<string | null>(null)
 
   const normalizeExpertise = (item: ApiExpertise): Expertise => ({
     id: Number(item.id),
@@ -15,20 +17,19 @@ export const useExpertise = () => {
     icon_url: resolveAssetUrl(item.icon_url)
   })
 
-  const fetchExpertise = async () => {
-    isLoading.value = true
-    error.value = null
-    try {
-      const res = await apiFetch<ApiExpertise[]>('/expertise')
-      expertise.value = (res || []).map(normalizeExpertise)
-    } catch (fetchError) {
-      console.error('Failed to fetch expertise', fetchError)
-      expertise.value = []
-      error.value = 'Unable to load expertise right now.'
-    } finally {
-      isLoading.value = false
-    }
+  const loadExpertise = async () => {
+    const res = await apiFetch<ApiExpertise[]>('/expertise')
+    return (res || []).map(normalizeExpertise)
   }
+
+  const expertiseQuery = useQuery({
+    queryKey: EXPERTISE_QUERY_KEY,
+    queryFn: loadExpertise
+  })
+
+  const expertise = computed(() => expertiseQuery.data.value || [])
+  const isLoading = computed(() => expertiseQuery.isLoading.value || expertiseQuery.isFetching.value)
+  const error = computed(() => mutationError.value || (expertiseQuery.error.value ? 'Unable to load expertise right now.' : null))
 
   const toExpertiseFormData = (payload: any) => toFormData({
     name: payload.name,
@@ -36,30 +37,66 @@ export const useExpertise = () => {
     icon_url: payload.iconFile ?? payload.icon_url
   })
 
-  const createExpertise = async (payload: any) => {
-    const res = await apiFetch<ApiExpertise>('/expertise', {
+  const fetchExpertise = async () => {
+    mutationError.value = null
+    try {
+      return await queryClient.ensureQueryData({
+        queryKey: EXPERTISE_QUERY_KEY,
+        queryFn: loadExpertise
+      })
+    } catch (fetchError) {
+      console.error('Failed to fetch expertise', fetchError)
+      mutationError.value = 'Unable to load expertise right now.'
+      return []
+    }
+  }
+
+  const invalidateExpertise = () => queryClient.invalidateQueries({ queryKey: EXPERTISE_QUERY_KEY })
+
+  const createExpertiseMutation = useMutation({
+    mutationFn: (payload: any) => apiFetch<ApiExpertise>('/expertise', {
       method: 'POST',
       body: toExpertiseFormData(payload)
-    })
+    }),
+    onSuccess: () => invalidateExpertise()
+  })
 
-    await fetchExpertise()
+  const updateExpertiseMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number, payload: any }) => apiFetch(`/expertise/${id}`, {
+      method: 'PUT',
+      body: toExpertiseFormData(payload)
+    }),
+    onSuccess: () => invalidateExpertise()
+  })
+
+  const deleteExpertiseMutation = useMutation({
+    mutationFn: (id: number) => apiFetch(`/expertise/${id}`, { method: 'DELETE' }),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: EXPERTISE_QUERY_KEY })
+      const previousExpertise = queryClient.getQueryData<Expertise[]>(EXPERTISE_QUERY_KEY)
+      queryClient.setQueryData<Expertise[]>(EXPERTISE_QUERY_KEY, (current = []) => current.filter((item) => item.id !== id))
+      return { previousExpertise }
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousExpertise) {
+        queryClient.setQueryData(EXPERTISE_QUERY_KEY, context.previousExpertise)
+      }
+    },
+    onSettled: () => invalidateExpertise()
+  })
+
+  const createExpertise = async (payload: any) => {
+    const res = await createExpertiseMutation.mutateAsync(payload)
     return res ? normalizeExpertise(res) : null
   }
 
   const updateExpertise = async (id: number, payload: any) => {
-    await apiFetch(`/expertise/${id}`, {
-      method: 'PUT',
-      body: toExpertiseFormData(payload)
-    })
-
-    await fetchExpertise()
+    await updateExpertiseMutation.mutateAsync({ id, payload })
     return expertise.value.find((item) => item.id === id) || null
   }
 
   const deleteExpertise = async (id: number) => {
-    const res = await apiFetch(`/expertise/${id}`, { method: 'DELETE' })
-    await fetchExpertise()
-    return res
+    return deleteExpertiseMutation.mutateAsync(id)
   }
 
   return {

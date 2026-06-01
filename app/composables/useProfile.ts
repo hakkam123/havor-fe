@@ -1,10 +1,12 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiCompanyProfile, CompanyProfile } from '~/types/api'
+
+const PROFILE_QUERY_KEY = ['profile'] as const
 
 export const useProfile = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const profile = ref<CompanyProfile | null>(null)
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const queryClient = useQueryClient()
+  const mutationError = ref<string | null>(null)
 
   const normalizeProfile = (item: ApiCompanyProfile): CompanyProfile => ({
     id: Number(item.id || 0),
@@ -23,35 +25,52 @@ export const useProfile = () => {
     seo_description: String(item.seo_description || '')
   })
 
-  const fetchProfile = async () => {
-    isLoading.value = true
-    error.value = null
+  const loadProfile = async () => {
+    const res = await apiFetch<ApiCompanyProfile>('/profile')
+    return normalizeProfile(res || {})
+  }
 
+  const profileQuery = useQuery({
+    queryKey: PROFILE_QUERY_KEY,
+    queryFn: loadProfile
+  })
+
+  const profile = computed(() => profileQuery.data.value || null)
+  const isLoading = computed(() => profileQuery.isLoading.value || profileQuery.isFetching.value)
+  const error = computed(() => mutationError.value || (profileQuery.error.value ? 'Unable to load profile right now.' : null))
+
+  const fetchProfile = async () => {
+    mutationError.value = null
     try {
-      const res = await apiFetch<ApiCompanyProfile>('/profile')
-      profile.value = normalizeProfile(res || {})
-      return profile.value
+      return await queryClient.ensureQueryData({
+        queryKey: PROFILE_QUERY_KEY,
+        queryFn: loadProfile
+      })
     } catch (fetchError) {
       console.error('Failed to fetch profile', fetchError)
-      error.value = 'Unable to load profile right now.'
-      profile.value = null
+      mutationError.value = 'Unable to load profile right now.'
       return null
-    } finally {
-      isLoading.value = false
     }
   }
 
-  const updateProfile = async (payload: any) => {
-    const res = await apiFetch<ApiCompanyProfile>('/profile', {
+  const updateProfileMutation = useMutation({
+    mutationFn: (payload: any) => apiFetch<ApiCompanyProfile>('/profile', {
       method: 'PUT',
       body: toFormData({
         ...payload,
         logo_url: payload.logoFile ?? payload.logo_url
       })
-    })
+    }),
+    onSuccess: (res) => {
+      const normalizedProfile = normalizeProfile(res || {})
+      queryClient.setQueryData(PROFILE_QUERY_KEY, normalizedProfile)
+      return queryClient.invalidateQueries({ queryKey: PROFILE_QUERY_KEY })
+    }
+  })
 
-    profile.value = normalizeProfile(res || {})
-    return profile.value
+  const updateProfile = async (payload: any) => {
+    const res = await updateProfileMutation.mutateAsync(payload)
+    return normalizeProfile(res || {})
   }
 
   return {

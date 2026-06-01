@@ -1,10 +1,12 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiContactMessage, ContactMessage } from '~/types/api'
+
+const CONTACT_MESSAGES_QUERY_KEY = ['contact-messages'] as const
 
 export const useContact = () => {
   const { apiFetch } = useApi()
-  const messages = ref<ContactMessage[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const queryClient = useQueryClient()
+  const mutationError = ref<string | null>(null)
 
   const formatDate = (value?: string | null) => {
     if (!value) return ''
@@ -36,38 +38,89 @@ export const useContact = () => {
     dateLabel: formatDate(item.createdAt)
   })
 
+  const loadMessages = async () => {
+    const res = await apiFetch<ApiContactMessage[]>('/contact')
+    return (res || []).map(normalizeMessage)
+  }
+
+  const messagesQuery = useQuery({
+    queryKey: CONTACT_MESSAGES_QUERY_KEY,
+    queryFn: loadMessages,
+    refetchInterval: 30_000
+  })
+
+  const messages = computed(() => messagesQuery.data.value || [])
+  const isLoading = computed(() => messagesQuery.isLoading.value || messagesQuery.isFetching.value)
+  const error = computed(() => mutationError.value || (messagesQuery.error.value ? 'Unable to load inbox messages right now.' : null))
+
   const fetchMessages = async () => {
-    isLoading.value = true
-    error.value = null
+    mutationError.value = null
     try {
-      const res = await apiFetch<ApiContactMessage[]>('/contact')
-      messages.value = (res || []).map(normalizeMessage)
+      return await queryClient.ensureQueryData({
+        queryKey: CONTACT_MESSAGES_QUERY_KEY,
+        queryFn: loadMessages
+      })
     } catch (fetchError) {
       console.error('Failed to fetch contact messages', fetchError)
-      messages.value = []
-      error.value = 'Unable to load inbox messages right now.'
-    } finally {
-      isLoading.value = false
+      mutationError.value = 'Unable to load inbox messages right now.'
+      return []
     }
   }
 
-  const createMessage = async (payload: { name: string; email: string; subject: string; message: string }) => {
-    return apiFetch('/contact', {
+  const invalidateMessages = () => queryClient.invalidateQueries({ queryKey: CONTACT_MESSAGES_QUERY_KEY })
+
+  const createMessageMutation = useMutation({
+    mutationFn: (payload: { name: string; email: string; subject: string; message: string }) => apiFetch('/contact', {
       method: 'POST',
       body: payload
-    })
+    }),
+    onSuccess: () => invalidateMessages()
+  })
+
+  const markAsReadMutation = useMutation({
+    mutationFn: (id: number) => apiFetch(`/contact/${id}/read`, { method: 'PUT' }),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: CONTACT_MESSAGES_QUERY_KEY })
+      const previousMessages = queryClient.getQueryData<ContactMessage[]>(CONTACT_MESSAGES_QUERY_KEY)
+      queryClient.setQueryData<ContactMessage[]>(CONTACT_MESSAGES_QUERY_KEY, (current = []) =>
+        current.map((item) => item.id === id ? { ...item, is_read: true } : item)
+      )
+      return { previousMessages }
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousMessages) {
+        queryClient.setQueryData(CONTACT_MESSAGES_QUERY_KEY, context.previousMessages)
+      }
+    },
+    onSettled: () => invalidateMessages()
+  })
+
+  const deleteMessageMutation = useMutation({
+    mutationFn: (id: number) => apiFetch(`/contact/${id}`, { method: 'DELETE' }),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: CONTACT_MESSAGES_QUERY_KEY })
+      const previousMessages = queryClient.getQueryData<ContactMessage[]>(CONTACT_MESSAGES_QUERY_KEY)
+      queryClient.setQueryData<ContactMessage[]>(CONTACT_MESSAGES_QUERY_KEY, (current = []) => current.filter((item) => item.id !== id))
+      return { previousMessages }
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousMessages) {
+        queryClient.setQueryData(CONTACT_MESSAGES_QUERY_KEY, context.previousMessages)
+      }
+    },
+    onSettled: () => invalidateMessages()
+  })
+
+  const createMessage = async (payload: { name: string; email: string; subject: string; message: string }) => {
+    return createMessageMutation.mutateAsync(payload)
   }
 
   const markAsRead = async (id: number) => {
-    const res = await apiFetch(`/contact/${id}/read`, { method: 'PUT' })
-    await fetchMessages()
-    return res
+    return markAsReadMutation.mutateAsync(id)
   }
 
   const deleteMessage = async (id: number) => {
-    const res = await apiFetch(`/contact/${id}`, { method: 'DELETE' })
-    await fetchMessages()
-    return res
+    return deleteMessageMutation.mutateAsync(id)
   }
 
   return {

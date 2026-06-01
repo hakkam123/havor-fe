@@ -1,11 +1,13 @@
+import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiCareer, Career } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
 
+const CAREERS_QUERY_KEY = ['careers'] as const
+
 export const useCareers = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const careers = ref<Career[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const queryClient = useQueryClient()
+  const fetchErrorMessage = ref<string | null>(null)
 
   const normalizeCareer = (item: ApiCareer): Career => ({
     id: Number(item.id),
@@ -16,18 +18,31 @@ export const useCareers = () => {
     slug: toSlug(item.job_title)
   })
 
+  const loadCareers = async () => {
+    const res = await apiFetch<ApiCareer[]>('/careers')
+    return (res || []).map(normalizeCareer)
+  }
+
+  const careersQuery = useQuery({
+    queryKey: CAREERS_QUERY_KEY,
+    queryFn: loadCareers
+  })
+
+  const careers = computed(() => careersQuery.data.value || [])
+  const isLoading = computed(() => careersQuery.isLoading.value || careersQuery.isFetching.value)
+  const error = computed(() => fetchErrorMessage.value || (careersQuery.error.value ? 'Unable to load careers right now.' : null))
+
   const fetchCareers = async () => {
-    isLoading.value = true
-    error.value = null
+    fetchErrorMessage.value = null
     try {
-      const res = await apiFetch<ApiCareer[]>('/careers')
-      careers.value = (res || []).map(normalizeCareer)
+      return await queryClient.ensureQueryData({
+        queryKey: CAREERS_QUERY_KEY,
+        queryFn: loadCareers
+      })
     } catch (fetchError) {
       console.error('Failed to fetch public careers', fetchError)
-      careers.value = []
-      error.value = 'Unable to load careers right now.'
-    } finally {
-      isLoading.value = false
+      fetchErrorMessage.value = 'Unable to load careers right now.'
+      return []
     }
   }
 

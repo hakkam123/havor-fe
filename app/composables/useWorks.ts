@@ -1,11 +1,13 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiWork, Work } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
 
+const WORKS_QUERY_KEY = ['works'] as const
+
 export const useWorks = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const works = ref<Work[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const queryClient = useQueryClient()
+  const mutationError = ref<string | null>(null)
 
   const normalizeWork = (item: ApiWork): Work => ({
     id: Number(item.id),
@@ -19,20 +21,19 @@ export const useWorks = () => {
     categoryName: String(item.categoryName ?? item.category_name ?? '')
   })
 
-  const fetchWorks = async () => {
-    isLoading.value = true
-    error.value = null
-    try {
-      const res = await apiFetch<ApiWork[]>('/works')
-      works.value = (res || []).map(normalizeWork)
-    } catch (fetchError) {
-      console.error('Failed to fetch works', fetchError)
-      works.value = []
-      error.value = 'Unable to load works right now.'
-    } finally {
-      isLoading.value = false
-    }
+  const loadWorks = async () => {
+    const res = await apiFetch<ApiWork[]>('/works')
+    return (res || []).map(normalizeWork)
   }
+
+  const worksQuery = useQuery({
+    queryKey: WORKS_QUERY_KEY,
+    queryFn: loadWorks
+  })
+
+  const works = computed(() => worksQuery.data.value || [])
+  const isLoading = computed(() => worksQuery.isLoading.value || worksQuery.isFetching.value)
+  const error = computed(() => mutationError.value || (worksQuery.error.value ? 'Unable to load works right now.' : null))
 
   const toWorkFormData = (payload: any) => toFormData({
     title: payload.title,
@@ -43,30 +44,66 @@ export const useWorks = () => {
     image_url: payload.imageFile ?? payload.image_url
   })
 
-  const createWork = async (payload: any) => {
-    const res = await apiFetch<ApiWork>('/works', {
+  const fetchWorks = async () => {
+    mutationError.value = null
+    try {
+      return await queryClient.ensureQueryData({
+        queryKey: WORKS_QUERY_KEY,
+        queryFn: loadWorks
+      })
+    } catch (fetchError) {
+      console.error('Failed to fetch works', fetchError)
+      mutationError.value = 'Unable to load works right now.'
+      return []
+    }
+  }
+
+  const invalidateWorks = () => queryClient.invalidateQueries({ queryKey: WORKS_QUERY_KEY })
+
+  const createWorkMutation = useMutation({
+    mutationFn: (payload: any) => apiFetch<ApiWork>('/works', {
       method: 'POST',
       body: toWorkFormData(payload)
-    })
+    }),
+    onSuccess: () => invalidateWorks()
+  })
 
-    await fetchWorks()
+  const updateWorkMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number, payload: any }) => apiFetch(`/works/${id}`, {
+      method: 'PUT',
+      body: toWorkFormData(payload)
+    }),
+    onSuccess: () => invalidateWorks()
+  })
+
+  const deleteWorkMutation = useMutation({
+    mutationFn: (id: number) => apiFetch(`/works/${id}`, { method: 'DELETE' }),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: WORKS_QUERY_KEY })
+      const previousWorks = queryClient.getQueryData<Work[]>(WORKS_QUERY_KEY)
+      queryClient.setQueryData<Work[]>(WORKS_QUERY_KEY, (current = []) => current.filter((item) => item.id !== id))
+      return { previousWorks }
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousWorks) {
+        queryClient.setQueryData(WORKS_QUERY_KEY, context.previousWorks)
+      }
+    },
+    onSettled: () => invalidateWorks()
+  })
+
+  const createWork = async (payload: any) => {
+    const res = await createWorkMutation.mutateAsync(payload)
     return res ? normalizeWork(res) : null
   }
 
   const updateWork = async (id: number, payload: any) => {
-    await apiFetch(`/works/${id}`, {
-      method: 'PUT',
-      body: toWorkFormData(payload)
-    })
-
-    await fetchWorks()
+    await updateWorkMutation.mutateAsync({ id, payload })
     return works.value.find((item) => item.id === id) || null
   }
 
   const deleteWork = async (id: number) => {
-    const res = await apiFetch(`/works/${id}`, { method: 'DELETE' })
-    await fetchWorks()
-    return res
+    return deleteWorkMutation.mutateAsync(id)
   }
 
   return {

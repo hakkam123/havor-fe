@@ -1,11 +1,13 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiCategory, Category } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
 
+const CATEGORIES_QUERY_KEY = ['categories'] as const
+
 export const useCategories = () => {
   const { apiFetch } = useApi()
-  const categories = ref<Category[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const queryClient = useQueryClient()
+  const mutationError = ref<string | null>(null)
 
   const normalizeCategory = (item: ApiCategory): Category => ({
     id: Number(item.id),
@@ -23,37 +25,82 @@ export const useCategories = () => {
     }
   }
 
+  const loadCategories = async () => {
+    const res = await apiFetch<ApiCategory[]>('/categories')
+    return (res || []).map(normalizeCategory)
+  }
+
+  const categoriesQuery = useQuery({
+    queryKey: CATEGORIES_QUERY_KEY,
+    queryFn: loadCategories
+  })
+
+  const categories = computed(() => categoriesQuery.data.value || [])
+  const isLoading = computed(() => categoriesQuery.isLoading.value || categoriesQuery.isFetching.value)
+  const error = computed(() => mutationError.value || (categoriesQuery.error.value ? 'Unable to load categories right now.' : null))
+
+  const invalidateCategories = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: CATEGORIES_QUERY_KEY }),
+      queryClient.invalidateQueries({ queryKey: ['works'] }),
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+    ])
+  }
+
   const fetchCategories = async () => {
-    isLoading.value = true
-    error.value = null
+    mutationError.value = null
     try {
-      const res = await apiFetch<ApiCategory[]>('/categories')
-      categories.value = (res || []).map(normalizeCategory)
+      return await queryClient.ensureQueryData({
+        queryKey: CATEGORIES_QUERY_KEY,
+        queryFn: loadCategories
+      })
     } catch (fetchError) {
       console.error(fetchError)
-      categories.value = []
-      error.value = 'Unable to load categories right now.'
-    } finally {
-      isLoading.value = false
+      mutationError.value = 'Unable to load categories right now.'
+      return []
     }
   }
 
+  const createCategoryMutation = useMutation({
+    mutationFn: (payload: string | { name: string }) =>
+      apiFetch<ApiCategory>('/categories', { method: 'POST', body: toCategoryPayload(payload) }),
+    onSuccess: () => invalidateCategories()
+  })
+
+  const updateCategoryMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number, payload: string | { name: string } }) =>
+      apiFetch(`/categories/${id}`, { method: 'PUT', body: toCategoryPayload(payload) }),
+    onSuccess: () => invalidateCategories()
+  })
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: (id: number) => apiFetch(`/categories/${id}`, { method: 'DELETE' }),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: CATEGORIES_QUERY_KEY })
+      const previousCategories = queryClient.getQueryData<Category[]>(CATEGORIES_QUERY_KEY)
+      queryClient.setQueryData<Category[]>(CATEGORIES_QUERY_KEY, (current = []) => current.filter((item) => item.id !== id))
+      return { previousCategories }
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousCategories) {
+        queryClient.setQueryData(CATEGORIES_QUERY_KEY, context.previousCategories)
+      }
+    },
+    onSettled: () => invalidateCategories()
+  })
+
   const createCategory = async (payload: string | { name: string }) => {
-    const res = await apiFetch<ApiCategory>('/categories', { method: 'POST', body: toCategoryPayload(payload) })
-    await fetchCategories()
+    const res = await createCategoryMutation.mutateAsync(payload)
     return res ? normalizeCategory(res) : null
   }
 
   const updateCategory = async (id: number, payload: string | { name: string }) => {
-    await apiFetch(`/categories/${id}`, { method: 'PUT', body: toCategoryPayload(payload) })
-    await fetchCategories()
+    await updateCategoryMutation.mutateAsync({ id, payload })
     return categories.value.find((item) => item.id === id) || null
   }
 
   const deleteCategory = async (id: number) => {
-    const res = await apiFetch(`/categories/${id}`, { method: 'DELETE' })
-    await fetchCategories()
-    return res
+    return deleteCategoryMutation.mutateAsync(id)
   }
 
   return { categories, isLoading, error, fetchCategories, createCategory, updateCategory, deleteCategory }

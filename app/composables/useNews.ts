@@ -1,3 +1,4 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiNewsItem, NewsItem } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
 
@@ -7,10 +8,10 @@ type UseNewsOptions = {
 
 export const useNews = (options: UseNewsOptions = {}) => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const news = ref<NewsItem[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const queryClient = useQueryClient()
+  const mutationError = ref<string | null>(null)
   const includeDrafts = Boolean(options.includeDrafts)
+  const newsQueryKey = ['news', { includeDrafts }] as const
 
   const stripHtml = (value?: string | null) => (value || '').replace(/<[^>]*>?/gm, '').trim()
 
@@ -35,39 +36,32 @@ export const useNews = (options: UseNewsOptions = {}) => {
     updatedAt: item.updatedAt || null
   })
 
-  const fetchNews = async () => {
-    isLoading.value = true
-    error.value = null
-    try {
-      const res = await apiFetch<ApiNewsItem[]>('/news')
-      const normalizedItems = (res || []).map(normalizeNewsItem)
-      news.value = includeDrafts ? normalizedItems : normalizedItems.filter((item) => item.is_published)
-    } catch (fetchError) {
-      console.error('Failed to fetch news', fetchError)
-      news.value = []
-      error.value = 'Unable to load news right now.'
-    } finally {
-      isLoading.value = false
-    }
+  const loadNews = async () => {
+    const res = await apiFetch<ApiNewsItem[]>('/news')
+    const normalizedItems = (res || []).map(normalizeNewsItem)
+    return includeDrafts ? normalizedItems : normalizedItems.filter((item) => item.is_published)
   }
 
-  const fetchNewsBySlug = async (slug: string) => {
-    const normalizedSlug = String(slug || '').trim()
-    if (!normalizedSlug) return null
+  const newsQuery = useQuery({
+    queryKey: newsQueryKey,
+    queryFn: loadNews
+  })
 
-    isLoading.value = true
-    error.value = null
+  const news = computed(() => newsQuery.data.value || [])
+  const isLoading = computed(() => newsQuery.isLoading.value || newsQuery.isFetching.value)
+  const error = computed(() => mutationError.value || (newsQuery.error.value ? 'Unable to load news right now.' : null))
+
+  const fetchNews = async () => {
+    mutationError.value = null
     try {
-      const res = await apiFetch<ApiNewsItem>(`/news/${normalizedSlug}`)
-      const item = normalizeNewsItem(res)
-      if (!includeDrafts && !item.is_published) return null
-      return item
+      return await queryClient.ensureQueryData({
+        queryKey: newsQueryKey,
+        queryFn: loadNews
+      })
     } catch (fetchError) {
-      console.error(`Failed to fetch news article "${normalizedSlug}"`, fetchError)
-      error.value = 'Unable to load the selected article right now.'
-      return null
-    } finally {
-      isLoading.value = false
+      console.error('Failed to fetch news', fetchError)
+      mutationError.value = 'Unable to load news right now.'
+      return []
     }
   }
 
@@ -80,30 +74,79 @@ export const useNews = (options: UseNewsOptions = {}) => {
     image_url: payload.imageFile ?? payload.image_url
   })
 
-  const createNews = async (payload: any) => {
-    const res = await apiFetch<ApiNewsItem>('/news', {
+  const fetchNewsBySlug = async (slug: string) => {
+    const normalizedSlug = String(slug || '').trim()
+    if (!normalizedSlug) return null
+
+    mutationError.value = null
+    try {
+      return await queryClient.ensureQueryData({
+        queryKey: ['news', 'slug', normalizedSlug, { includeDrafts }],
+        queryFn: async () => {
+          const res = await apiFetch<ApiNewsItem>(`/news/${normalizedSlug}`)
+          const item = normalizeNewsItem(res)
+          return !includeDrafts && !item.is_published ? null : item
+        }
+      })
+    } catch (fetchError) {
+      console.error(`Failed to fetch news article "${normalizedSlug}"`, fetchError)
+      mutationError.value = 'Unable to load the selected article right now.'
+      return null
+    }
+  }
+
+  const invalidateNews = () => queryClient.invalidateQueries({ queryKey: ['news'] })
+
+  const createNewsMutation = useMutation({
+    mutationFn: (payload: any) => apiFetch<ApiNewsItem>('/news', {
       method: 'POST',
       body: toNewsFormData(payload)
-    })
+    }),
+    onSuccess: () => invalidateNews()
+  })
 
-    await fetchNews()
+  const updateNewsMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number, payload: any }) => apiFetch(`/news/${id}`, {
+      method: 'PUT',
+      body: toNewsFormData(payload)
+    }),
+    onSuccess: () => invalidateNews()
+  })
+
+  const deleteNewsMutation = useMutation({
+    mutationFn: (id: number) => apiFetch(`/news/${id}`, { method: 'DELETE' }),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['news'] })
+      const previousNews = queryClient.getQueriesData<NewsItem[]>({ queryKey: ['news'] })
+
+      previousNews.forEach(([queryKey, current]) => {
+        if (Array.isArray(current)) {
+          queryClient.setQueryData<NewsItem[]>(queryKey, current.filter((item) => item.id !== id))
+        }
+      })
+
+      return { previousNews }
+    },
+    onError: (_error, _id, context) => {
+      context?.previousNews?.forEach(([queryKey, value]) => {
+        queryClient.setQueryData(queryKey, value)
+      })
+    },
+    onSettled: () => invalidateNews()
+  })
+
+  const createNews = async (payload: any) => {
+    const res = await createNewsMutation.mutateAsync(payload)
     return res ? normalizeNewsItem(res) : null
   }
 
   const updateNews = async (id: number, payload: any) => {
-    await apiFetch(`/news/${id}`, {
-      method: 'PUT',
-      body: toNewsFormData(payload)
-    })
-
-    await fetchNews()
+    await updateNewsMutation.mutateAsync({ id, payload })
     return news.value.find((item) => item.id === id) || null
   }
 
   const deleteNews = async (id: number) => {
-    const res = await apiFetch(`/news/${id}`, { method: 'DELETE' })
-    await fetchNews()
-    return res
+    return deleteNewsMutation.mutateAsync(id)
   }
 
   return {

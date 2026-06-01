@@ -1,10 +1,12 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiClient, Client } from '~/types/api'
+
+const CLIENTS_QUERY_KEY = ['clients'] as const
 
 export const useClients = () => {
   const { apiFetch, resolveAssetUrl } = useApi()
-  const clients = ref<Client[]>([])
-  const isLoading = ref(false)
-  const error = ref<string | null>(null)
+  const queryClient = useQueryClient()
+  const mutationError = ref<string | null>(null)
 
   const normalizeClient = (item: ApiClient): Client => ({
     id: Number(item.id),
@@ -14,51 +16,86 @@ export const useClients = () => {
     client_icon: resolveAssetUrl(item.client_icon)
   })
 
-  const fetchClients = async () => {
-    isLoading.value = true
-    error.value = null
-    try {
-      const res = await apiFetch<ApiClient[]>('/clients')
-      clients.value = (res || []).map(normalizeClient)
-    } catch (fetchError) {
-      console.error('Failed to fetch clients', fetchError)
-      clients.value = []
-      error.value = 'Unable to load client data right now.'
-    } finally {
-      isLoading.value = false
-    }
-  }
-
   const toClientFormData = (payload: any) => toFormData({
     name: payload.name,
     description: payload.description,
     client_icon: payload.clientFile ?? payload.client_icon
   })
 
-  const createClient = async (payload: any) => {
-    const res = await apiFetch<ApiClient>('/clients', {
+  const loadClients = async () => {
+    const res = await apiFetch<ApiClient[]>('/clients')
+    return (res || []).map(normalizeClient)
+  }
+
+  const clientsQuery = useQuery({
+    queryKey: CLIENTS_QUERY_KEY,
+    queryFn: loadClients
+  })
+
+  const clients = computed(() => clientsQuery.data.value || [])
+  const isLoading = computed(() => clientsQuery.isLoading.value || clientsQuery.isFetching.value)
+  const error = computed(() => mutationError.value || (clientsQuery.error.value ? 'Unable to load client data right now.' : null))
+
+  const fetchClients = async () => {
+    mutationError.value = null
+    try {
+      return await queryClient.ensureQueryData({
+        queryKey: CLIENTS_QUERY_KEY,
+        queryFn: loadClients
+      })
+    } catch (fetchError) {
+      console.error('Failed to fetch clients', fetchError)
+      mutationError.value = 'Unable to load client data right now.'
+      return []
+    }
+  }
+
+  const invalidateClients = () => queryClient.invalidateQueries({ queryKey: CLIENTS_QUERY_KEY })
+
+  const createClientMutation = useMutation({
+    mutationFn: (payload: any) => apiFetch<ApiClient>('/clients', {
       method: 'POST',
       body: toClientFormData(payload)
-    })
+    }),
+    onSuccess: () => invalidateClients()
+  })
 
-    await fetchClients()
+  const updateClientMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number, payload: any }) => apiFetch(`/clients/${id}`, {
+      method: 'PUT',
+      body: toClientFormData(payload)
+    }),
+    onSuccess: () => invalidateClients()
+  })
+
+  const deleteClientMutation = useMutation({
+    mutationFn: (id: number) => apiFetch(`/clients/${id}`, { method: 'DELETE' }),
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: CLIENTS_QUERY_KEY })
+      const previousClients = queryClient.getQueryData<Client[]>(CLIENTS_QUERY_KEY)
+      queryClient.setQueryData<Client[]>(CLIENTS_QUERY_KEY, (current = []) => current.filter((item) => item.id !== id))
+      return { previousClients }
+    },
+    onError: (_error, _id, context) => {
+      if (context?.previousClients) {
+        queryClient.setQueryData(CLIENTS_QUERY_KEY, context.previousClients)
+      }
+    },
+    onSettled: () => invalidateClients()
+  })
+
+  const createClient = async (payload: any) => {
+    const res = await createClientMutation.mutateAsync(payload)
     return res ? normalizeClient(res) : null
   }
 
   const updateClient = async (id: number, payload: any) => {
-    await apiFetch(`/clients/${id}`, {
-      method: 'PUT',
-      body: toClientFormData(payload)
-    })
-
-    await fetchClients()
+    await updateClientMutation.mutateAsync({ id, payload })
     return clients.value.find((item) => item.id === id) || null
   }
 
   const deleteClient = async (id: number) => {
-    const res = await apiFetch(`/clients/${id}`, { method: 'DELETE' })
-    await fetchClients()
-    return res
+    return deleteClientMutation.mutateAsync(id)
   }
 
   return {
