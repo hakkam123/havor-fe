@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false, // Disable SSR to avoid custom directive ('v-motion') errors and because this is an administrative dashboard.
+  ssr: true,
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   routeRules: {
@@ -17,11 +17,18 @@ export default defineNuxtConfig({
       mode: 'out-in'
     },
     head: {
+      htmlAttrs: {
+        lang: 'en'
+      },
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#0e2344' }
+      ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/logo-havor.svg' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap' }
+        { rel: 'preload', href: '/fonts/PlusJakartaSans-Regular.ttf', as: 'font', type: 'font/ttf', crossorigin: '' },
+        { rel: 'preload', href: '/fonts/PlusJakartaSans-SemiBold.ttf', as: 'font', type: 'font/ttf', crossorigin: '' },
+        { rel: 'stylesheet', href: '/fonts/plus-jakarta-sans.css' }
       ]
     }
   },
@@ -35,7 +42,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/havor/api',
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://havorsmarta.netlify.app'
     }
   }
 })

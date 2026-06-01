@@ -1,2 +1,4 @@
 User-Agent: *
 Disallow:
+
+Sitemap: https://havorsmarta.netlify.app/sitemap.xml

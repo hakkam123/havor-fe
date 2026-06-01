@@ -8,7 +8,7 @@
     >
       <template #actions>
         <NuxtLink to="/careers" class="btn-primary">Back to Careers</NuxtLink>
-        <a :href="applyLink" class="btn-outline text-white border-white/20 hover:bg-white/10">Apply Now</a>
+        <NuxtLink :to="applyLink" class="btn-outline text-white border-white/20 hover:bg-white/10">Apply Now</NuxtLink>
       </template>
     </HeroSection>
 
@@ -54,7 +54,7 @@
               <div class="relative">
                 <h3 class="font-display text-2xl font-semibold text-white">Ready to apply?</h3>
                 <p class="mt-2 text-white/78">We&apos;d love to hear from you. Send us your resume and a short note about why this role fits you.</p>
-                <a :href="applyLink" class="mt-6 inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0e2344] transition hover:bg-[#edf4ff]">Apply Now</a>
+                <NuxtLink :to="applyLink" class="mt-6 inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#0e2344] transition hover:bg-[#edf4ff]">Apply Now</NuxtLink>
               </div>
             </div>
           </article>
@@ -137,7 +137,12 @@ const relatedRoles = computed(() => {
     .slice(0, 3)
 })
 
-const applyLink = computed(() => `mailto:careers@havor.com?subject=${encodeURIComponent(`Application for ${careerRole.value?.job_title || 'this role'}`)}`)
+const applyLink = computed(() => ({
+  path: '/careers',
+  query: {
+    position: careerRole.value?.job_title || ''
+  }
+}))
 
 usePageSeo({
   title: computed(() => careerRole.value ? `${careerRole.value.job_title} | Havor Smarta Digital` : 'Career | Havor Smarta Digital'),

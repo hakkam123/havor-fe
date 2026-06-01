@@ -3,6 +3,9 @@
     <img
       :src="image"
       :alt="imageAlt"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
       class="absolute inset-0 h-full w-full object-cover"
     >
     <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,22,0.5)_0%,rgba(3,10,22,0.08)_40%,rgba(3,10,22,0.36)_100%)]"></div>

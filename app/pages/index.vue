@@ -356,7 +356,6 @@
       :image="ctaImage"
       image-alt="Havor consultation"
       :action-label="t('home.cta.button')"
-      :href="`mailto:${company.email}?subject=${encodeURIComponent('Contact PT Havor SMART Digital')}`"
     >
       <template #meta>
         <div class="flex flex-wrap gap-x-5 gap-y-2 text-[0.84rem] font-semibold text-white/72">
@@ -365,6 +364,80 @@
           <span>{{ company.email }}</span>
         </div>
       </template>
+      <template #actions>
+        <form
+          id="contact-form"
+          class="w-full rounded-lg border border-white/18 bg-white p-4 text-[#0e2344] shadow-[0_20px_54px_rgba(3,11,24,0.24)] sm:w-[30rem] sm:p-5"
+          novalidate
+          @submit.prevent="handleContactSubmit"
+        >
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="text-sm font-semibold" for="contact-name">
+              Nama
+              <input
+                id="contact-name"
+                v-model="contactForm.name"
+                class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+                type="text"
+                autocomplete="name"
+                :aria-invalid="Boolean(contactFieldErrors.name)"
+              >
+            </label>
+
+            <label class="text-sm font-semibold" for="contact-email">
+              Email
+              <input
+                id="contact-email"
+                v-model="contactForm.email"
+                class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+                type="email"
+                autocomplete="email"
+                :aria-invalid="Boolean(contactFieldErrors.email)"
+              >
+            </label>
+          </div>
+
+          <label class="mt-3 block text-sm font-semibold" for="contact-subject">
+            Subject
+            <input
+              id="contact-subject"
+              v-model="contactForm.subject"
+              class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+              type="text"
+              autocomplete="off"
+              :aria-invalid="Boolean(contactFieldErrors.subject)"
+            >
+          </label>
+
+          <label class="mt-3 block text-sm font-semibold" for="contact-message">
+            Pesan
+            <textarea
+              id="contact-message"
+              v-model="contactForm.message"
+              class="mt-2 min-h-28 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+              :aria-invalid="Boolean(contactFieldErrors.message)"
+            ></textarea>
+          </label>
+
+          <p
+            v-if="contactMessage"
+            class="mt-3 rounded-lg px-3 py-2 text-sm font-medium"
+            :class="contactStatus === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'"
+            role="status"
+            aria-live="polite"
+          >
+            {{ contactMessage }}
+          </p>
+
+          <button
+            type="submit"
+            class="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="contactStatus === 'loading'"
+          >
+            {{ contactStatus === 'loading' ? 'Mengirim...' : 'Kirim Pesan' }}
+          </button>
+        </form>
+      </template>
     </PublicImageCta>
   </div>
 </template>
@@ -372,6 +445,7 @@
 <script setup lang="ts">
 import { ArrowLeft, ArrowRight, BrainCircuit, CheckCircle2, Globe2, MonitorSmartphone, ServerCog } from 'lucide-vue-next'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { submitContactMessage } from '~/services/contactService'
 
 definePageMeta({
   layout: 'public'
@@ -390,6 +464,16 @@ const { works, isLoading: isLoadingWorks, fetchWorks } = useWorks()
 const { news, isLoading: isLoadingNews, fetchNews } = useNews()
 const { clients, isLoading: isLoadingClients, fetchClients } = useClients()
 const { fetchBanners, findBannerByPage } = useBanners()
+const contactStatus = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
+const contactMessage = ref('')
+const contactFieldErrors = ref<Record<string, string>>({})
+const contactForm = reactive({
+  name: '',
+  email: '',
+  subject: '',
+  message: ''
+})
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const defaultServiceImage = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'
 const defaultProjectImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80'
@@ -597,4 +681,58 @@ watch(() => serviceCarouselItems.value.length, async () => {
   await scrollServiceCarousel(0)
   startServiceCarousel()
 })
+
+const validateContactForm = () => {
+  const errors: Record<string, string> = {}
+
+  if (!contactForm.name.trim()) errors.name = 'Nama wajib diisi.'
+  if (!contactForm.email.trim()) {
+    errors.email = 'Email wajib diisi.'
+  } else if (!emailPattern.test(contactForm.email.trim())) {
+    errors.email = 'Format email belum valid.'
+  }
+  if (!contactForm.subject.trim()) errors.subject = 'Subject wajib diisi.'
+  if (!contactForm.message.trim()) errors.message = 'Pesan wajib diisi.'
+
+  contactFieldErrors.value = errors
+
+  if (Object.keys(errors).length) {
+    contactStatus.value = 'error'
+    contactMessage.value = Object.values(errors)[0]
+    return false
+  }
+
+  return true
+}
+
+const resetContactForm = () => {
+  contactForm.name = ''
+  contactForm.email = ''
+  contactForm.subject = ''
+  contactForm.message = ''
+}
+
+const handleContactSubmit = async () => {
+  if (!validateContactForm()) return
+
+  contactStatus.value = 'loading'
+  contactMessage.value = ''
+
+  try {
+    await submitContactMessage({
+      name: contactForm.name.trim(),
+      email: contactForm.email.trim(),
+      subject: contactForm.subject.trim(),
+      message: contactForm.message.trim()
+    })
+
+    resetContactForm()
+    contactFieldErrors.value = {}
+    contactStatus.value = 'success'
+    contactMessage.value = 'Pesan berhasil dikirim. Mohon tunggu sebentar, admin akan membalas melalui email.'
+  } catch (_error) {
+    contactStatus.value = 'error'
+    contactMessage.value = 'Data belum berhasil dikirim. Silakan coba lagi beberapa saat.'
+  }
+}
 </script>

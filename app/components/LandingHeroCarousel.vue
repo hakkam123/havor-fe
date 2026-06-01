@@ -3,6 +3,9 @@
     <img
       :src="activeSlide.image"
       :alt="activeSlide.title"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
       class="absolute inset-0 h-full w-full object-cover"
     >
     <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,11,24,0.84)_0%,rgba(3,11,24,0.56)_46%,rgba(3,11,24,0.3)_100%)]"></div>

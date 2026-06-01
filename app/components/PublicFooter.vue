@@ -4,7 +4,7 @@
       <div class="grid gap-8 lg:grid-cols-[1.2fr_0.85fr_0.85fr_0.9fr]">
         <div>
           <div class="mb-4 inline-flex items-center gap-3">
-            <img src="/logo-havor.svg" alt="Havor Smarta Digital" class="h-9 w-9 rounded-full object-cover">
+            <img src="/logo-havor.svg" alt="Havor Smarta Digital" width="36" height="36" loading="lazy" decoding="async" class="h-9 w-9 rounded-full object-cover">
             <div>
               <p class="text-sm font-semibold text-[#0e2344]">Havor Smarta Digital</p>
             </div>

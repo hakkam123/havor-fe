@@ -5,6 +5,9 @@
       :src="image"
       :alt="imageAlt || title"
       :style="styleFor(0.05, -16, 1.08)"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
       class="absolute inset-0 h-full w-full object-cover transition-transform duration-300"
     >
     <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,12,26,0.82)_0%,rgba(4,12,26,0.48)_42%,rgba(4,12,26,0.34)_100%)]"></div>

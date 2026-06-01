@@ -102,9 +102,9 @@
               <NuxtLink :to="`/careers/${role.slug}`" class="btn-outline">
                 View Role
               </NuxtLink>
-              <a :href="`mailto:${company.email}?subject=${encodeURIComponent(`Application - ${role.job_title}`)}`" class="btn-primary">
+              <button type="button" class="btn-primary" @click="openCareerModal(role.job_title)">
                 Apply Now
-              </a>
+              </button>
             </div>
           </article>
         </div>
@@ -120,7 +120,7 @@
         <div v-else class="mt-8 brand-soft-panel p-10 text-center">
           <h3 class="text-xl font-semibold text-[#0e2344]">No open positions at the moment</h3>
           <p class="mt-4 text-slate-600">While we don't have active roles listed right now, we are always looking for great talent. Send us your CV for future opportunities.</p>
-          <a :href="`mailto:${company.email}?subject=${encodeURIComponent('General Career Inquiry')}`" class="btn-outline mt-8 inline-flex">Send your CV</a>
+          <button type="button" class="btn-outline mt-8 inline-flex" @click="openCareerModal('General Career Inquiry')">Send your Resume</button>
         </div>
       </div>
     </section>
@@ -131,13 +131,271 @@
       :image="careersHeroImage"
       image-alt="Career inquiry"
       action-label="Connect With Us"
-      :href="`mailto:${company.email}?subject=${encodeURIComponent('Career Inquiry')}`"
-    />
+    >
+      <template #actions>
+        <button type="button" class="inline-flex w-fit items-center justify-center rounded-full bg-white px-5 py-2.5 text-[0.84rem] font-semibold text-[#0e2344] transition hover:bg-[#edf4ff]" @click="openCareerModal('General Career Inquiry')">
+          Apply Now
+        </button>
+      </template>
+    </PublicImageCta>
+
+    <Teleport to="body">
+      <div
+        v-if="isCareerModalOpen"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-[#031027]/72 px-4 py-6 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="career-application-title"
+        @click.self="closeCareerModal"
+      >
+        <form
+          id="career-application-form"
+          class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-lg border border-[#dbe6f4] bg-white p-5 text-[#0e2344] shadow-[0_28px_90px_rgba(3,11,24,0.34)] sm:p-6"
+          novalidate
+          @submit.prevent="handleCareerSubmit"
+        >
+          <div class="flex items-start justify-between gap-4 border-b border-[#dbe6f4] pb-4">
+            <div>
+              <p class="brand-meta">Career Application</p>
+              <h2 id="career-application-title" class="mt-2 text-2xl font-semibold leading-tight text-[#0e2344]">
+                Apply for {{ careerForm.position || 'a role' }}
+              </h2>
+              <p class="mt-2 text-sm leading-6 text-slate-600">
+                Complete your application details and attach your resume in PDF format.
+              </p>
+            </div>
+            <button
+              type="button"
+              class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#dbe6f4] text-xl leading-none text-slate-500 transition hover:bg-[#edf4ff] hover:text-[#0e2344]"
+              aria-label="Close application form"
+              @click="closeCareerModal"
+            >
+              &times;
+            </button>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="text-sm font-semibold" for="career-full-name">
+              Nama panjang
+              <input
+                id="career-full-name"
+                v-model="careerForm.fullName"
+                class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+                type="text"
+                autocomplete="name"
+                :aria-invalid="Boolean(careerFieldErrors.fullName)"
+                @input="validateCareerField('fullName')"
+              >
+              <span v-if="careerFieldErrors.fullName" class="mt-1 block text-xs font-medium text-rose-600">
+                {{ careerFieldErrors.fullName }}
+              </span>
+            </label>
+
+            <label class="text-sm font-semibold" for="career-email">
+              Email
+              <input
+                id="career-email"
+                v-model="careerForm.email"
+                class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+                type="email"
+                autocomplete="email"
+                :aria-invalid="Boolean(careerFieldErrors.email)"
+                @input="validateCareerField('email')"
+                @blur="validateCareerField('email')"
+              >
+              <span v-if="careerFieldErrors.email" class="mt-1 block text-xs font-medium text-rose-600">
+                {{ careerFieldErrors.email }}
+              </span>
+            </label>
+
+            <label class="text-sm font-semibold" for="career-phone">
+              Nomor telepon
+              <input
+                id="career-phone"
+                v-model="careerForm.phone"
+                class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+                type="tel"
+                autocomplete="tel"
+                :aria-invalid="Boolean(careerFieldErrors.phone)"
+                @input="validateCareerField('phone')"
+                @blur="validateCareerField('phone')"
+              >
+              <span v-if="careerFieldErrors.phone" class="mt-1 block text-xs font-medium text-rose-600">
+                {{ careerFieldErrors.phone }}
+              </span>
+            </label>
+
+            <label class="text-sm font-semibold" for="career-address">
+              Alamat
+              <input
+                id="career-address"
+                v-model="careerForm.address"
+                class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+                type="text"
+                autocomplete="street-address"
+                :aria-invalid="Boolean(careerFieldErrors.address)"
+                @input="validateCareerField('address')"
+              >
+              <span v-if="careerFieldErrors.address" class="mt-1 block text-xs font-medium text-rose-600">
+                {{ careerFieldErrors.address }}
+              </span>
+            </label>
+
+            <label class="text-sm font-semibold" for="career-position">
+              Posisi yang dilamar
+              <select
+                id="career-position"
+                v-model="careerForm.position"
+                class="mt-2 w-full rounded-lg border border-[#d6e5fb] bg-white px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+                :aria-invalid="Boolean(careerFieldErrors.position)"
+                @change="validateCareerField('position')"
+              >
+                <option value="">Pilih posisi</option>
+                <option v-for="option in careerPositionOptions" :key="option" :value="option">
+                  {{ option }}
+                </option>
+              </select>
+              <span v-if="careerFieldErrors.position" class="mt-1 block text-xs font-medium text-rose-600">
+                {{ careerFieldErrors.position }}
+              </span>
+            </label>
+
+            <label class="text-sm font-semibold" for="career-education">
+              Pendidikan terakhir
+              <input
+                id="career-education"
+                v-model="careerForm.latestEducation"
+                class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+                type="text"
+                placeholder="Contoh: S1 Informatika"
+                :aria-invalid="Boolean(careerFieldErrors.latestEducation)"
+                @input="validateCareerField('latestEducation')"
+              >
+              <span v-if="careerFieldErrors.latestEducation" class="mt-1 block text-xs font-medium text-rose-600">
+                {{ careerFieldErrors.latestEducation }}
+              </span>
+            </label>
+          </div>
+
+          <label class="mt-3 block text-sm font-semibold" for="career-experience">
+            Pengalaman singkat
+            <input
+              id="career-experience"
+              v-model="careerForm.experienceSummary"
+              class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+              type="text"
+              placeholder="Contoh: 2 tahun Frontend Developer"
+              :aria-invalid="Boolean(careerFieldErrors.experienceSummary)"
+              @input="validateCareerField('experienceSummary')"
+            >
+            <span v-if="careerFieldErrors.experienceSummary" class="mt-1 block text-xs font-medium text-rose-600">
+              {{ careerFieldErrors.experienceSummary }}
+            </span>
+          </label>
+
+          <label class="mt-3 block text-sm font-semibold" for="career-portfolio">
+            LinkedIn / portfolio URL
+            <input
+              id="career-portfolio"
+              v-model="careerForm.portfolioUrl"
+              class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+              type="url"
+              placeholder="https://"
+              :aria-invalid="Boolean(careerFieldErrors.portfolioUrl)"
+              @input="validateCareerField('portfolioUrl')"
+              @blur="validateCareerField('portfolioUrl')"
+            >
+            <span v-if="careerFieldErrors.portfolioUrl" class="mt-1 block text-xs font-medium text-rose-600">
+              {{ careerFieldErrors.portfolioUrl }}
+            </span>
+          </label>
+
+          <label class="mt-3 block text-sm font-semibold" for="career-message">
+            Pesan / cover letter singkat
+            <textarea
+              id="career-message"
+              v-model="careerForm.message"
+              class="mt-2 min-h-28 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
+              :aria-invalid="Boolean(careerFieldErrors.message)"
+              @input="validateCareerField('message')"
+            ></textarea>
+            <span v-if="careerFieldErrors.message" class="mt-1 block text-xs font-medium text-rose-600">
+              {{ careerFieldErrors.message }}
+            </span>
+          </label>
+
+          <label class="mt-3 block text-sm font-semibold" for="career-cv">
+            Upload Resume
+            <input
+              id="career-cv"
+              ref="careerFileInput"
+              class="mt-2 w-full rounded-lg border border-dashed border-[#b9d1fb] bg-[#f8fbff] px-3 py-2.5 text-sm text-slate-600 file:mr-3 file:rounded-full file:border-0 file:bg-[#1f5dcc] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white"
+              type="file"
+              accept="application/pdf,.pdf"
+              :aria-invalid="Boolean(careerFieldErrors.resume)"
+              @change="handleCareerFileChange"
+            >
+            <span class="mt-1 block text-xs font-medium text-slate-500">PDF only.</span>
+            <span v-if="careerFieldErrors.resume" class="mt-1 block text-xs font-medium text-rose-600">
+              {{ careerFieldErrors.resume }}
+            </span>
+          </label>
+
+          <p
+            v-if="careerMessage"
+            class="mt-3 rounded-lg px-3 py-2 text-sm font-medium"
+            :class="careerStatus === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'"
+            role="status"
+            aria-live="polite"
+          >
+            {{ careerMessage }}
+          </p>
+
+          <button
+            type="submit"
+            class="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-60"
+            :disabled="careerStatus === 'loading'"
+          >
+            {{ careerStatus === 'loading' ? 'Mengirim...' : 'Kirim Lamaran' }}
+          </button>
+        </form>
+      </div>
+    </Teleport>
+
+    <Teleport to="body">
+      <div
+        v-if="isCareerSuccessModalOpen"
+        class="fixed inset-0 z-[110] flex items-center justify-center bg-[#031027]/72 px-4 py-6 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="career-success-title"
+        @click.self="closeCareerSuccessModal"
+      >
+        <div class="w-full max-w-md rounded-lg border border-[#dbe6f4] bg-white p-6 text-center text-[#0e2344] shadow-[0_28px_90px_rgba(3,11,24,0.34)]">
+          <CheckCircle class="mx-auto h-14 w-14 text-emerald-600" aria-hidden="true" />
+          <h2 id="career-success-title" class="mt-4 text-2xl font-semibold leading-tight">
+            Lamaran Berhasil Dikirim
+          </h2>
+          <p class="mt-3 text-sm leading-6 text-slate-600">
+            Terima kasih. Lamaran Anda sudah kami terima. Mohon tunggu sebentar, admin akan membalas melalui email jika terdapat informasi lanjutan.
+          </p>
+          <button
+            type="button"
+            class="btn-primary mt-5 w-full"
+            @click="closeCareerSuccessModal"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
+import { CheckCircle } from 'lucide-vue-next'
+import { submitCareerApplication } from '~/services/careerService'
 
 definePageMeta({
   layout: 'public'
@@ -149,17 +407,147 @@ usePageSeo({
   path: '/careers'
 })
 
-const { company, careersPage } = useCorporateContent()
+const { careersPage } = useCorporateContent()
 const { careers, fetchCareers } = useCareers()
 const { fetchBannerPage, useBannerPage } = useBanners()
+const route = useRoute()
 const careersBanner = useBannerPage('careers')
 const careersHeroImage = computed(() => careersBanner.value.media_url || careersPage.hero.image)
 const selectedCategory = ref('All categories')
 const searchQuery = ref('')
+const careerFileInput = ref(null)
+const isCareerModalOpen = ref(false)
+const isCareerSuccessModalOpen = ref(false)
+const careerStatus = ref('idle')
+const careerMessage = ref('')
+const careerFieldErrors = ref({})
+const careerForm = reactive({
+  fullName: '',
+  email: '',
+  phone: '',
+  address: '',
+  position: '',
+  latestEducation: '',
+  experienceSummary: '',
+  portfolioUrl: '',
+  message: '',
+  resume: null
+})
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const maxCvSize = 2 * 1024 * 1024
+
+const normalizePortfolioUrl = (value) => {
+  const trimmedValue = String(value || '').trim()
+  if (!trimmedValue) return ''
+  return /^https?:\/\//i.test(trimmedValue) ? trimmedValue : `https://${trimmedValue}`
+}
+
+const isValidPortfolioUrl = (value) => {
+  const normalizedValue = normalizePortfolioUrl(value)
+  if (!normalizedValue) return true
+
+  try {
+    const url = new URL(normalizedValue)
+    return ['http:', 'https:'].includes(url.protocol) && url.hostname.includes('.')
+  } catch (_error) {
+    return false
+  }
+}
+
+const countPhoneDigits = (value) => String(value || '').replace(/\D/g, '').length
+
+const setCareerFieldError = (field, message) => {
+  careerFieldErrors.value = {
+    ...careerFieldErrors.value,
+    [field]: message
+  }
+
+  if (!message) {
+    const { [field]: _removed, ...remainingErrors } = careerFieldErrors.value
+    careerFieldErrors.value = remainingErrors
+  }
+}
+
+const validateCareerField = (field) => {
+  const phoneDigitCount = countPhoneDigits(careerForm.phone)
+  let message = ''
+
+  if (field === 'fullName' && !careerForm.fullName.trim()) {
+    message = 'Nama panjang wajib diisi.'
+  }
+
+  if (field === 'email') {
+    if (!careerForm.email.trim()) {
+      message = 'Email wajib diisi.'
+    } else if (!emailPattern.test(careerForm.email.trim())) {
+      message = 'Masukkan email yang valid, contoh nama@gmail.com.'
+    }
+  }
+
+  if (field === 'phone') {
+    if (!careerForm.phone.trim()) {
+      message = 'Nomor telepon wajib diisi.'
+    } else if (!/^[+\d\s()-]+$/.test(careerForm.phone.trim())) {
+      message = 'Nomor telepon hanya boleh berisi angka, spasi, tanda +, -, atau ().'
+    } else if (phoneDigitCount < 10) {
+      message = 'Nomor telepon minimal 10 digit.'
+    } else if (phoneDigitCount > 15) {
+      message = 'Nomor telepon maksimal 15 digit.'
+    }
+  }
+
+  if (field === 'address' && !careerForm.address.trim()) {
+    message = 'Alamat wajib diisi.'
+  }
+
+  if (field === 'position' && !careerForm.position.trim()) {
+    message = 'Posisi wajib dipilih.'
+  }
+
+  if (field === 'latestEducation' && !careerForm.latestEducation.trim()) {
+    message = 'Pendidikan terakhir wajib diisi.'
+  }
+
+  if (field === 'experienceSummary' && !careerForm.experienceSummary.trim()) {
+    message = 'Pengalaman singkat wajib diisi.'
+  }
+
+  if (field === 'portfolioUrl' && !isValidPortfolioUrl(careerForm.portfolioUrl)) {
+    message = 'Masukkan URL yang valid, contoh https://www.google.com.'
+  }
+
+  if (field === 'message' && !careerForm.message.trim()) {
+    message = 'Pesan atau cover letter singkat wajib diisi.'
+  }
+
+  if (field === 'resume') {
+    if (!careerForm.resume) {
+      message = 'Resume PDF wajib diupload.'
+    } else if (careerForm.resume.type !== 'application/pdf' && !careerForm.resume.name.toLowerCase().endsWith('.pdf')) {
+      message = 'Resume harus berupa file PDF.'
+    } else if (careerForm.resume.size > maxCvSize) {
+      message = 'Ukuran CV maksimal 2 MB.'
+    }
+  }
+
+  setCareerFieldError(field, message)
+  return !message
+}
 
 onMounted(() => {
   fetchCareers()
   fetchBannerPage('careers')
+
+  const requestedPosition = String(route.query.position || '')
+  if (requestedPosition) {
+    openCareerModal(requestedPosition)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (import.meta.client) {
+    document.body.style.overflow = ''
+  }
 })
 
 const roleCategoryFor = (role) => {
@@ -178,6 +566,11 @@ const categoryOptions = computed(() => [
   ...new Set(careers.value.map(roleCategoryFor))
 ])
 
+const careerPositionOptions = computed(() => {
+  const options = careers.value.map((role) => role.job_title).filter(Boolean)
+  return [...new Set([...options, 'General Career Inquiry'])]
+})
+
 const filteredCareers = computed(() => {
   const keyword = searchQuery.value.trim().toLowerCase()
 
@@ -193,4 +586,111 @@ const filteredCareers = computed(() => {
     return matchesCategory && matchesKeyword
   })
 })
+
+watch([isCareerModalOpen, isCareerSuccessModalOpen], ([isCareerOpen, isSuccessOpen]) => {
+  if (!import.meta.client) return
+  document.body.style.overflow = isCareerOpen || isSuccessOpen ? 'hidden' : ''
+})
+
+const openCareerModal = (position) => {
+  careerForm.position = position
+  careerStatus.value = 'idle'
+  careerMessage.value = ''
+  careerFieldErrors.value = {}
+  isCareerModalOpen.value = true
+}
+
+const closeCareerModal = () => {
+  if (careerStatus.value === 'loading') return
+  isCareerModalOpen.value = false
+}
+
+const closeCareerSuccessModal = () => {
+  isCareerSuccessModalOpen.value = false
+}
+
+const handleCareerFileChange = (event) => {
+  const input = event.target
+  careerForm.resume = input.files?.[0] || null
+  validateCareerField('resume')
+}
+
+const validateCareerForm = () => {
+  const fields = [
+    'fullName',
+    'email',
+    'phone',
+    'address',
+    'position',
+    'latestEducation',
+    'experienceSummary',
+    'portfolioUrl',
+    'message',
+    'resume'
+  ]
+
+  const validationResults = fields.map((field) => validateCareerField(field))
+  const isValid = validationResults.every(Boolean)
+
+  if (!isValid) {
+    careerStatus.value = 'error'
+    careerMessage.value = Object.values(careerFieldErrors.value)[0]
+    return false
+  }
+
+  return true
+}
+
+const resetCareerForm = () => {
+  const submittedPosition = careerForm.position
+
+  careerForm.fullName = ''
+  careerForm.email = ''
+  careerForm.phone = ''
+  careerForm.address = ''
+  careerForm.position = submittedPosition
+  careerForm.latestEducation = ''
+  careerForm.experienceSummary = ''
+  careerForm.portfolioUrl = ''
+  careerForm.message = ''
+  careerForm.resume = null
+
+  if (careerFileInput.value) {
+    careerFileInput.value.value = ''
+  }
+}
+
+const handleCareerSubmit = async () => {
+  if (!validateCareerForm()) return
+
+  careerStatus.value = 'loading'
+  careerMessage.value = ''
+
+  try {
+    await submitCareerApplication({
+      fullName: careerForm.fullName.trim(),
+      email: careerForm.email.trim(),
+      phone: careerForm.phone.trim(),
+      address: careerForm.address.trim(),
+      position: careerForm.position.trim(),
+      latestEducation: careerForm.latestEducation.trim(),
+      experienceSummary: careerForm.experienceSummary.trim(),
+      portfolioUrl: normalizePortfolioUrl(careerForm.portfolioUrl),
+      message: careerForm.message.trim(),
+      cv: careerForm.resume
+    })
+
+    resetCareerForm()
+    careerFieldErrors.value = {}
+    careerStatus.value = 'success'
+    careerMessage.value = 'Lamaran berhasil dikirim. Mohon tunggu sebentar, admin akan membalas melalui email.'
+    isCareerModalOpen.value = false
+    isCareerSuccessModalOpen.value = true
+  } catch (error) {
+    careerStatus.value = 'error'
+    careerMessage.value = error instanceof Error
+      ? error.message
+      : 'Data belum berhasil dikirim. Silakan coba lagi beberapa saat.'
+  }
+}
 </script>

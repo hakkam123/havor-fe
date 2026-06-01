@@ -6,6 +6,9 @@
     <img
       :src="image"
       :alt="imageAlt || title"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
       class="absolute inset-0 h-full w-full object-cover"
     >
     <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,12,26,0.8)_0%,rgba(4,12,26,0.44)_42%,rgba(4,12,26,0.28)_100%)]"></div>
