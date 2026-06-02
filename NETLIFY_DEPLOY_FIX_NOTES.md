@@ -10,10 +10,6 @@ Berikut ini aman dan memang perlu untuk frontend:
 - NUXT_PUBLIC_SITE_URL
 - VITE_API_BASE_URL
 
-Contoh nilai public URL:
-
-- https://tplnext.com/havor
-- https://havorsmarta.netlify.app
 
 ## Environment variable backend yang tidak boleh ada di frontend
 Jangan pernah menaruh ini di Netlify frontend:
@@ -37,10 +33,6 @@ Tidak ada value hardcoded di repo. Jangan set env ini di Netlify frontend produc
 2. Masuk ke Environment variables.
 3. Pastikan hanya public URL env yang ada di frontend.
 4. Pastikan public URL env tidak ditandai sebagai secret/sensitive.
-5. Tambahkan atau pastikan value berikut:
-   - SECRETS_SCAN_OMIT_KEYS=VITE_API_BASE_URL,NUXT_PUBLIC_API_BASE,NUXT_PUBLIC_SITE_URL
-   - SECRETS_SCAN_OMIT_PATHS=dist/**,.netlify/functions-internal/**
-   - SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES=https://tplnext.com/havor,https://havorsmarta.netlify.app
 6. Trigger deploy ulang dengan Clear cache and deploy site.
 
 Catatan: jangan simpan SECRETS_SCAN_* di netlify.toml karena Netlify bisa menganggapnya sebagai secret env var dan memblokir deploy saat value-nya ditemukan di repo.
