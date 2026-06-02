@@ -105,8 +105,8 @@
   - `/products`
   - `/careers`
 - PASS: Local backend started on port `5000` after Laragon/MySQL was available.
-- PASS: Local contact submit to `http://127.0.0.1:5000/havor/api/contact`.
-- PASS: Local career submit to `http://127.0.0.1:5000/havor/api/careers`.
+- PASS: Local contact submit to the backend contact endpoint.
+- PASS: Local career submit to the backend careers endpoint.
 - PASS: Protected local data fetch for contact messages and career applications using a local JWT.
 
 ## 13. Errors Found

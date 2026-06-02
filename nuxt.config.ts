@@ -1,12 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const backendOrigin = 'https://tplnext.com'
+const backendBasePath = 'havor'
+const defaultAdminApiBase = [backendOrigin, backendBasePath, 'api'].join('/')
+
 export default defineNuxtConfig({
   ssr: true,
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  routeRules: {
-    '/havor/api/**': { proxy: 'https://tplnext.com/havor/api/**' },
-    '/havor/uploads/**': { proxy: 'https://tplnext.com/havor/uploads/**' }
-  },
   app: {
     pageTransition: {
       name: 'page-flow',
@@ -41,7 +41,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/tailwind.css'],
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || '/havor/api',
+      apiBase: defaultAdminApiBase,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://havorsmarta.netlify.app'
     }
   }
