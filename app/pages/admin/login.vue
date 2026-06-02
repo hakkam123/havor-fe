@@ -79,6 +79,10 @@ const isLoading = ref(false)
 const errorMsg = ref('')
 
 const handleLogin = async () => {
+  if (isLoading.value) {
+    return
+  }
+
   try {
     isLoading.value = true
     errorMsg.value = ''
@@ -87,8 +91,10 @@ const handleLogin = async () => {
     await authStore.login({ email: email.value, password: password.value })
     router.push('/admin')
   } catch (err) {
-    if (err.response && err.response.status === 401) {
+    if (err?.response?.status === 401) {
       errorMsg.value = 'Invalid email or password.'
+    } else if (err?.message === 'NUXT_PUBLIC_API_BASE is not configured') {
+      errorMsg.value = 'API endpoint is not configured. Please contact the administrator.'
     } else {
       errorMsg.value = 'An error occurred during login. Please try again later.'
     }

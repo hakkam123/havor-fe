@@ -1,7 +1,7 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
 
 const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3000'
-const apiBase = process.env.E2E_API_BASE || 'https://tplnext.com/havor/api'
+const apiBase = process.env.E2E_API_BASE
 const adminEmail = process.env.E2E_ADMIN_EMAIL || process.env.QA_ADMIN_EMAIL
 const adminPassword = process.env.E2E_ADMIN_PASSWORD || process.env.QA_ADMIN_PASSWORD
 
@@ -18,6 +18,7 @@ const slugify = (value: string) =>
     .replace(/(^-|-$)+/g, '')
 
 async function login(request: APIRequestContext) {
+  expect(apiBase, 'E2E_API_BASE is required').toBeTruthy()
   expect(adminEmail, 'E2E_ADMIN_EMAIL or QA_ADMIN_EMAIL is required').toBeTruthy()
   expect(adminPassword, 'E2E_ADMIN_PASSWORD or QA_ADMIN_PASSWORD is required').toBeTruthy()
 

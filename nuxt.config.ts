@@ -1,8 +1,3 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
-const backendOrigin = 'https://tplnext.com'
-const backendBasePath = 'havor'
-const defaultAdminApiBase = [backendOrigin, backendBasePath, 'api'].join('/')
-
 export default defineNuxtConfig({
   ssr: true,
   compatibilityDate: '2025-07-15',
@@ -41,7 +36,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/tailwind.css'],
   runtimeConfig: {
     public: {
-      apiBase: defaultAdminApiBase,
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://havorsmarta.netlify.app'
     }
   }

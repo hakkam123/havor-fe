@@ -13,6 +13,11 @@ node_modules
 logs
 *.log
 
+# Generated QA artifacts
+qa-evidence
+qa-evidence-after-fix
+ui-refactor-evidence
+
 # Misc
 .DS_Store
 .fleet

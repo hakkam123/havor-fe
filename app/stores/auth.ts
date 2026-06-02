@@ -39,6 +39,16 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken.value = session.refreshToken
   }
 
+  const getApiBase = () => {
+    const apiBase = String(config.public.apiBase || '').replace(/\/+$/, '')
+
+    if (!apiBase) {
+      throw new Error('NUXT_PUBLIC_API_BASE is not configured')
+    }
+
+    return apiBase
+  }
+
   const clearAuthState = () => {
     token.value = null
     refreshToken.value = null
@@ -55,7 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const login = async (credentials: { email: string, password: string }) => {
-    const res = await $fetch<LoginResponse>(`${config.public.apiBase}/auth/login`, {
+    const res = await $fetch<LoginResponse>(`${getApiBase()}/auth/login`, {
       method: 'POST',
       body: credentials
     })
@@ -83,7 +93,7 @@ export const useAuthStore = defineStore('auth', () => {
       const activeRefreshToken = refreshToken.value
       const refreshVersion = sessionVersion
 
-      refreshRequest = $fetch<RefreshResponse>(`${config.public.apiBase}/auth/refresh`, {
+      refreshRequest = $fetch<RefreshResponse>(`${getApiBase()}/auth/refresh`, {
         method: 'POST',
         body: { refreshToken: activeRefreshToken }
       })
@@ -115,7 +125,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       if (activeRefreshToken) {
-        await $fetch(`${config.public.apiBase}/auth/logout`, {
+        await $fetch(`${getApiBase()}/auth/logout`, {
           method: 'POST',
           body: { refreshToken: activeRefreshToken }
         })
