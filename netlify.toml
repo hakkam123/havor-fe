@@ -1,0 +1,4 @@
+[build.environment]
+  # This is a public client-side API base URL, not a credential.
+  # Netlify scans values from public env vars in generated client bundles, so omit this key.
+  SECRETS_SCAN_OMIT_KEYS = "VITE_API_BASE_URL"
