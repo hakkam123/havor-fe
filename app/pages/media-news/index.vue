@@ -159,6 +159,11 @@
               </div>
             </div>
           </div>
+          <div v-if="canShowMoreNews" class="mt-6 flex justify-center">
+            <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#dbe6f4] bg-white text-[#1f5dcc] shadow-sm transition hover:border-[#1f5dcc] hover:bg-[#edf4ff]" aria-label="Show more media updates" @click="showMoreNews">
+              <ChevronDown class="h-5 w-5" />
+            </button>
+          </div>
           </div>
         </section>
       </template>
@@ -198,6 +203,8 @@
 </template>
 
 <script setup lang="ts">
+import { ChevronDown } from 'lucide-vue-next'
+
 definePageMeta({
   layout: 'public'
 })
@@ -215,6 +222,7 @@ const mediaBanner = useBannerPage('media-news', 'news')
 const mediaHeroImage = computed(() => mediaBanner.value.media_url || mediaPage.hero.image)
 const selectedCategory = ref('All categories')
 const searchQuery = ref('')
+const visibleNewsCount = ref(7)
 
 onMounted(() => {
   fetchNews()
@@ -222,16 +230,16 @@ onMounted(() => {
 })
 
 const featuredPressRelease = computed(() => {
-  const press = filteredNews.value.filter(item => item.category.toLowerCase().includes('press') || item.category.toLowerCase().includes('release'))
-  return press.length ? press[0] : filteredNews.value[0] || null
+  const press = visibleNews.value.filter(item => item.category.toLowerCase().includes('press') || item.category.toLowerCase().includes('release'))
+  return press.length ? press[0] : visibleNews.value[0] || null
 })
 const pressSidebar = computed(() => {
-  const press = filteredNews.value.filter(item => item.category.toLowerCase().includes('press') || item.category.toLowerCase().includes('release'))
-  return press.length ? press.slice(1, 5) : filteredNews.value.slice(1, 5)
+  const press = visibleNews.value.filter(item => item.category.toLowerCase().includes('press') || item.category.toLowerCase().includes('release'))
+  return press.length ? press.slice(1, 5) : visibleNews.value.slice(1, 5)
 })
 const newsColumns = computed(() => {
-  const other = filteredNews.value.filter(item => !item.category.toLowerCase().includes('press') && !item.category.toLowerCase().includes('release'))
-  const source = other.length ? other : filteredNews.value.slice(5)
+  const other = visibleNews.value.filter(item => !item.category.toLowerCase().includes('press') && !item.category.toLowerCase().includes('release'))
+  const source = other.length ? other : visibleNews.value.slice(5)
   return [
     source.slice(0, 3),
     source.slice(3, 6)
@@ -254,5 +262,14 @@ const filteredNews = computed(() => {
 
     return matchesCategory && matchesKeyword
   })
+})
+const visibleNews = computed(() => filteredNews.value.slice(0, visibleNewsCount.value))
+const canShowMoreNews = computed(() => filteredNews.value.length > visibleNews.value.length)
+const showMoreNews = () => {
+  visibleNewsCount.value += 6
+}
+
+watch([selectedCategory, searchQuery], () => {
+  visibleNewsCount.value = 7
 })
 </script>

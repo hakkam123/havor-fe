@@ -14,9 +14,16 @@ export class PublicApiError extends Error {
   }
 }
 
-const DEFAULT_PUBLIC_API_BASE_URL = 'https://tplnext.com/havor'
+const getApiBaseUrl = () => {
+  const config = useRuntimeConfig()
+  const apiBaseUrl = String(config.public.apiBase || import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
 
-const getApiBaseUrl = () => String(import.meta.env.VITE_API_BASE_URL || DEFAULT_PUBLIC_API_BASE_URL).replace(/\/$/, '')
+  if (!apiBaseUrl) {
+    throw new PublicApiError('API endpoint is not configured. Please contact the administrator.', 0)
+  }
+
+  return apiBaseUrl
+}
 
 const buildUrl = (path: string) => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`

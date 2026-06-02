@@ -39,7 +39,7 @@
                 <NuxtLink to="/projects" class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]" aria-label="Back to projects">
                   <ArrowLeft class="h-4 w-4" />
                 </NuxtLink>
-                <NuxtLink to="/#contact" class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]" aria-label="Discuss project">
+                <NuxtLink to="/contact" class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]" aria-label="Discuss project">
                   <Mail class="h-4 w-4" />
                 </NuxtLink>
               </div>

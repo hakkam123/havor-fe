@@ -33,7 +33,7 @@
 
         <div class="hidden items-center gap-3 lg:flex">
           <NuxtLink
-            to="/#contact"
+            to="/contact"
             class="inline-flex items-center justify-center px-1 py-2 text-[0.86rem] font-medium transition-all duration-300 ease-out hover:font-semibold"
             :class="isPastHero ? 'text-slate-700 hover:text-slate-950' : 'text-white/90 hover:text-white'"
           >
@@ -72,7 +72,7 @@
             </NuxtLink>
           </nav>
           <NuxtLink
-            to="/#contact"
+            to="/contact"
             class="mt-3 inline-flex w-full items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition-all duration-300 ease-out"
             :class="isPastHero ? 'border-slate-950 bg-slate-950 text-white hover:border-slate-800 hover:bg-slate-800' : 'border-white/30 bg-white/10 text-white hover:border-white/50 hover:bg-white/15'"
             @click="isOpen = false"

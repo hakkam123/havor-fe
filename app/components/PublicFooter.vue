@@ -38,7 +38,7 @@
             <li>{{ company.phone }}</li>
             <li>{{ company.office }}</li>
           </ul>
-          <NuxtLink to="/#contact" class="mt-5 inline-flex text-sm font-medium text-[#0e2344] transition hover:text-[#1f5dcc]">
+          <NuxtLink to="/contact" class="mt-5 inline-flex text-sm font-medium text-[#0e2344] transition hover:text-[#1f5dcc]">
             {{ t('footer.start') }}
           </NuxtLink>
         </div>

@@ -38,7 +38,7 @@
                 <NuxtLink to="/services" class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]" aria-label="Back to services">
                   <ArrowLeft class="h-4 w-4" />
                 </NuxtLink>
-                <NuxtLink to="/#contact" class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]" aria-label="Discuss service">
+                <NuxtLink to="/contact" class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]" aria-label="Discuss service">
                   <Mail class="h-4 w-4" />
                 </NuxtLink>
               </div>
@@ -83,7 +83,7 @@
             <div class="rounded-lg bg-[#0d3b91] p-5 text-white">
               <p class="text-[0.75rem] font-medium uppercase tracking-normal text-white/70">Need This Capability?</p>
               <h3 class="mt-3 text-lg font-semibold leading-tight">Talk with Havor about the right implementation scope.</h3>
-              <NuxtLink to="/#contact" class="mt-5 inline-flex text-sm font-medium text-white/88 hover:text-white">
+              <NuxtLink to="/contact" class="mt-5 inline-flex text-sm font-medium text-white/88 hover:text-white">
                 Contact us
               </NuxtLink>
             </div>

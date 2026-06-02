@@ -240,7 +240,7 @@
 
         <div v-else-if="works.length" class="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <NuxtLink
-              v-for="project in works.slice(0, 4)"
+            v-for="project in visibleHomeProjects"
               :key="project.id"
               :to="`/projects/${project.slug}`"
               class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-[0_12px_32px_rgba(18,56,122,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.11)]"
@@ -272,6 +272,11 @@
           <p class="font-medium text-slate-500">{{ t('home.projects.empty') }}</p>
         </div>
 
+        <div v-if="canShowMoreHomeProjects" class="mt-6 flex justify-center">
+          <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#dbe6f4] bg-white text-[#1f5dcc] shadow-sm transition hover:border-[#1f5dcc] hover:bg-[#edf4ff]" aria-label="Show more projects" @click="showMoreHomeProjects">
+            <ChevronDown class="h-5 w-5" />
+          </button>
+        </div>
       </div>
     </section>
 
@@ -327,7 +332,7 @@
 
         <div v-else-if="displayNews.length" class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <NuxtLink
-            v-for="article in displayNews.slice(0, 6)"
+            v-for="article in visibleHomeNews"
             :key="article.id"
             :to="article.slug ? `/media-news/${article.slug}` : '/media-news'"
             class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.1)]"
@@ -346,8 +351,22 @@
         <div v-else class="mt-8 brand-soft-panel p-6 text-center">
           <p class="font-medium text-slate-500">{{ t('home.insights.empty') }}</p>
         </div>
+        <div v-if="canShowMoreHomeNews" class="mt-6 flex justify-center">
+          <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#dbe6f4] bg-white text-[#1f5dcc] shadow-sm transition hover:border-[#1f5dcc] hover:bg-[#edf4ff]" aria-label="Show more media updates" @click="showMoreHomeNews">
+            <ChevronDown class="h-5 w-5" />
+          </button>
+        </div>
       </div>
     </section>
+
+    <PublicImageCta
+      title="Company Campaign"
+      copy="Explore Havor initiatives for digital transformation, long-term support, and practical technology adoption across organizations that need dependable execution."
+      :image="aboutImage"
+      image-alt="Havor company campaign"
+      action-label="Discuss a Campaign"
+      to="/contact"
+    />
 
     <PublicImageCta
       anchor-id="contact"
@@ -373,7 +392,7 @@
         >
           <div class="grid gap-3 sm:grid-cols-2">
             <label class="text-sm font-semibold" for="contact-name">
-              Name
+              Name <span class="text-rose-600">*</span>
               <input
                 id="contact-name"
                 v-model="contactForm.name"
@@ -382,10 +401,11 @@
                 autocomplete="name"
                 :aria-invalid="Boolean(contactFieldErrors.name)"
               >
+              <span v-if="contactFieldErrors.name" class="mt-1 block text-xs font-medium text-rose-600">{{ contactFieldErrors.name }}</span>
             </label>
 
             <label class="text-sm font-semibold" for="contact-email">
-              Email
+              Email <span class="text-rose-600">*</span>
               <input
                 id="contact-email"
                 v-model="contactForm.email"
@@ -394,11 +414,12 @@
                 autocomplete="email"
                 :aria-invalid="Boolean(contactFieldErrors.email)"
               >
+              <span v-if="contactFieldErrors.email" class="mt-1 block text-xs font-medium text-rose-600">{{ contactFieldErrors.email }}</span>
             </label>
           </div>
 
           <label class="mt-3 block text-sm font-semibold" for="contact-subject">
-            Subject
+            Subject <span class="text-rose-600">*</span>
             <input
               id="contact-subject"
               v-model="contactForm.subject"
@@ -407,16 +428,18 @@
               autocomplete="off"
               :aria-invalid="Boolean(contactFieldErrors.subject)"
             >
+            <span v-if="contactFieldErrors.subject" class="mt-1 block text-xs font-medium text-rose-600">{{ contactFieldErrors.subject }}</span>
           </label>
 
           <label class="mt-3 block text-sm font-semibold" for="contact-message">
-            Message
+            Message <span class="text-rose-600">*</span>
             <textarea
               id="contact-message"
               v-model="contactForm.message"
               class="mt-2 min-h-28 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
               :aria-invalid="Boolean(contactFieldErrors.message)"
             ></textarea>
+            <span v-if="contactFieldErrors.message" class="mt-1 block text-xs font-medium text-rose-600">{{ contactFieldErrors.message }}</span>
           </label>
 
           <p
@@ -443,7 +466,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, ArrowRight, BrainCircuit, CheckCircle2, Globe2, MonitorSmartphone, ServerCog } from 'lucide-vue-next'
+import { ArrowLeft, ArrowRight, BrainCircuit, CheckCircle2, ChevronDown, Globe2, MonitorSmartphone, ServerCog } from 'lucide-vue-next'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { submitContactMessage } from '~/services/contactService'
 
@@ -474,6 +497,8 @@ const contactForm = reactive({
   message: ''
 })
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const homeProjectLimit = ref(4)
+const homeNewsLimit = ref(6)
 
 const defaultServiceImage = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'
 const defaultProjectImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80'
@@ -664,6 +689,16 @@ const displayNews = computed(() => {
     slug: ''
   }))
 })
+const visibleHomeProjects = computed(() => works.value.slice(0, homeProjectLimit.value))
+const canShowMoreHomeProjects = computed(() => works.value.length > visibleHomeProjects.value.length)
+const showMoreHomeProjects = () => {
+  homeProjectLimit.value += 4
+}
+const visibleHomeNews = computed(() => displayNews.value.slice(0, homeNewsLimit.value))
+const canShowMoreHomeNews = computed(() => displayNews.value.length > visibleHomeNews.value.length)
+const showMoreHomeNews = () => {
+  homeNewsLimit.value += 3
+}
 
 onMounted(() => {
   fetchExpertise()

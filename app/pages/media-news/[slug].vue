@@ -36,16 +36,27 @@
             <div class="sticky top-28">
               <p class="brand-meta">Share</p>
               <div class="mt-4 flex flex-col gap-3">
+                <button
+                  type="button"
+                  class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]"
+                  aria-label="Copy article link"
+                  @click="copyArticleLink"
+                >
+                  <LinkIcon class="h-4 w-4" />
+                </button>
                 <a
                   v-for="item in shareLinks"
                   :key="item.label"
                   :href="item.href"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]"
                   :aria-label="item.label"
                 >
                   <component :is="item.icon" class="h-4 w-4" />
                 </a>
               </div>
+              <p v-if="copyMessage" class="mt-3 text-xs font-medium text-emerald-700">{{ copyMessage }}</p>
             </div>
           </aside>
 
@@ -117,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { ArrowUpRight, Link as LinkIcon, Mail, Share2 } from 'lucide-vue-next'
 
 definePageMeta({
@@ -132,9 +143,12 @@ const { news, fetchNews, error } = useNews()
 const { fetchBannerPage, useBannerPage } = useBanners()
 const mediaBanner = useBannerPage('media-news', 'news')
 const fallbackImage = computed(() => mediaBanner.value.media_url || defaultFallbackImage)
+const currentUrl = ref('')
+const copyMessage = ref('')
 
 onMounted(async () => {
   await Promise.allSettled([fetchNews(), fetchBannerPage('media-news')])
+  currentUrl.value = window.location.href
 
   if (!error.value && !article.value) {
     showError({
@@ -155,12 +169,23 @@ const categoryCards = computed(() => {
 
   return [...categoryMap.values()].slice(0, 4)
 })
-const currentUrl = computed(() => `/media-news/${slug.value}`)
+const encodedShareUrl = computed(() => encodeURIComponent(currentUrl.value || `/media-news/${slug.value}`))
+const encodedShareText = computed(() => encodeURIComponent(article.value?.title || 'Havor article'))
 const shareLinks = computed(() => [
-  { label: 'Share page', href: currentUrl.value, icon: Share2 },
-  { label: 'Copy article link', href: currentUrl.value, icon: LinkIcon },
-  { label: 'Share by email', href: `mailto:?subject=${encodeURIComponent(article.value?.title || 'Havor article')}&body=${encodeURIComponent(currentUrl.value)}`, icon: Mail }
+  { label: 'Share on WhatsApp', href: `https://wa.me/?text=${encodedShareText.value}%20${encodedShareUrl.value}`, icon: Share2 },
+  { label: 'Share on LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedShareUrl.value}`, icon: Share2 },
+  { label: 'Share by email', href: `mailto:?subject=${encodedShareText.value}&body=${encodedShareUrl.value}`, icon: Mail }
 ])
+const copyArticleLink = async () => {
+  const link = currentUrl.value || `/media-news/${slug.value}`
+
+  try {
+    await navigator.clipboard.writeText(link)
+    copyMessage.value = 'Article link copied.'
+  } catch (_error) {
+    copyMessage.value = 'Copy failed. Please copy the address from your browser.'
+  }
+}
 const formatDate = (value: string) => new Date(value).toLocaleDateString('en-GB', {
   day: '2-digit',
   month: 'short',

@@ -56,20 +56,7 @@
           description="Each service combines implementation depth with supporting deliverables so clients can move from direction to execution with confidence."
         />
 
-        <div v-if="expertise.length" class="mt-8 grid gap-5 border-y border-[#dbe6f4] py-5 lg:grid-cols-[0.42fr_0.58fr]" v-motion-fade-up>
-          <div>
-            <label for="service-category" class="brand-meta">Service Category</label>
-            <select
-              id="service-category"
-              v-model="selectedCategory"
-              class="mt-3 w-full rounded-lg border border-[#d6e5fb] bg-white px-4 py-3 text-[0.95rem] font-medium text-[#0e2344] outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
-            >
-              <option v-for="option in categoryOptions" :key="option" :value="option">
-                {{ option }}
-              </option>
-            </select>
-          </div>
-
+        <div v-if="expertise.length" class="mt-8 border-y border-[#dbe6f4] py-5" v-motion-fade-up>
           <div>
             <label for="service-search" class="brand-meta">Search Service</label>
             <input
@@ -101,16 +88,16 @@
         <div v-else-if="expertise.length" class="mt-8 brand-soft-panel p-8 text-center">
           <p class="text-[1rem] font-semibold text-[#0e2344]">No services match your filter.</p>
           <p class="mt-2 text-[0.92rem] leading-6 text-slate-600">
-            Try another service category or broaden your search keyword.
+            Broaden your search keyword.
           </p>
-          <button @click="selectedCategory = 'All categories'; searchQuery = ''" class="btn-outline mt-6 inline-flex">
+          <button @click="searchQuery = ''" class="btn-outline mt-6 inline-flex">
             Clear All Filters
           </button>
         </div>
         <div v-else class="mt-8 brand-soft-panel p-10 text-center">
           <h3 class="text-2xl font-semibold text-[#0e2344]">Our services are being finalized</h3>
           <p class="mt-4 text-slate-600">We are currently updating our service offerings. Please contact us directly for inquiries regarding our technology solutions.</p>
-          <NuxtLink to="/#contact" class="btn-primary mt-8 inline-flex">Get in touch</NuxtLink>
+          <NuxtLink to="/contact" class="btn-primary mt-8 inline-flex">Get in touch</NuxtLink>
         </div>
       </div>
     </section>
@@ -165,7 +152,7 @@
       :image="servicesHeroImage"
       image-alt="Service consultation"
       :action-label="servicesPage.cta.button"
-      to="/#contact"
+      to="/contact"
     />
   </div>
 </template>
@@ -188,7 +175,6 @@ const { expertise, fetchExpertise } = useExpertise()
 const { fetchBannerPage, useBannerPage } = useBanners()
 const servicesBanner = useBannerPage('services')
 const servicesHeroImage = computed(() => servicesBanner.value.media_url || servicesPage.hero.image)
-const selectedCategory = ref('All categories')
 const searchQuery = ref('')
 
 onMounted(() => {
@@ -196,35 +182,16 @@ onMounted(() => {
   fetchBannerPage('services')
 })
 
-const serviceCategoryFor = (service) => {
-  const text = `${service.name} ${service.description}`.toLowerCase()
-
-  if (text.includes('mobile') || text.includes('android') || text.includes('ios')) return 'Mobile Apps'
-  if (text.includes('ai') || text.includes('intelligent') || text.includes('automation') || text.includes('data')) return 'AI & Data'
-  if (text.includes('website') || text.includes('web') || text.includes('cms')) return 'Website & CMS'
-  if (text.includes('api') || text.includes('backend') || text.includes('integration') || text.includes('dashboard') || text.includes('enterprise')) return 'Enterprise Systems'
-
-  return 'Digital Solution'
-}
-
-const categoryOptions = computed(() => [
-  'All categories',
-  ...new Set(expertise.value.map(serviceCategoryFor))
-])
-
 const filteredExpertise = computed(() => {
   const keyword = searchQuery.value.trim().toLowerCase()
 
   return expertise.value.filter((service) => {
-    const serviceCategory = serviceCategoryFor(service)
-    const matchesCategory = selectedCategory.value === 'All categories' || serviceCategory === selectedCategory.value
     const matchesKeyword =
       !keyword ||
       service.name.toLowerCase().includes(keyword) ||
-      service.description.toLowerCase().includes(keyword) ||
-      serviceCategory.toLowerCase().includes(keyword)
+      service.description.toLowerCase().includes(keyword)
 
-    return matchesCategory && matchesKeyword
+    return matchesKeyword
   })
 })
 </script>

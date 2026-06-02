@@ -28,9 +28,6 @@
             >
             <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.68)_100%)]"></div>
             <div class="relative">
-              <p class="inline-flex rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-[0.68rem] font-medium uppercase tracking-normal text-white/78">
-                Why Work With Us
-              </p>
               <h2 class="mt-5 text-[clamp(1.8rem,3.4vw,3rem)] font-semibold leading-tight tracking-normal">
                 Join a team where growth, meaningful work, and support move together.
               </h2>
@@ -92,16 +89,13 @@
           <article
             v-for="role in filteredCareers"
             :key="role.id"
-            class="brand-panel p-5"
+            class="brand-panel flex min-h-[17rem] flex-col p-5"
             v-motion-fade-up
           >
             <p class="brand-meta">{{ roleCategoryFor(role) }}</p>
             <h3 class="mt-3 text-[1.25rem] font-semibold tracking-normal text-[#0e2344]">{{ role.job_title }}</h3>
             <p class="mt-2 line-clamp-3 text-[0.86rem] leading-6 text-slate-600">{{ role.excerpt }}</p>
-            <div class="mt-5 flex flex-wrap gap-3">
-              <NuxtLink :to="`/careers/${role.slug}`" class="btn-outline">
-                View Role
-              </NuxtLink>
+            <div class="mt-auto flex justify-end pt-5">
               <button type="button" class="btn-primary" @click="openCareerModal(role.job_title)">
                 Apply Now
               </button>
@@ -176,7 +170,7 @@
 
           <div class="grid gap-3 sm:grid-cols-2">
             <label class="text-sm font-semibold" for="career-full-name">
-              Full Name
+              Full Name <span class="text-rose-600">*</span>
               <input
                 id="career-full-name"
                 v-model="careerForm.fullName"
@@ -192,7 +186,7 @@
             </label>
 
             <label class="text-sm font-semibold" for="career-email">
-              Email
+              Email <span class="text-rose-600">*</span>
               <input
                 id="career-email"
                 v-model="careerForm.email"
@@ -209,7 +203,7 @@
             </label>
 
             <label class="text-sm font-semibold" for="career-phone">
-              Phone Number
+              Phone Number <span class="text-rose-600">*</span>
               <input
                 id="career-phone"
                 v-model="careerForm.phone"
@@ -217,7 +211,7 @@
                 type="tel"
                 autocomplete="tel"
                 :aria-invalid="Boolean(careerFieldErrors.phone)"
-                @input="validateCareerField('phone')"
+                @input="handleCareerPhoneInput"
                 @blur="validateCareerField('phone')"
               >
               <span v-if="careerFieldErrors.phone" class="mt-1 block text-xs font-medium text-rose-600">
@@ -226,7 +220,7 @@
             </label>
 
             <label class="text-sm font-semibold" for="career-address">
-              Address
+              Address <span class="text-rose-600">*</span>
               <input
                 id="career-address"
                 v-model="careerForm.address"
@@ -242,7 +236,7 @@
             </label>
 
             <label class="text-sm font-semibold" for="career-position">
-              Position Applied
+              Position Applied <span class="text-rose-600">*</span>
               <select
                 id="career-position"
                 v-model="careerForm.position"
@@ -261,7 +255,7 @@
             </label>
 
             <label class="text-sm font-semibold" for="career-education">
-              Latest Education
+              Latest Education <span class="text-rose-600">*</span>
               <input
                 id="career-education"
                 v-model="careerForm.latestEducation"
@@ -278,23 +272,22 @@
           </div>
 
           <label class="mt-3 block text-sm font-semibold" for="career-experience">
-            Experience Summary
-            <input
+            Experience Summary <span class="text-rose-600">*</span>
+            <textarea
               id="career-experience"
               v-model="careerForm.experienceSummary"
-              class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
-              type="text"
+              class="mt-2 min-h-24 w-full resize-y rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
               placeholder="Example: 2 years as a Frontend Developer"
               :aria-invalid="Boolean(careerFieldErrors.experienceSummary)"
               @input="validateCareerField('experienceSummary')"
-            >
+            ></textarea>
             <span v-if="careerFieldErrors.experienceSummary" class="mt-1 block text-xs font-medium text-rose-600">
               {{ careerFieldErrors.experienceSummary }}
             </span>
           </label>
 
           <label class="mt-3 block text-sm font-semibold" for="career-portfolio">
-            LinkedIn / portfolio URL
+            LinkedIn or Portfolio URL
             <input
               id="career-portfolio"
               v-model="careerForm.portfolioUrl"
@@ -311,7 +304,7 @@
           </label>
 
           <label class="mt-3 block text-sm font-semibold" for="career-message">
-            Short Message / Cover Letter
+            Short Message or Cover Letter <span class="text-rose-600">*</span>
             <textarea
               id="career-message"
               v-model="careerForm.message"
@@ -325,7 +318,7 @@
           </label>
 
           <label class="mt-3 block text-sm font-semibold" for="career-cv">
-            Upload Resume
+            Upload Resume <span class="text-rose-600">*</span>
             <input
               id="career-cv"
               ref="careerFileInput"
@@ -363,6 +356,14 @@
     </Teleport>
 
     <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95"
+      >
       <div
         v-if="isCareerSuccessModalOpen"
         class="fixed inset-0 z-[110] flex items-center justify-center bg-[#031027]/72 px-4 py-6 backdrop-blur-sm"
@@ -371,7 +372,7 @@
         aria-labelledby="career-success-title"
         @click.self="closeCareerSuccessModal"
       >
-        <div class="w-full max-w-md rounded-lg border border-[#dbe6f4] bg-white p-6 text-center text-[#0e2344] shadow-[0_28px_90px_rgba(3,11,24,0.34)]">
+        <div class="w-full max-w-md rounded-lg border border-[#dbe6f4] bg-white p-6 text-center text-[#0e2344] shadow-[0_28px_90px_rgba(3,11,24,0.34)] transition duration-300 ease-out">
           <CheckCircle class="mx-auto h-14 w-14 text-emerald-600" aria-hidden="true" />
           <h2 id="career-success-title" class="mt-4 text-2xl font-semibold leading-tight">
             Your Application Has Been Submitted
@@ -388,6 +389,7 @@
           </button>
         </div>
       </div>
+      </Transition>
     </Teleport>
   </div>
 </template>
@@ -455,6 +457,20 @@ const isValidPortfolioUrl = (value) => {
 }
 
 const countPhoneDigits = (value) => String(value || '').replace(/\D/g, '').length
+const countWords = (value) => String(value || '').trim().split(/\s+/).filter(Boolean).length
+
+const limitPhoneDigits = (value) => {
+  let digitCount = 0
+
+  return String(value || '')
+    .split('')
+    .filter((character) => {
+      if (!/\d/.test(character)) return true
+      digitCount += 1
+      return digitCount <= 15
+    })
+    .join('')
+}
 
 const setCareerFieldError = (field, message) => {
   careerFieldErrors.value = {
@@ -474,6 +490,8 @@ const validateCareerField = (field) => {
 
   if (field === 'fullName' && !careerForm.fullName.trim()) {
     message = 'Full name is required.'
+  } else if (field === 'fullName' && countWords(careerForm.fullName) < 2) {
+    message = 'Please enter your full name with at least 2 words.'
   }
 
   if (field === 'email') {
@@ -491,8 +509,6 @@ const validateCareerField = (field) => {
       message = 'Phone number may only contain numbers, spaces, +, -, or parentheses.'
     } else if (phoneDigitCount < 10) {
       message = 'Phone number must contain at least 10 digits.'
-    } else if (phoneDigitCount > 15) {
-      message = 'Phone number may contain up to 15 digits.'
     }
   }
 
@@ -506,10 +522,14 @@ const validateCareerField = (field) => {
 
   if (field === 'latestEducation' && !careerForm.latestEducation.trim()) {
     message = 'Latest education is required.'
+  } else if (field === 'latestEducation' && countWords(careerForm.latestEducation) < 2) {
+    message = 'Please write your latest education clearly, for example Bachelor of Computer Science.'
   }
 
   if (field === 'experienceSummary' && !careerForm.experienceSummary.trim()) {
     message = 'Experience summary is required.'
+  } else if (field === 'experienceSummary' && careerForm.experienceSummary.trim().length < 10) {
+    message = 'Experience summary must be at least 10 characters.'
   }
 
   if (field === 'portfolioUrl' && !isValidPortfolioUrl(careerForm.portfolioUrl)) {
@@ -613,6 +633,11 @@ const handleCareerFileChange = (event) => {
   const input = event.target
   careerForm.resume = input.files?.[0] || null
   validateCareerField('resume')
+}
+
+const handleCareerPhoneInput = () => {
+  careerForm.phone = limitPhoneDigits(careerForm.phone)
+  validateCareerField('phone')
 }
 
 const validateCareerForm = () => {

@@ -27,7 +27,7 @@ export const submitCareerApplication = (payload: CareerApplicationPayload) => {
   formData.append('message', payload.message)
   formData.append('cv', payload.cv)
 
-  return publicApiFetch('/api/careers', {
+  return publicApiFetch('/careers', {
     method: 'POST',
     body: formData
   })

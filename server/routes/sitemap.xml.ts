@@ -8,7 +8,8 @@ const publicRoutes = [
   { path: '/projects', changefreq: 'weekly', priority: '0.8' },
   { path: '/products', changefreq: 'weekly', priority: '0.7' },
   { path: '/media-news', changefreq: 'weekly', priority: '0.7' },
-  { path: '/careers', changefreq: 'weekly', priority: '0.7' }
+  { path: '/careers', changefreq: 'weekly', priority: '0.7' },
+  { path: '/contact', changefreq: 'monthly', priority: '0.7' }
 ]
 
 const getSiteUrl = (event: H3Event) => {

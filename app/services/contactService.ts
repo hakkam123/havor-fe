@@ -8,7 +8,7 @@ export type ContactFormPayload = {
 }
 
 export const submitContactMessage = (payload: ContactFormPayload) => {
-  return publicApiFetch('/api/contact', {
+  return publicApiFetch('/contact', {
     method: 'POST',
     body: payload
   })

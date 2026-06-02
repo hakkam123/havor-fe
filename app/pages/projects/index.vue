@@ -53,7 +53,7 @@
 
         <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <NuxtLink
-            v-for="project in filteredProjects"
+            v-for="project in visibleProjects"
             :key="project.title"
             :to="`/projects/${project.slug}`"
             class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-[0_14px_40px_rgba(18,56,122,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(18,56,122,0.12)]"
@@ -101,6 +101,12 @@
             </button>
           </div>
         </div>
+
+        <div v-if="canShowMoreProjects" class="mt-6 flex justify-center">
+          <button type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#dbe6f4] bg-white text-[#1f5dcc] shadow-sm transition hover:border-[#1f5dcc] hover:bg-[#edf4ff]" aria-label="Show more projects" @click="showMoreProjects">
+            <ChevronDown class="h-5 w-5" />
+          </button>
+        </div>
       </div>
     </section>
 
@@ -110,12 +116,14 @@
       :image="projectsHeroImage"
       image-alt="Project consultation"
       action-label="Discuss Your Project Idea"
-      to="/#contact"
+      to="/contact"
     />
   </div>
 </template>
 
 <script setup>
+import { ChevronDown } from 'lucide-vue-next'
+
 definePageMeta({
   layout: 'public'
 })
@@ -134,6 +142,7 @@ const projectsHeroImage = computed(() => projectsBanner.value.media_url || proje
 
 const selectedCategory = ref('All categories')
 const searchQuery = ref('')
+const visibleProjectCount = ref(6)
 const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').trim()
 
 onMounted(() => {
@@ -160,5 +169,14 @@ const filteredProjects = computed(() => {
 
     return matchesCategory && matchesKeyword
   })
+})
+const visibleProjects = computed(() => filteredProjects.value.slice(0, visibleProjectCount.value))
+const canShowMoreProjects = computed(() => filteredProjects.value.length > visibleProjects.value.length)
+const showMoreProjects = () => {
+  visibleProjectCount.value += 6
+}
+
+watch([selectedCategory, searchQuery], () => {
+  visibleProjectCount.value = 6
 })
 </script>
