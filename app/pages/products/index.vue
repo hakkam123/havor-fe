@@ -1,8 +1,8 @@
 <template>
   <div class="bg-white">
     <CorporatePageHero
+      :title="productsBanner.title || productsPage.hero.title"
       :subtitle="productsBanner.subtitle || 'Ready-to-adapt product packages and implementation starters managed from the Havor dashboard.'"
-      kicker="Products"
       :image="heroImage"
       image-alt="Havor digital product workspace"
     />

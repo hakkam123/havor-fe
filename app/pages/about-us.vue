@@ -159,9 +159,6 @@
             >
             <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.68)_100%)]"></div>
             <div class="relative">
-              <p class="inline-flex rounded-lg border border-white/15 bg-white/10 px-3 py-1.5 text-[0.68rem] font-medium uppercase tracking-normal text-white/78">
-                Culture
-              </p>
               <h2 class="mt-5 text-[clamp(1.8rem,3.4vw,3rem)] font-semibold leading-tight tracking-normal">
                 {{ aboutPage.culture.title }}
               </h2>

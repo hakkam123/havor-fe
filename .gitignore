@@ -27,3 +27,5 @@ ui-refactor-evidence
 .env
 .env.*
 !.env.example
+
+public/images/banner/
