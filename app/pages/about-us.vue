@@ -95,7 +95,6 @@
               v-motion-fade-up
             >
               <div>
-                <p class="text-[0.72rem] font-medium uppercase tracking-normal text-[#6c86ad]">Milestone</p>
                 <p class="mt-2.5 text-[1.15rem] font-semibold text-[#1f5dcc]">{{ item.phase }}</p>
               </div>
               <div>
