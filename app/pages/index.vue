@@ -359,14 +359,38 @@
       </div>
     </section>
 
-    <PublicImageCta
-      title="Company Campaign"
-      copy="Explore Havor initiatives for digital transformation, long-term support, and practical technology adoption across organizations that need dependable execution."
-      :image="aboutImage"
-      image-alt="Havor company campaign"
-      action-label="Discuss a Campaign"
-      to="/contact"
-    />
+    <section class="brand-section bg-white">
+      <div class="marketing-container">
+        <div class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <SectionHeading
+            title="Company Campaign"
+            description="Explore Havor initiatives for digital transformation, long-term support, and practical technology adoption across organizations that need dependable execution."
+          />
+
+          <div class="lg:justify-self-end">
+            <NuxtLink to="/contact" class="btn-outline">Discuss a Campaign</NuxtLink>
+          </div>
+        </div>
+
+        <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <NuxtLink
+            v-for="campaign in campaignItems"
+            :key="campaign.title"
+            to="/contact"
+            class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.1)]"
+            :aria-label="`Discuss campaign: ${campaign.title}`"
+            v-motion-fade-up
+          >
+            <img :src="campaign.image" :alt="campaign.title" class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]">
+            <div class="p-4">
+              <p class="brand-meta">{{ campaign.category }}</p>
+              <h3 class="mt-2 line-clamp-2 text-[1.02rem] font-semibold leading-snug text-[#0e2344]">{{ campaign.title }}</h3>
+              <p class="mt-2 line-clamp-2 text-[0.84rem] leading-6 text-slate-600">{{ campaign.excerpt }}</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
 
     <PublicImageCta
       anchor-id="contact"
@@ -689,6 +713,26 @@ const displayNews = computed(() => {
     slug: ''
   }))
 })
+const campaignItems = computed(() => [
+  {
+    category: 'Digital Readiness',
+    title: 'Operational Assessment for Growing Teams',
+    excerpt: 'A focused campaign to map workflow gaps, clarify priorities, and prepare practical implementation steps.',
+    image: featuredImage.value
+  },
+  {
+    category: 'Implementation Support',
+    title: 'Build, Improve, and Maintain Core Systems',
+    excerpt: 'Support for companies that need dependable execution across web platforms, internal tools, and integrations.',
+    image: aboutImage.value
+  },
+  {
+    category: 'Long-Term Partnership',
+    title: 'Technology Care for Business Continuity',
+    excerpt: 'A structured support model for monitoring, iteration, and ongoing improvement after launch.',
+    image: ctaImage.value
+  }
+])
 const visibleHomeProjects = computed(() => works.value.slice(0, homeProjectLimit.value))
 const canShowMoreHomeProjects = computed(() => works.value.length > visibleHomeProjects.value.length)
 const showMoreHomeProjects = () => {
