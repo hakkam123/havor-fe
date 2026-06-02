@@ -14,7 +14,9 @@ export class PublicApiError extends Error {
   }
 }
 
-const getApiBaseUrl = () => String(import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+const DEFAULT_PUBLIC_API_BASE_URL = 'https://tplnext.com/havor'
+
+const getApiBaseUrl = () => String(import.meta.env.VITE_API_BASE_URL || DEFAULT_PUBLIC_API_BASE_URL).replace(/\/$/, '')
 
 const buildUrl = (path: string) => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
