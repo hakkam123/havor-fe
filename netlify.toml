@@ -3,3 +3,4 @@
   # Nuxt/Vite intentionally embed public env values into generated client/server bundles.
   SECRETS_SCAN_OMIT_KEYS = "VITE_API_BASE_URL,NUXT_PUBLIC_API_BASE,NUXT_PUBLIC_SITE_URL"
   SECRETS_SCAN_OMIT_PATHS = "dist/**,.netlify/functions-internal/**"
+  SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "https://tplnext.com/havor,https://havorsmarta.netlify.app"
