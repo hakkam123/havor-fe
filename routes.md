@@ -158,8 +158,8 @@ Success response:
   "id": 1,
   "username": "Admin",
   "email": "admin@example.com",
-  "accessToken": "eyJhbGciOi...",
-  "refreshToken": "eyJhbGciOi..."
+  "accessToken": "<access_token_placeholder>",
+  "refreshToken": "<refresh_token_placeholder>"
 }
 ```
 
@@ -170,7 +170,7 @@ Body (JSON):
 
 ```json
 {
-  "refreshToken": "eyJhbGciOi..."
+  "refreshToken": "<refresh_token_placeholder>"
 }
 ```
 
@@ -178,8 +178,8 @@ Success response:
 
 ```json
 {
-  "accessToken": "eyJhbGciOi...",
-  "refreshToken": "eyJhbGciOi..."
+  "accessToken": "<access_token_placeholder>",
+  "refreshToken": "<refresh_token_placeholder>"
 }
 ```
 
