@@ -179,7 +179,7 @@ import { computed, onMounted, ref } from 'vue'
 import { Edit2, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { works, fetchWorks, createWork, updateWork, deleteWork } = useWorks()
-const { categories, fetchCategories } = useCategories()
+const { categories, fetchCategories } = useCategories({ type: 'product' })
 const { clients, fetchClients } = useClients()
 
 const isModalOpen = ref(false)

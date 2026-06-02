@@ -4,8 +4,8 @@
       <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <p class="admin-kicker">Taxonomy</p>
-          <h1 class="admin-title">Shared Categories</h1>
-          <p class="admin-copy">Maintain the shared category labels used by products and works. This admin form now matches the backend contract of `name` only.</p>
+          <h1 class="admin-title">Content Categories</h1>
+          <p class="admin-copy">Maintain category labels by scope so product and editorial content stay cleanly separated.</p>
         </div>
 
         <button @click="openModal()" class="admin-primary-btn">
@@ -37,6 +37,7 @@
           <thead>
             <tr>
               <th>Name</th>
+              <th>Type</th>
               <th>Slug</th>
               <th class="text-right">Actions</th>
             </tr>
@@ -44,6 +45,7 @@
           <tbody>
             <tr v-for="item in filteredCategories" :key="item.id">
               <td class="font-semibold text-slate-900">{{ item.name }}</td>
+              <td><span class="admin-badge capitalize">{{ item.type }}</span></td>
               <td><span class="admin-badge">{{ item.slug }}</span></td>
               <td>
                 <div class="flex items-center justify-end gap-2">
@@ -57,7 +59,7 @@
               </td>
             </tr>
             <tr v-if="!filteredCategories.length">
-              <td colspan="3" class="admin-empty-state">
+              <td colspan="4" class="admin-empty-state">
                 {{ error ? error : 'No categories found.' }}
               </td>
             </tr>
@@ -77,6 +79,13 @@
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Name <span class="text-rose-500">*</span></label>
           <input v-model="form.name" type="text" required class="admin-input" placeholder="Category name">
+        </div>
+        <div>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Type <span class="text-rose-500">*</span></label>
+          <select v-model="form.type" class="admin-select">
+            <option value="news">News</option>
+            <option value="product">Product</option>
+          </select>
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Slug <span class="text-rose-500">*</span></label>
@@ -104,7 +113,7 @@
     <AdminConfirmModal
       v-model="deleteState.open"
       title="Delete Category"
-      message="This category will be removed if it is not used by products or news."
+      message="This category will be removed if it is not used by products, news, or campaigns."
       :detail="deleteState.name"
       :is-loading="isDeleting"
       @confirm="confirmDelete"
@@ -119,6 +128,7 @@ import { Edit2, Plus, Search, Trash2 } from 'lucide-vue-next'
 const { categories, error, fetchCategories, createCategory, updateCategory, deleteCategory } = useCategories()
 const { products, fetchProducts } = useProducts()
 const { news: newsItems, fetchNews } = useNews({ includeDrafts: true })
+const { campaigns, fetchCampaigns } = useCampaigns({ includeDrafts: true })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
@@ -130,7 +140,7 @@ const successState = ref({
   title: '',
   message: ''
 })
-const form = ref({ id: null, name: '' })
+const form = ref({ id: null, name: '', type: 'product' })
 const deleteState = ref({ open: false, id: null, name: '' })
 
 const toSlug = (value = '') =>
@@ -154,22 +164,23 @@ const filteredCategories = computed(() => {
 
 const stats = computed(() => [
   { label: 'Total Categories', value: categories.value.length, meta: 'Shared labels returned from the API' },
-  { label: 'Unique Slugs', value: new Set(categories.value.map((item) => item.slug).filter(Boolean)).size, meta: 'Frontend-friendly route labels' },
-  { label: 'Search Results', value: filteredCategories.value.length, meta: 'Current filtered category count' },
-  { label: 'Empty Name', value: categories.value.filter((item) => !item.name).length, meta: 'Should remain zero' }
+  { label: 'News Categories', value: categories.value.filter((item) => item.type === 'news').length, meta: 'Editorial and campaign labels' },
+  { label: 'Product Categories', value: categories.value.filter((item) => item.type === 'product').length, meta: 'Product catalog labels' },
+  { label: 'Search Results', value: filteredCategories.value.length, meta: 'Current filtered category count' }
 ])
 
 onMounted(() => {
   fetchCategories()
   fetchProducts()
   fetchNews()
+  fetchCampaigns()
 })
 
 const openModal = (item = null) => {
   formError.value = ''
   form.value = item
-    ? { id: item.id, name: item.name || '' }
-    : { id: null, name: '' }
+    ? { id: item.id, name: item.name || '', type: item.type || 'product' }
+    : { id: null, name: '', type: 'product' }
 
   isModalOpen.value = true
 }
@@ -193,9 +204,9 @@ const saveCategory = async () => {
     const isEditing = Boolean(form.value.id)
 
     if (isEditing) {
-      await updateCategory(form.value.id, { name: form.value.name })
+      await updateCategory(form.value.id, { name: form.value.name, type: form.value.type })
     } else {
-      await createCategory({ name: form.value.name })
+      await createCategory({ name: form.value.name, type: form.value.type })
     }
 
     isModalOpen.value = false
@@ -220,12 +231,14 @@ const categoryUsageMessage = (id) => {
 
   const usedByProduct = products.value.some((product) => String(product.categoryId) === String(id) || product.categoryName === category.name)
   const usedByNews = newsItems.value.some((news) => news.category === category.name)
+  const usedByCampaign = campaigns.value.some((campaign) => campaign.category === category.name)
 
-  if (!usedByProduct && !usedByNews) return ''
+  if (!usedByProduct && !usedByNews && !usedByCampaign) return ''
 
   const usages = [
     usedByProduct ? 'products' : '',
-    usedByNews ? 'news' : ''
+    usedByNews ? 'news' : '',
+    usedByCampaign ? 'campaigns' : ''
   ].filter(Boolean).join(' and ')
 
   return `This category is still used by ${usages}. Move or update those records before deleting it.`

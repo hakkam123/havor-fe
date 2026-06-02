@@ -117,8 +117,9 @@
               <div>
                 <label class="mb-2 block text-sm font-medium text-slate-600">Category <span class="text-rose-500">*</span></label>
                 <select v-model="form.category" class="admin-select">
-                  <option value="Technology">Technology</option>
-                  <option value="Company">Company Updates</option>
+                  <option v-for="category in categoryOptions" :key="category" :value="category">
+                    {{ category }}
+                  </option>
                 </select>
               </div>
               <div>
@@ -186,6 +187,7 @@ import { computed, onMounted, ref } from 'vue'
 import { Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { news: newsItems, fetchNews, createNews, updateNews, deleteNews } = useNews({ includeDrafts: true })
+const { categories: newsCategories, fetchCategories } = useCategories({ type: 'news' })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
@@ -209,6 +211,11 @@ const form = ref({
   imageFile: null,
   imageFileName: '',
   content: ''
+})
+
+const categoryOptions = computed(() => {
+  const options = newsCategories.value.map((category) => category.name).filter(Boolean)
+  return options.length ? options : ['Technology', 'Company Updates']
 })
 
 const filteredNews = computed(() => {
@@ -253,7 +260,7 @@ const openModal = (item = null) => {
       id: null,
       title: '',
       slug: '',
-      category: 'Technology',
+      category: categoryOptions.value[0] || 'Technology',
       is_published: true,
       image_url: null,
       imageFile: null,
@@ -341,5 +348,6 @@ const confirmDelete = async () => {
 
 onMounted(() => {
   fetchNews()
+  fetchCategories()
 })
 </script>

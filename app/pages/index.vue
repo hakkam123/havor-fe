@@ -509,6 +509,7 @@ const { t, tm } = usePublicI18n()
 const { expertise, isLoading: isLoadingExpertise, fetchExpertise } = useExpertise()
 const { works, isLoading: isLoadingWorks, fetchWorks } = useWorks()
 const { news, isLoading: isLoadingNews, fetchNews } = useNews()
+const { campaigns, fetchCampaigns } = useCampaigns()
 const { clients, isLoading: isLoadingClients, fetchClients } = useClients()
 const { fetchBanners, findBannerByPage } = useBanners()
 const contactStatus = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -713,7 +714,7 @@ const displayNews = computed(() => {
     slug: ''
   }))
 })
-const campaignItems = computed(() => [
+const fallbackCampaignItems = computed(() => [
   {
     category: 'Digital Readiness',
     title: 'Operational Assessment for Growing Teams',
@@ -733,6 +734,16 @@ const campaignItems = computed(() => [
     image: ctaImage.value
   }
 ])
+const campaignItems = computed(() => {
+  if (!campaigns.value.length) return fallbackCampaignItems.value
+
+  return campaigns.value.slice(0, 3).map((campaign, index) => ({
+    category: campaign.category,
+    title: campaign.title,
+    excerpt: campaign.excerpt,
+    image: campaign.image_url || fallbackCampaignItems.value[index]?.image || ctaImage.value
+  }))
+})
 const visibleHomeProjects = computed(() => works.value.slice(0, homeProjectLimit.value))
 const canShowMoreHomeProjects = computed(() => works.value.length > visibleHomeProjects.value.length)
 const showMoreHomeProjects = () => {
@@ -748,6 +759,7 @@ onMounted(() => {
   fetchExpertise()
   fetchWorks()
   fetchNews()
+  fetchCampaigns()
   fetchClients()
   fetchBanners()
   startServiceCarousel()
