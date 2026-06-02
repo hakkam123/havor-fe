@@ -118,13 +118,16 @@ const menuSections = [
   {
     label: 'Workspace',
     items: [
-      { label: 'Campaign', path: '/admin/profile', icon: BellRing },
-      { label: 'Settings', path: '/admin/profile', icon: Settings }
+      { label: 'Campaign', path: '/admin/campaign', icon: BellRing },
+      { label: 'Profile', path: '/admin/profile', icon: Settings }
     ]
   }
 ]
 
-const isActive = (path) => route.path === path || route.path.startsWith(`${path}/`)
+const isActive = (path) => {
+  if (path === '/admin') return route.path === '/admin'
+  return route.path === path || route.path.startsWith(`${path}/`)
+}
 
 const logout = async () => {
   await authStore.logout()

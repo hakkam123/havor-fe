@@ -165,7 +165,7 @@
               <input v-model="form.job_title" type="text" required class="admin-input" placeholder="Frontend Developer">
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Slug Preview</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Slug Preview <span class="text-rose-500">*</span></label>
               <input :value="toSlug(form.job_title)" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
             </div>
             <div>
@@ -187,13 +187,7 @@
           <div class="space-y-4">
             <div>
               <label class="mb-2 block text-sm font-medium text-slate-600">Job Description <span class="text-rose-500">*</span></label>
-              <div class="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-white">
-                <Editor
-                  api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
-                  v-model="form.job_description"
-                  :init="editorConfig"
-                />
-              </div>
+              <AdminRichTextEditor v-model="form.job_description" aria-label="Career job description" />
             </div>
             <p v-if="formError" class="rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
               {{ formError }}
@@ -215,13 +209,21 @@
       :title="successState.title"
       :message="successState.message"
     />
+
+    <AdminConfirmModal
+      v-model="deleteState.open"
+      title="Delete Career"
+      message="This career position will be removed from the public careers feed. This action cannot be undone."
+      :detail="deleteState.name"
+      :is-loading="isDeleting"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { Edit2, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
-import Editor from '@tinymce/tinymce-vue'
 
 const { careers, error, fetchCareers, createCareer, updateCareer, deleteCareer } = useAdminCareers()
 const {
@@ -235,11 +237,13 @@ const isModalOpen = ref(false)
 const searchQuery = ref('')
 const formError = ref('')
 const isSaving = ref(false)
+const isDeleting = ref(false)
 const successState = ref({
   open: false,
   title: '',
   message: ''
 })
+const deleteState = ref({ open: false, id: null, name: '' })
 
 const initialForm = () => ({
   id: null,
@@ -251,20 +255,6 @@ const initialForm = () => ({
 })
 
 const form = ref(initialForm())
-
-const editorConfig = {
-  height: 320,
-  menubar: false,
-  plugins: [
-    'advlist autolink lists link image charmap print preview anchor',
-    'searchreplace visualblocks code fullscreen',
-    'insertdatetime media table paste code help wordcount'
-  ],
-  toolbar:
-    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-  content_css: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap',
-  content_style: 'body { font-family: Poppins, sans-serif; font-size: 14px; color: #0f172a; }'
-}
 
 const filteredCareers = computed(() => {
   if (!searchQuery.value) return careers.value
@@ -366,11 +356,21 @@ const saveForm = async () => {
   }
 }
 
-const handleDelete = async (id) => {
+const handleDelete = (id) => {
   if (!id) return
+  const career = careers.value.find((item) => item.id === id)
+  deleteState.value = { open: true, id, name: career?.job_title || `Career ID ${id}` }
+}
 
-  if (confirm('Delete this career position?')) {
-    await deleteCareer(id)
+const confirmDelete = async () => {
+  if (!deleteState.value.id || isDeleting.value) return
+
+  isDeleting.value = true
+  try {
+    await deleteCareer(deleteState.value.id)
+    deleteState.value = { open: false, id: null, name: '' }
+  } finally {
+    isDeleting.value = false
   }
 }
 

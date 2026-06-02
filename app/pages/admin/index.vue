@@ -17,7 +17,14 @@
       </div>
 
       <div class="admin-stat-grid mt-6">
-        <article v-for="stat in stats" :key="stat.label" class="admin-stat-card">
+        <button
+          v-for="stat in stats"
+          :key="stat.label"
+          type="button"
+          class="admin-stat-card text-left transition hover:border-[var(--admin-accent)] hover:bg-white"
+          :class="stat.filter && messageFilter === stat.filter ? 'border-[var(--admin-accent)] bg-white ring-4 ring-[var(--admin-accent-soft)]' : ''"
+          @click="stat.filter ? messageFilter = stat.filter : null"
+        >
           <div class="flex items-start justify-between gap-4">
             <div>
               <p class="admin-stat-label">{{ stat.label }}</p>
@@ -28,7 +35,7 @@
               <component :is="stat.icon" class="h-5 w-5" :class="stat.iconClass" />
             </div>
           </div>
-        </article>
+        </button>
       </div>
     </section>
 
@@ -54,9 +61,9 @@
           </div>
         </div>
 
-        <div v-else-if="sortedMessages.length" class="divide-y divide-[var(--admin-border)]">
+        <div v-else-if="dashboardMessages.length" class="divide-y divide-[var(--admin-border)]">
           <article
-            v-for="message in sortedMessages"
+            v-for="message in dashboardMessages"
             :key="message.id"
             class="flex flex-col gap-4 px-5 py-5 transition hover:bg-slate-50/70 md:flex-row md:items-start md:justify-between"
           >
@@ -216,6 +223,7 @@ const {
 } = useCareerApplications()
 
 const lastSyncedAt = ref<Date | null>(null)
+const messageFilter = ref<'all' | 'unread' | 'read'>('all')
 let refreshTimer: ReturnType<typeof setInterval> | null = null
 
 const formatDateTime = (value?: string | Date | null) => {
@@ -249,6 +257,11 @@ const sortedMessages = computed(() => {
   })
 })
 
+const dashboardMessages = computed(() => {
+  if (messageFilter.value === 'unread') return sortedMessages.value.filter((message) => !message.is_read)
+  if (messageFilter.value === 'read') return sortedMessages.value.filter((message) => message.is_read)
+  return sortedMessages.value
+})
 const unreadMessages = computed(() => sortedMessages.value.filter((message) => !message.is_read).slice(0, 4))
 const latestApplications = computed(() => applications.value.slice(0, 4))
 
@@ -268,6 +281,7 @@ const stats = computed(() => [
     label: 'Total Messages',
     value: messages.value.length,
     meta: 'Fetched from the public contact inbox',
+    filter: 'all',
     icon: Inbox,
     iconWrapClass: 'bg-slate-100',
     iconClass: 'text-slate-600'
@@ -276,9 +290,19 @@ const stats = computed(() => [
     label: 'Unread Messages',
     value: messages.value.filter((message) => !message.is_read).length,
     meta: 'Need follow-up from the admin team',
+    filter: 'unread',
     icon: Eye,
     iconWrapClass: 'bg-emerald-50',
     iconClass: 'text-emerald-500'
+  },
+  {
+    label: 'Read Messages',
+    value: messages.value.filter((message) => message.is_read).length,
+    meta: 'Already reviewed by admin',
+    filter: 'read',
+    icon: Eye,
+    iconWrapClass: 'bg-slate-100',
+    iconClass: 'text-slate-600'
   },
   {
     label: 'Career Applications',

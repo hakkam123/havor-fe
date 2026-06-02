@@ -9,10 +9,6 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
-          <button class="admin-secondary-btn">
-            <Download class="h-4 w-4" />
-            Export
-          </button>
           <button @click="openModal()" class="admin-primary-btn">
             <Plus class="h-4 w-4" />
             Create Product
@@ -36,10 +32,11 @@
             <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input v-model="searchQuery" type="text" placeholder="Search products, categories, descriptions..." class="admin-input pl-11">
           </div>
-          <button class="admin-secondary-btn py-2 text-xs">
-            <Filter class="h-4 w-4" />
-            All Categories
-          </button>
+          <select v-model="selectedCategoryId" class="admin-select min-w-[200px] py-2 text-xs">
+            <option value="all">All Categories</option>
+            <option value="unassigned">Unassigned</option>
+            <option v-for="cat in categories" :key="cat.id" :value="String(cat.id)">{{ cat.name }}</option>
+          </select>
         </div>
 
         <div class="text-sm text-slate-500">Showing {{ filteredProducts.length }} entries</div>
@@ -77,7 +74,7 @@
               <td>
                 <a
                   v-if="item.external_link"
-                  :href="item.external_link"
+                  :href="normalizeProductExternalLink(item.external_link)"
                   target="_blank"
                   class="inline-flex items-center gap-2 font-medium text-slate-700 transition hover:text-slate-950"
                 >
@@ -128,16 +125,17 @@
               <select v-model="form.categoryId" class="admin-select" required>
                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
               </select>
+              <p v-if="fieldErrors.categoryId" class="mt-1 text-sm text-rose-600">{{ fieldErrors.categoryId }}</p>
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">External Link</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600">External Link <span class="text-rose-500">*</span></label>
               <input v-model="form.external_link" type="url" class="admin-input" placeholder="https://..." :aria-invalid="Boolean(fieldErrors.external_link)">
               <p v-if="fieldErrors.external_link" class="mt-1 text-sm text-rose-600">{{ fieldErrors.external_link }}</p>
             </div>
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-medium text-slate-600">Image</label>
+            <label class="mb-2 block text-sm font-medium text-slate-600">Image <span class="text-rose-500">*</span></label>
             <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
               <div v-if="form.image_url" class="absolute inset-0">
                 <img :src="form.image_url" class="h-full w-full object-cover" >
@@ -155,13 +153,7 @@
 
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Description <span class="text-rose-500">*</span></label>
-          <div class="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-white">
-            <Editor
-              api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
-              v-model="form.description"
-              :init="editorConfig"
-            />
-          </div>
+          <AdminRichTextEditor v-model="form.description" aria-label="Product description" />
           <p v-if="fieldErrors.description" class="mt-1 text-sm text-rose-600">{{ fieldErrors.description }}</p>
         </div>
       </form>
@@ -179,20 +171,30 @@
       :title="successState.title"
       :message="successState.message"
     />
+
+    <AdminConfirmModal
+      v-model="deleteState.open"
+      title="Delete Product"
+      message="This product will be removed from the catalog. This action cannot be undone."
+      :detail="deleteState.name"
+      :is-loading="isDeleting"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Download, Edit2, ExternalLink, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
-import Editor from '@tinymce/tinymce-vue'
+import { Edit2, ExternalLink, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { products, fetchProducts, createProduct, updateProduct, deleteProduct } = useProducts()
 const { categories, fetchCategories } = useCategories()
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
+const selectedCategoryId = ref('all')
 const isSaving = ref(false)
+const isDeleting = ref(false)
 const formError = ref('')
 const fieldErrors = ref({})
 const successState = ref({
@@ -201,28 +203,23 @@ const successState = ref({
   message: ''
 })
 const form = ref({})
-
-const editorConfig = {
-  height: 300,
-  menubar: false,
-  plugins: [
-    'advlist autolink lists link image charmap print preview anchor',
-    'searchreplace visualblocks code fullscreen',
-    'insertdatetime media table paste code help wordcount'
-  ],
-  toolbar:
-    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-  content_css: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap',
-  content_style: 'body { font-family: Poppins, sans-serif; font-size: 14px; color: #0f172a; }'
-}
+const deleteState = ref({ open: false, id: null, name: '' })
 
 const stripHtml = (value) => (value || '').replace(/<[^>]*>?/gm, '').trim()
+const normalizeProductExternalLink = (value = '') => String(value || '').replace('havorsmartadigital.com', 'havorsmarta.netlify.app')
 
 const filteredProducts = computed(() => {
-  if (!searchQuery.value) return products.value
+  const selectedCategory = selectedCategoryId.value
+  const source = products.value.filter((item) => {
+    if (selectedCategory === 'all') return true
+    if (selectedCategory === 'unassigned') return !item.categoryId
+    return String(item.categoryId) === selectedCategory
+  })
+
+  if (!searchQuery.value) return source
 
   const query = searchQuery.value.toLowerCase()
-  return products.value.filter((item) =>
+  return source.filter((item) =>
     [item.name, item.categoryName, stripHtml(item.description)]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query))
@@ -251,7 +248,7 @@ const openModal = (item = null) => {
       name: '',
       description: '',
       categoryId: categories.value[0]?.id || '',
-      external_link: '',
+      external_link: 'https://havorsmarta.netlify.app/products',
       image_url: null,
       imageFile: null,
       imageFileName: ''
@@ -279,7 +276,9 @@ const saveProduct = async () => {
   formError.value = ''
   const errors = {}
   if (!form.value.name?.trim()) errors.name = 'Product name is required.'
+  if (!form.value.categoryId) errors.categoryId = 'Category is required.'
   if (!stripHtml(form.value.description).trim()) errors.description = 'Description is required.'
+  if (!form.value.external_link?.trim()) errors.external_link = 'External link is required.'
   if (!isValidHttpUrl(form.value.external_link)) errors.external_link = 'External link must be a valid http or https URL.'
   if (!isSupportedImageFile(form.value.imageFile)) errors.image_url = 'Image must be a JPG, PNG, or WEBP file.'
   if (Object.keys(errors).length) {
@@ -292,6 +291,7 @@ const saveProduct = async () => {
 
   try {
     const isEditing = Boolean(form.value.id)
+    form.value.external_link = normalizeProductExternalLink(form.value.external_link)
 
     if (isEditing) {
       await updateProduct(form.value.id, form.value)
@@ -315,9 +315,20 @@ const saveProduct = async () => {
   }
 }
 
-const handleDelete = async (id) => {
-  if (confirm('Delete this product?')) {
-    await deleteProduct(id)
+const handleDelete = (id) => {
+  const product = products.value.find((item) => item.id === id)
+  deleteState.value = { open: true, id, name: product?.name || `Product ID ${id}` }
+}
+
+const confirmDelete = async () => {
+  if (!deleteState.value.id || isDeleting.value) return
+
+  isDeleting.value = true
+  try {
+    await deleteProduct(deleteState.value.id)
+    deleteState.value = { open: false, id: null, name: '' }
+  } finally {
+    isDeleting.value = false
   }
 }
 </script>

@@ -51,9 +51,6 @@
               <button @click="openModal(banner)" class="admin-icon-btn" :aria-label="`Edit ${banner.page_name} banner`">
                 <Edit2 class="h-4 w-4" />
               </button>
-              <button @click="handleDelete(banner.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" :aria-label="`Delete ${banner.page_name} banner`">
-                <Trash2 class="h-4 w-4" />
-              </button>
             </div>
           </div>
         </div>
@@ -72,33 +69,35 @@
           {{ formError }}
         </div>
         <div>
-          <label class="mb-2 block text-sm font-medium text-slate-600">Page Name</label>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Page Name <span class="text-rose-500">*</span></label>
           <input v-model="form.page_name" type="text" class="admin-input" placeholder="home" :aria-invalid="Boolean(fieldErrors.page_name)">
           <p v-if="fieldErrors.page_name" class="mt-1 text-sm text-rose-600">{{ fieldErrors.page_name }}</p>
         </div>
         <div>
-          <label class="mb-2 block text-sm font-medium text-slate-600">Title</label>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Title <span class="text-rose-500">*</span></label>
           <input v-model="form.title" type="text" class="admin-input">
+          <p v-if="fieldErrors.title" class="mt-1 text-sm text-rose-600">{{ fieldErrors.title }}</p>
         </div>
         <div>
-          <label class="mb-2 block text-sm font-medium text-slate-600">Subtitle</label>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Subtitle <span class="text-rose-500">*</span></label>
           <textarea v-model="form.subtitle" rows="3" class="admin-textarea"></textarea>
+          <p v-if="fieldErrors.subtitle" class="mt-1 text-sm text-rose-600">{{ fieldErrors.subtitle }}</p>
         </div>
         <div>
-          <label class="mb-2 block text-sm font-medium text-slate-600">Media Type</label>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Media Type <span class="text-rose-500">*</span></label>
           <select v-model="form.media_type" class="admin-select">
             <option value="image">Image</option>
             <option value="video">Video</option>
           </select>
         </div>
         <div>
-          <label class="mb-2 block text-sm font-medium text-slate-600">Upload File</label>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Upload File <span class="text-rose-500">*</span></label>
           <input type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/x-msvideo" class="admin-input py-2" aria-label="Upload banner media" @change="handleMediaUpload">
           <p v-if="form.mediaFileName" class="mt-2 text-xs text-slate-500">{{ form.mediaFileName }}</p>
           <p v-if="fieldErrors.media_url" class="mt-1 text-sm text-rose-600">{{ fieldErrors.media_url }}</p>
         </div>
         <div>
-          <label class="mb-2 block text-sm font-medium text-slate-600">Or Existing Media URL</label>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Or Existing Media URL <span class="text-rose-500">*</span></label>
           <input v-model="form.media_url" type="text" class="admin-input" placeholder="/uploads/banners/home-banner.jpg">
         </div>
       </form>
@@ -121,9 +120,9 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { BadgeInfo, Edit2, Trash2, Upload } from 'lucide-vue-next'
+import { BadgeInfo, Edit2, Upload } from 'lucide-vue-next'
 
-const { banners, fetchBanners, createBanner, updateBanner, deleteBanner } = useBanners()
+const { banners, fetchBanners, createBanner, updateBanner } = useBanners()
 const isModalOpen = ref(false)
 const isSaving = ref(false)
 const formError = ref('')
@@ -194,11 +193,21 @@ const isSupportedMediaFile = (file) => {
   return ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/quicktime', 'video/x-msvideo'].includes(file.type)
 }
 
+const withSaveTimeout = (promise) => {
+  const timeout = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Saving took longer than 5 seconds. Please try again.')), 5000)
+  })
+
+  return Promise.race([promise, timeout])
+}
+
 const saveBanner = async () => {
   formError.value = ''
   fieldErrors.value = {}
   const errors = {}
   if (!form.value.page_name?.trim()) errors.page_name = 'Page name is required.'
+  if (!form.value.title?.trim()) errors.title = 'Title is required.'
+  if (!form.value.subtitle?.trim()) errors.subtitle = 'Subtitle is required.'
   if (!form.value.mediaFile && !form.value.media_url?.trim()) errors.media_url = 'Upload a media file or provide a media URL.'
   if (!isSupportedMediaFile(form.value.mediaFile)) errors.media_url = 'Media must be JPG, PNG, WEBP, MP4, MOV, or AVI.'
   if (form.value.media_url && !form.value.media_url.startsWith('/') && !isValidHttpUrl(form.value.media_url)) errors.media_url = 'Media URL must start with /uploads or use a valid http or https URL.'
@@ -214,9 +223,9 @@ const saveBanner = async () => {
     const isEditing = Boolean(form.value.id)
 
     if (isEditing) {
-      await updateBanner(form.value.id, form.value)
+      await withSaveTimeout(updateBanner(form.value.id, form.value))
     } else {
-      await createBanner(form.value)
+      await withSaveTimeout(createBanner(form.value))
     }
 
     isModalOpen.value = false
@@ -235,9 +244,4 @@ const saveBanner = async () => {
   }
 }
 
-const handleDelete = async (id) => {
-  if (confirm('Delete this banner?')) {
-    await deleteBanner(id)
-  }
-}
 </script>

@@ -9,10 +9,6 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
-          <button class="admin-secondary-btn">
-            <Download class="h-4 w-4" />
-            Export
-          </button>
           <button @click="openModal()" class="admin-primary-btn">
             <Plus class="h-4 w-4" />
             Create News
@@ -114,19 +110,19 @@
               <p v-if="fieldErrors.title" class="mt-1 text-sm text-rose-600">{{ fieldErrors.title }}</p>
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Slug <span class="text-rose-500">*</span></label>
               <input v-model="form.slug" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600">Category</label>
+                <label class="mb-2 block text-sm font-medium text-slate-600">Category <span class="text-rose-500">*</span></label>
                 <select v-model="form.category" class="admin-select">
                   <option value="Technology">Technology</option>
                   <option value="Company">Company Updates</option>
                 </select>
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600">Publish Status</label>
+                <label class="mb-2 block text-sm font-medium text-slate-600">Publish Status <span class="text-rose-500">*</span></label>
                 <select v-model="form.is_published" class="admin-select">
                   <option :value="true">Published</option>
                   <option :value="false">Draft</option>
@@ -136,7 +132,7 @@
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-medium text-slate-600">Featured Image</label>
+            <label class="mb-2 block text-sm font-medium text-slate-600">Featured Image <span class="text-rose-500">*</span></label>
             <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
               <div v-if="form.image_url" class="absolute inset-0">
                 <img :src="form.image_url" class="h-full w-full object-cover" >
@@ -156,13 +152,7 @@
 
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Content <span class="text-rose-500">*</span></label>
-          <div class="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-white">
-            <Editor
-              api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
-              v-model="form.content"
-              :init="editorConfig"
-            />
-          </div>
+          <AdminRichTextEditor v-model="form.content" aria-label="News content" />
         </div>
       </form>
 
@@ -179,19 +169,28 @@
       :title="successState.title"
       :message="successState.message"
     />
+
+    <AdminConfirmModal
+      v-model="deleteState.open"
+      title="Delete News"
+      message="This article will be removed from the editorial list. This action cannot be undone."
+      :detail="deleteState.name"
+      :is-loading="isDeleting"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Download, Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
-import Editor from '@tinymce/tinymce-vue'
+import { Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { news: newsItems, fetchNews, createNews, updateNews, deleteNews } = useNews({ includeDrafts: true })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
 const isSaving = ref(false)
+const isDeleting = ref(false)
 const formError = ref('')
 const fieldErrors = ref({})
 const successState = ref({
@@ -199,6 +198,7 @@ const successState = ref({
   title: '',
   message: ''
 })
+const deleteState = ref({ open: false, id: null, name: '' })
 const form = ref({
   id: null,
   title: '',
@@ -210,20 +210,6 @@ const form = ref({
   imageFileName: '',
   content: ''
 })
-
-const editorConfig = {
-  height: 300,
-  menubar: false,
-  plugins: [
-    'advlist autolink lists link image charmap print preview anchor',
-    'searchreplace visualblocks code fullscreen',
-    'insertdatetime media table paste code help wordcount'
-  ],
-  toolbar:
-    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-  content_css: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap',
-  content_style: 'body { font-family: Poppins, sans-serif; font-size: 14px; color: #0f172a; }'
-}
 
 const filteredNews = computed(() => {
   if (!searchQuery.value) return newsItems.value
@@ -337,8 +323,19 @@ const saveForm = async () => {
 }
 
 const handleDelete = async (id) => {
-  if (confirm('Delete this news item?')) {
-    await deleteNews(id)
+  const news = newsItems.value.find((item) => item.id === id)
+  deleteState.value = { open: true, id, name: news?.title || `News ID ${id}` }
+}
+
+const confirmDelete = async () => {
+  if (!deleteState.value.id || isDeleting.value) return
+
+  isDeleting.value = true
+  try {
+    await deleteNews(deleteState.value.id)
+    deleteState.value = { open: false, id: null, name: '' }
+  } finally {
+    isDeleting.value = false
   }
 }
 

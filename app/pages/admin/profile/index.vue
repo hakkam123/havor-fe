@@ -46,58 +46,58 @@
 
           <div class="grid gap-5 md:grid-cols-2">
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600" for="company_name">Company Name</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600" for="company_name">Company Name <span class="text-rose-500">*</span></label>
               <input id="company_name" v-model="form.company_name" type="text" class="admin-input" :aria-invalid="Boolean(fieldErrors.company_name)">
               <p v-if="fieldErrors.company_name" class="mt-1 text-sm text-rose-600">{{ fieldErrors.company_name }}</p>
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600" for="tagline">Tagline</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600" for="tagline">Tagline <span class="text-rose-500">*</span></label>
               <input id="tagline" v-model="form.tagline" type="text" class="admin-input">
             </div>
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-medium text-slate-600" for="short_description">Short Description</label>
+            <label class="mb-2 block text-sm font-medium text-slate-600" for="short_description">Short Description <span class="text-rose-500">*</span></label>
             <textarea id="short_description" v-model="form.short_description" rows="3" class="admin-textarea"></textarea>
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-medium text-slate-600" for="long_description">Long Description</label>
+            <label class="mb-2 block text-sm font-medium text-slate-600" for="long_description">Long Description <span class="text-rose-500">*</span></label>
             <textarea id="long_description" v-model="form.long_description" rows="6" class="admin-textarea"></textarea>
           </div>
 
           <div class="grid gap-5 md:grid-cols-2">
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600" for="email">Email</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600" for="email">Email <span class="text-rose-500">*</span></label>
               <input id="email" v-model="form.email" type="email" class="admin-input" :aria-invalid="Boolean(fieldErrors.email)">
               <p v-if="fieldErrors.email" class="mt-1 text-sm text-rose-600">{{ fieldErrors.email }}</p>
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600" for="phone">Phone</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600" for="phone">Phone <span class="text-rose-500">*</span></label>
               <input id="phone" v-model="form.phone" type="text" class="admin-input">
             </div>
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-medium text-slate-600" for="address">Address</label>
+            <label class="mb-2 block text-sm font-medium text-slate-600" for="address">Address <span class="text-rose-500">*</span></label>
             <textarea id="address" v-model="form.address" rows="3" class="admin-textarea"></textarea>
           </div>
 
           <div class="grid gap-5 md:grid-cols-2">
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600" for="website">Website</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600" for="website">Website <span class="text-rose-500">*</span></label>
               <input id="website" v-model="form.website" type="url" class="admin-input" :aria-invalid="Boolean(fieldErrors.website)">
               <p v-if="fieldErrors.website" class="mt-1 text-sm text-rose-600">{{ fieldErrors.website }}</p>
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600" for="linkedin_url">LinkedIn URL</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600" for="linkedin_url">LinkedIn URL <span class="text-rose-500">*</span></label>
               <input id="linkedin_url" v-model="form.linkedin_url" type="url" class="admin-input" :aria-invalid="Boolean(fieldErrors.linkedin_url)">
               <p v-if="fieldErrors.linkedin_url" class="mt-1 text-sm text-rose-600">{{ fieldErrors.linkedin_url }}</p>
             </div>
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-medium text-slate-600" for="instagram_url">Instagram URL</label>
+            <label class="mb-2 block text-sm font-medium text-slate-600" for="instagram_url">Instagram URL <span class="text-rose-500">*</span></label>
             <input id="instagram_url" v-model="form.instagram_url" type="url" class="admin-input" :aria-invalid="Boolean(fieldErrors.instagram_url)">
             <p v-if="fieldErrors.instagram_url" class="mt-1 text-sm text-rose-600">{{ fieldErrors.instagram_url }}</p>
           </div>
@@ -106,11 +106,11 @@
             <p class="text-sm font-semibold text-slate-900">SEO Metadata</p>
             <div class="mt-5 grid gap-5">
               <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600" for="seo_title">SEO Title</label>
+                <label class="mb-2 block text-sm font-medium text-slate-600" for="seo_title">SEO Title <span class="text-rose-500">*</span></label>
                 <input id="seo_title" v-model="form.seo_title" type="text" class="admin-input">
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600" for="seo_description">SEO Description</label>
+                <label class="mb-2 block text-sm font-medium text-slate-600" for="seo_description">SEO Description <span class="text-rose-500">*</span></label>
                 <textarea id="seo_description" v-model="form.seo_description" rows="3" class="admin-textarea"></textarea>
               </div>
             </div>
@@ -124,6 +124,30 @@
         </form>
       </section>
     </div>
+
+    <section v-if="!isLoading" class="grid gap-6 xl:grid-cols-2">
+      <div class="admin-panel p-6">
+        <p class="admin-kicker">Access Log</p>
+        <h2 class="mt-2 text-xl font-semibold text-slate-900">Recent Admin Access</h2>
+        <div class="mt-5 space-y-3">
+          <article v-for="log in accessLogs" :key="log.label" class="rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4">
+            <p class="text-sm font-semibold text-slate-900">{{ log.label }}</p>
+            <p class="mt-1 text-xs text-slate-500">{{ log.meta }}</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="admin-panel p-6">
+        <p class="admin-kicker">Activity Log</p>
+        <h2 class="mt-2 text-xl font-semibold text-slate-900">Profile Update Activity</h2>
+        <div class="mt-5 space-y-3">
+          <article v-for="log in activityLogs" :key="log.label" class="rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-4">
+            <p class="text-sm font-semibold text-slate-900">{{ log.label }}</p>
+            <p class="mt-1 text-xs text-slate-500">{{ log.meta }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
     <AdminSuccessModal
       v-model="showSuccess"
@@ -162,8 +186,17 @@ const formError = ref('')
 const isSaving = ref(false)
 const showSuccess = ref(false)
 const logoPreview = ref('')
+const lastSavedAt = ref('')
 
 const initials = computed(() => (form.company_name || 'HS').split(/\s+/).slice(0, 2).map((word) => word[0]).join('').toUpperCase())
+const accessLogs = computed(() => [
+  { label: 'Admin profile opened', meta: `Current session at ${new Date().toLocaleString()}` },
+  { label: 'Authenticated area accessed', meta: 'Route: /admin/profile' }
+])
+const activityLogs = computed(() => [
+  { label: lastSavedAt.value ? 'Profile updated' : 'Waiting for profile update', meta: lastSavedAt.value || 'No update recorded in this session.' },
+  { label: 'Logo asset status', meta: logoPreview.value ? 'Logo preview is available.' : 'Logo has not been uploaded in this session.' }
+])
 
 const setForm = (profile: any) => {
   Object.assign(form, {
@@ -218,6 +251,7 @@ const saveProfile = async () => {
   try {
     const updated = await updateProfile(form)
     setForm(updated)
+    lastSavedAt.value = new Date().toLocaleString()
     showSuccess.value = true
   } catch (error: any) {
     fieldErrors.value = getApiFieldErrors(error)

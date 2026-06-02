@@ -1,6 +1,14 @@
 <template>
   <Teleport to="body">
-    <div v-if="modelValue" class="fixed inset-0 z-[120]">
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="modelValue" class="fixed inset-0 z-[120]">
       <div class="absolute inset-0 bg-slate-950/55 backdrop-blur-[2px]" @click="handleBackdropClick"></div>
 
       <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
@@ -8,8 +16,7 @@
           ref="dialogRef"
           :aria-labelledby="titleId"
           aria-modal="true"
-          class="admin-modal-card w-full"
-          :class="maxWidthClass"
+          :class="['admin-modal-card w-full animate-[admin-modal-in_180ms_ease-out]', maxWidthClass]"
           role="dialog"
           tabindex="-1"
           @click.stop
@@ -39,7 +46,8 @@
           </div>
         </section>
       </div>
-    </div>
+      </div>
+    </Transition>
   </Teleport>
 </template>
 

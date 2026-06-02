@@ -94,13 +94,13 @@
               <p v-if="fieldErrors.name" class="mt-1 text-sm text-rose-600">{{ fieldErrors.name }}</p>
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Slug <span class="text-rose-500">*</span></label>
               <input :value="toSlug(form.name)" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
             </div>
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-medium text-slate-600">Icon File</label>
+            <label class="mb-2 block text-sm font-medium text-slate-600">Icon File <span class="text-rose-500">*</span></label>
             <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
               <div v-if="form.icon_url" class="absolute inset-0 flex items-center justify-center bg-white">
                 <img :src="form.icon_url" class="h-16 w-16 object-contain" >
@@ -119,13 +119,7 @@
 
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Description <span class="text-rose-500">*</span></label>
-          <div class="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-white">
-            <Editor
-              api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
-              v-model="form.description"
-              :init="editorConfig"
-            />
-          </div>
+          <AdminRichTextEditor v-model="form.description" aria-label="Expertise description" />
         </div>
       </form>
 
@@ -142,13 +136,21 @@
       :title="successState.title"
       :message="successState.message"
     />
+
+    <AdminConfirmModal
+      v-model="deleteState.open"
+      title="Delete Expertise"
+      message="This expertise item will be removed from the service capability list. This action cannot be undone."
+      :detail="deleteState.name"
+      :is-loading="isDeleting"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { Cpu, Edit2, Plus, Search, ShieldCheck, Smartphone, Star, Trash2, Upload, Wifi } from 'lucide-vue-next'
-import Editor from '@tinymce/tinymce-vue'
 
 const iconMap = {
   Cpu,
@@ -165,6 +167,7 @@ const { expertise: expertises, fetchExpertise, createExpertise, updateExpertise,
 const isModalOpen = ref(false)
 const searchQuery = ref('')
 const isSaving = ref(false)
+const isDeleting = ref(false)
 const formError = ref('')
 const fieldErrors = ref({})
 const successState = ref({
@@ -173,20 +176,7 @@ const successState = ref({
   message: ''
 })
 const form = ref({})
-
-const editorConfig = {
-  height: 300,
-  menubar: false,
-  plugins: [
-    'advlist autolink lists link image charmap print preview anchor',
-    'searchreplace visualblocks code fullscreen',
-    'insertdatetime media table paste code help wordcount'
-  ],
-  toolbar:
-    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-  content_css: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap',
-  content_style: 'body { font-family: Poppins, sans-serif; font-size: 14px; color: #0f172a; }'
-}
+const deleteState = ref({ open: false, id: null, name: '' })
 
 const stripHtml = (value) => (value || '').replace(/<[^>]*>?/gm, '').trim()
 
@@ -292,9 +282,20 @@ const saveExpertiseItem = async () => {
   }
 }
 
-const handleDelete = async (id) => {
-  if (confirm('Delete this expertise?')) {
-    await deleteExpertise(id)
+const handleDelete = (id) => {
+  const expertiseItem = expertises.value.find((item) => item.id === id)
+  deleteState.value = { open: true, id, name: expertiseItem?.name || `Expertise ID ${id}` }
+}
+
+const confirmDelete = async () => {
+  if (!deleteState.value.id || isDeleting.value) return
+
+  isDeleting.value = true
+  try {
+    await deleteExpertise(deleteState.value.id)
+    deleteState.value = { open: false, id: null, name: '' }
+  } finally {
+    isDeleting.value = false
   }
 }
 </script>

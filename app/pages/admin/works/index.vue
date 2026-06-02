@@ -9,10 +9,6 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
-          <button class="admin-secondary-btn">
-            <Download class="h-4 w-4" />
-            Export
-          </button>
           <button @click="openModal()" class="admin-primary-btn">
             <Plus class="h-4 w-4" />
             Create Work
@@ -107,11 +103,15 @@
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600">Client</label>
-                <input v-model="form.client" type="text" class="admin-input" placeholder="Client name">
+                <label class="mb-2 block text-sm font-medium text-slate-600">Client <span class="text-rose-500">*</span></label>
+                <select v-model="form.client" class="admin-select" :aria-invalid="Boolean(fieldErrors.client)">
+                  <option value="">Select client</option>
+                  <option v-for="client in clients" :key="client.id" :value="client.name">{{ client.name }}</option>
+                </select>
+                <p v-if="fieldErrors.client" class="mt-1 text-sm text-rose-600">{{ fieldErrors.client }}</p>
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-slate-600">Year</label>
+                <label class="mb-2 block text-sm font-medium text-slate-600">Year <span class="text-rose-500">*</span></label>
                 <input v-model="form.year" type="number" class="admin-input" placeholder="2026" :aria-invalid="Boolean(fieldErrors.year)">
                 <p v-if="fieldErrors.year" class="mt-1 text-sm text-rose-600">{{ fieldErrors.year }}</p>
               </div>
@@ -121,11 +121,12 @@
               <select v-model="form.categoryId" class="admin-select" required>
                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
               </select>
+              <p v-if="fieldErrors.categoryId" class="mt-1 text-sm text-rose-600">{{ fieldErrors.categoryId }}</p>
             </div>
           </div>
 
           <div>
-            <label class="mb-2 block text-sm font-medium text-slate-600">Image</label>
+            <label class="mb-2 block text-sm font-medium text-slate-600">Image <span class="text-rose-500">*</span></label>
             <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
               <div v-if="form.image_url" class="absolute inset-0">
                 <img :src="form.image_url" class="h-full w-full object-cover" >
@@ -144,13 +145,7 @@
 
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Description <span class="text-rose-500">*</span></label>
-          <div class="overflow-hidden rounded-xl border border-[var(--admin-border)] bg-white">
-            <Editor
-              api-key="88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt"
-              v-model="form.description"
-              :init="editorConfig"
-            />
-          </div>
+          <AdminRichTextEditor v-model="form.description" aria-label="Work description" />
         </div>
       </form>
 
@@ -167,20 +162,30 @@
       :title="successState.title"
       :message="successState.message"
     />
+
+    <AdminConfirmModal
+      v-model="deleteState.open"
+      title="Delete Work"
+      message="This work item will be removed from the portfolio list. This action cannot be undone."
+      :detail="deleteState.name"
+      :is-loading="isDeleting"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Download, Edit2, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
-import Editor from '@tinymce/tinymce-vue'
+import { Edit2, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { works, fetchWorks, createWork, updateWork, deleteWork } = useWorks()
 const { categories, fetchCategories } = useCategories()
+const { clients, fetchClients } = useClients()
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
 const isSaving = ref(false)
+const isDeleting = ref(false)
 const formError = ref('')
 const fieldErrors = ref({})
 const successState = ref({
@@ -189,20 +194,7 @@ const successState = ref({
   message: ''
 })
 const form = ref({})
-
-const editorConfig = {
-  height: 300,
-  menubar: false,
-  plugins: [
-    'advlist autolink lists link image charmap print preview anchor',
-    'searchreplace visualblocks code fullscreen',
-    'insertdatetime media table paste code help wordcount'
-  ],
-  toolbar:
-    'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-  content_css: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap',
-  content_style: 'body { font-family: Poppins, sans-serif; font-size: 14px; color: #0f172a; }'
-}
+const deleteState = ref({ open: false, id: null, name: '' })
 
 const stripHtml = (value) => (value || '').replace(/<[^>]*>?/gm, '').trim()
 
@@ -225,7 +217,7 @@ const stats = computed(() => [
 ])
 
 onMounted(async () => {
-  await Promise.all([fetchWorks(), fetchCategories()])
+  await Promise.all([fetchWorks(), fetchCategories(), fetchClients()])
 })
 
 const openModal = (item = null) => {
@@ -268,7 +260,10 @@ const saveWork = async () => {
   formError.value = ''
   const errors = {}
   if (!form.value.title?.trim()) errors.title = 'Project title is required.'
+  if (!form.value.client?.trim()) errors.client = 'Client is required.'
+  if (!form.value.categoryId) errors.categoryId = 'Category is required.'
   if (!stripHtml(form.value.description).trim()) errors.description = 'Description is required.'
+  if (!form.value.year) errors.year = 'Year is required.'
   if (form.value.year && (Number(form.value.year) < 1900 || Number(form.value.year) > 2100)) errors.year = 'Year must be between 1900 and 2100.'
   if (!isSupportedImageFile(form.value.imageFile)) errors.image_url = 'Image must be a JPG, PNG, or WEBP file.'
   if (Object.keys(errors).length) {
@@ -304,9 +299,20 @@ const saveWork = async () => {
   }
 }
 
-const handleDelete = async (id) => {
-  if (confirm('Delete this work item?')) {
-    await deleteWork(id)
+const handleDelete = (id) => {
+  const work = works.value.find((item) => item.id === id)
+  deleteState.value = { open: true, id, name: work?.title || `Work ID ${id}` }
+}
+
+const confirmDelete = async () => {
+  if (!deleteState.value.id || isDeleting.value) return
+
+  isDeleting.value = true
+  try {
+    await deleteWork(deleteState.value.id)
+    deleteState.value = { open: false, id: null, name: '' }
+  } finally {
+    isDeleting.value = false
   }
 }
 </script>

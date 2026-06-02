@@ -14,13 +14,6 @@
         </button>
       </div>
 
-      <div class="admin-stat-grid mt-6">
-        <article v-for="stat in stats" :key="stat.label" class="admin-stat-card">
-          <p class="admin-stat-label">{{ stat.label }}</p>
-          <div class="admin-stat-value">{{ stat.value }}</div>
-          <p class="admin-stat-meta">{{ stat.meta }}</p>
-        </article>
-      </div>
     </section>
 
     <section class="admin-table-shell">
@@ -29,7 +22,10 @@
           <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input v-model="searchQuery" type="text" placeholder="Search client name or description..." class="admin-input pl-11">
         </div>
-        <div class="text-sm text-slate-500">Showing {{ filteredClients.length }} entries</div>
+        <div class="flex flex-wrap items-center gap-3 text-sm text-slate-500">
+          <span class="admin-badge">Total Clients: {{ clients.length }}</span>
+          <span>Showing {{ filteredClients.length }} entries</span>
+        </div>
       </div>
 
       <div class="custom-scrollbar overflow-x-auto">
@@ -138,6 +134,15 @@
       :title="successState.title"
       :message="successState.message"
     />
+
+    <AdminConfirmModal
+      v-model="deleteState.open"
+      title="Delete Client"
+      message="This client will be removed from the public trust section. This action cannot be undone."
+      :detail="deleteState.name"
+      :is-loading="isDeleting"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
@@ -151,12 +156,14 @@ const isModalOpen = ref(false)
 const searchQuery = ref('')
 const formError = ref('')
 const isSaving = ref(false)
+const isDeleting = ref(false)
 const successState = ref({
   open: false,
   title: '',
   message: ''
 })
 const form = ref({})
+const deleteState = ref({ open: false, id: null, name: '' })
 
 const filteredClients = computed(() => {
   if (!searchQuery.value) return clients.value
@@ -168,13 +175,6 @@ const filteredClients = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
-
-const stats = computed(() => [
-  { label: 'Total Clients', value: clients.value.length, meta: 'Shown in public trust sections' },
-  { label: 'With Icon', value: clients.value.filter((item) => item.client_icon).length, meta: 'Ready for landing-page display' },
-  { label: 'With Description', value: clients.value.filter((item) => item.description).length, meta: 'Includes supporting context' },
-  { label: 'Search Results', value: filteredClients.value.length, meta: 'Current filtered client count' }
-])
 
 onMounted(() => {
   fetchClients()
@@ -261,9 +261,20 @@ const saveClient = async () => {
   }
 }
 
-const handleDelete = async (id) => {
-  if (confirm('Delete this client?')) {
-    await deleteClient(id)
+const handleDelete = (id) => {
+  const client = clients.value.find((item) => item.id === id)
+  deleteState.value = { open: true, id, name: client?.name || `Client ID ${id}` }
+}
+
+const confirmDelete = async () => {
+  if (!deleteState.value.id || isDeleting.value) return
+
+  isDeleting.value = true
+  try {
+    await deleteClient(deleteState.value.id)
+    deleteState.value = { open: false, id: null, name: '' }
+  } finally {
+    isDeleting.value = false
   }
 }
 </script>

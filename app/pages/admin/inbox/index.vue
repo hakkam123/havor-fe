@@ -17,11 +17,18 @@
       </div>
 
       <div class="admin-stat-grid mt-6">
-        <article v-for="stat in stats" :key="stat.label" class="admin-stat-card">
+        <button
+          v-for="stat in stats"
+          :key="stat.label"
+          type="button"
+          class="admin-stat-card text-left transition hover:border-[var(--admin-accent)] hover:bg-white"
+          :class="stat.filter && messageFilter === stat.filter ? 'border-[var(--admin-accent)] bg-white ring-4 ring-[var(--admin-accent-soft)]' : ''"
+          @click="stat.filter ? messageFilter = stat.filter : null"
+        >
           <p class="admin-stat-label">{{ stat.label }}</p>
           <div class="admin-stat-value">{{ stat.value }}</div>
           <p class="admin-stat-meta">{{ stat.meta }}</p>
-        </article>
+        </button>
       </div>
     </section>
 
@@ -40,7 +47,7 @@
 
           <div class="custom-scrollbar max-h-[620px] overflow-y-auto">
             <button
-              v-for="msg in messages"
+              v-for="msg in filteredMessages"
               :key="msg.id"
               type="button"
               @click="selectedMessage = msg"
@@ -58,7 +65,7 @@
               <span v-if="!msg.is_read" class="absolute right-5 top-5 h-2.5 w-2.5 rounded-full bg-[var(--admin-accent)]"></span>
             </button>
 
-            <div v-if="!messages.length" class="admin-empty-state">No messages yet.</div>
+            <div v-if="!filteredMessages.length" class="admin-empty-state">No messages match this filter.</div>
           </div>
         </div>
 
@@ -107,6 +114,15 @@
         </div>
       </div>
     </section>
+
+    <AdminConfirmModal
+      v-model="deleteState.open"
+      title="Delete Message"
+      message="This inbox message will be deleted permanently."
+      :detail="deleteState.name"
+      :is-loading="isDeleting"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
@@ -116,11 +132,20 @@ import { Check, Filter, Mail, RefreshCw, Trash2 } from 'lucide-vue-next'
 
 const { messages, fetchMessages, markAsRead, deleteMessage } = useContact()
 const selectedMessage = ref(null)
+const messageFilter = ref('all')
+const isDeleting = ref(false)
+const deleteState = ref({ open: false, id: null, name: '' })
+
+const filteredMessages = computed(() => {
+  if (messageFilter.value === 'unread') return messages.value.filter((msg) => !msg.is_read)
+  if (messageFilter.value === 'read') return messages.value.filter((msg) => msg.is_read)
+  return messages.value
+})
 
 const stats = computed(() => [
-  { label: 'Total Messages', value: messages.value.length, meta: 'Customer inquiries in inbox' },
-  { label: 'Unread', value: messages.value.filter((msg) => !msg.is_read).length, meta: 'Need your attention' },
-  { label: 'Read', value: messages.value.filter((msg) => msg.is_read).length, meta: 'Already reviewed' },
+  { label: 'Total Messages', value: messages.value.length, meta: 'Customer inquiries in inbox', filter: 'all' },
+  { label: 'Unread', value: messages.value.filter((msg) => !msg.is_read).length, meta: 'Need your attention', filter: 'unread' },
+  { label: 'Read', value: messages.value.filter((msg) => msg.is_read).length, meta: 'Already reviewed', filter: 'read' },
   { label: 'Active Thread', value: selectedMessage.value ? 1 : 0, meta: selectedMessage.value ? selectedMessage.value.name : 'No message selected' }
 ])
 
@@ -143,9 +168,22 @@ const handleMarkAsRead = async (msg) => {
   syncSelectedMessage(msg.id)
 }
 
-const handleDelete = async (id) => {
-  await deleteMessage(id)
-  syncSelectedMessage()
+const handleDelete = (id) => {
+  const message = messages.value.find((msg) => msg.id === id)
+  deleteState.value = { open: true, id, name: message?.subject || `Message ID ${id}` }
+}
+
+const confirmDelete = async () => {
+  if (!deleteState.value.id || isDeleting.value) return
+
+  isDeleting.value = true
+  try {
+    await deleteMessage(deleteState.value.id)
+    deleteState.value = { open: false, id: null, name: '' }
+    syncSelectedMessage()
+  } finally {
+    isDeleting.value = false
+  }
 }
 
 onMounted(() => {

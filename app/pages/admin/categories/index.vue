@@ -79,7 +79,7 @@
           <input v-model="form.name" type="text" required class="admin-input" placeholder="Category name">
         </div>
         <div>
-          <label class="mb-2 block text-sm font-medium text-slate-600">Slug</label>
+          <label class="mb-2 block text-sm font-medium text-slate-600">Slug <span class="text-rose-500">*</span></label>
           <input :value="toSlug(form.name)" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
         </div>
         <p v-if="formError" class="rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
@@ -100,6 +100,15 @@
       :title="successState.title"
       :message="successState.message"
     />
+
+    <AdminConfirmModal
+      v-model="deleteState.open"
+      title="Delete Category"
+      message="This category will be removed if it is not used by products or news."
+      :detail="deleteState.name"
+      :is-loading="isDeleting"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
@@ -108,17 +117,21 @@ import { computed, onMounted, ref } from 'vue'
 import { Edit2, Plus, Search, Trash2 } from 'lucide-vue-next'
 
 const { categories, error, fetchCategories, createCategory, updateCategory, deleteCategory } = useCategories()
+const { products, fetchProducts } = useProducts()
+const { news: newsItems, fetchNews } = useNews({ includeDrafts: true })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
 const formError = ref('')
 const isSaving = ref(false)
+const isDeleting = ref(false)
 const successState = ref({
   open: false,
   title: '',
   message: ''
 })
 const form = ref({ id: null, name: '' })
+const deleteState = ref({ open: false, id: null, name: '' })
 
 const toSlug = (value = '') =>
   value
@@ -148,6 +161,8 @@ const stats = computed(() => [
 
 onMounted(() => {
   fetchCategories()
+  fetchProducts()
+  fetchNews()
 })
 
 const openModal = (item = null) => {
@@ -199,9 +214,53 @@ const saveCategory = async () => {
   }
 }
 
-const handleDelete = async (id) => {
-  if (confirm('Are you sure you want to delete this category?')) {
-    await deleteCategory(id)
+const categoryUsageMessage = (id) => {
+  const category = categories.value.find((item) => item.id === id)
+  if (!category) return ''
+
+  const usedByProduct = products.value.some((product) => String(product.categoryId) === String(id) || product.categoryName === category.name)
+  const usedByNews = newsItems.value.some((news) => news.category === category.name)
+
+  if (!usedByProduct && !usedByNews) return ''
+
+  const usages = [
+    usedByProduct ? 'products' : '',
+    usedByNews ? 'news' : ''
+  ].filter(Boolean).join(' and ')
+
+  return `This category is still used by ${usages}. Move or update those records before deleting it.`
+}
+
+const handleDelete = (id) => {
+  const category = categories.value.find((item) => item.id === id)
+  const usageMessage = categoryUsageMessage(id)
+
+  if (usageMessage) {
+    formError.value = usageMessage
+    return
+  }
+
+  deleteState.value = { open: true, id, name: category?.name || `Category ID ${id}` }
+}
+
+const confirmDelete = async () => {
+  if (!deleteState.value.id || isDeleting.value) return
+
+  const usageMessage = categoryUsageMessage(deleteState.value.id)
+  if (usageMessage) {
+    formError.value = usageMessage
+    deleteState.value.open = false
+    return
+  }
+
+  isDeleting.value = true
+  try {
+    await deleteCategory(deleteState.value.id)
+    deleteState.value = { open: false, id: null, name: '' }
+  } catch (error) {
+    formError.value = getApiErrorMessage(error)
+  } finally {
+    isDeleting.value = false
   }
 }
 </script>
