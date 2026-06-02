@@ -373,7 +373,7 @@
         >
           <div class="grid gap-3 sm:grid-cols-2">
             <label class="text-sm font-semibold" for="contact-name">
-              Nama
+              Name
               <input
                 id="contact-name"
                 v-model="contactForm.name"
@@ -410,7 +410,7 @@
           </label>
 
           <label class="mt-3 block text-sm font-semibold" for="contact-message">
-            Pesan
+            Message
             <textarea
               id="contact-message"
               v-model="contactForm.message"
@@ -434,7 +434,7 @@
             class="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-60"
             :disabled="contactStatus === 'loading'"
           >
-            {{ contactStatus === 'loading' ? 'Mengirim...' : 'Kirim Pesan' }}
+            {{ contactStatus === 'loading' ? 'Sending...' : 'Send Message' }}
           </button>
         </form>
       </template>
@@ -685,14 +685,14 @@ watch(() => serviceCarouselItems.value.length, async () => {
 const validateContactForm = () => {
   const errors: Record<string, string> = {}
 
-  if (!contactForm.name.trim()) errors.name = 'Nama wajib diisi.'
+  if (!contactForm.name.trim()) errors.name = 'Name is required.'
   if (!contactForm.email.trim()) {
-    errors.email = 'Email wajib diisi.'
+    errors.email = 'Email is required.'
   } else if (!emailPattern.test(contactForm.email.trim())) {
-    errors.email = 'Format email belum valid.'
+    errors.email = 'Please enter a valid email address.'
   }
-  if (!contactForm.subject.trim()) errors.subject = 'Subject wajib diisi.'
-  if (!contactForm.message.trim()) errors.message = 'Pesan wajib diisi.'
+  if (!contactForm.subject.trim()) errors.subject = 'Subject is required.'
+  if (!contactForm.message.trim()) errors.message = 'Message is required.'
 
   contactFieldErrors.value = errors
 
@@ -729,10 +729,10 @@ const handleContactSubmit = async () => {
     resetContactForm()
     contactFieldErrors.value = {}
     contactStatus.value = 'success'
-    contactMessage.value = 'Pesan berhasil dikirim. Mohon tunggu sebentar, admin akan membalas melalui email.'
+    contactMessage.value = 'Your message has been sent successfully. Please wait while our team reviews your submission. We will contact you by email.'
   } catch (_error) {
     contactStatus.value = 'error'
-    contactMessage.value = 'Data belum berhasil dikirim. Silakan coba lagi beberapa saat.'
+    contactMessage.value = 'We could not submit your message. Please try again in a moment.'
   }
 }
 </script>

@@ -115,8 +115,13 @@ export const useBanners = () => {
       setPageBanner(normalizedBanner)
       return normalizedBanner
     } catch (fetchError) {
-      console.error(`Failed to fetch banner for page "${normalizedPageName}"`, fetchError)
       delete pageBanners.value[normalizedPageName]
+
+      if ((fetchError as any)?.response?.status === 404 || (fetchError as any)?.status === 404) {
+        return null
+      }
+
+      console.error(`Failed to fetch banner for page "${normalizedPageName}"`, fetchError)
       mutationError.value = 'Unable to load banner content right now.'
       return null
     }

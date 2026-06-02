@@ -106,8 +106,8 @@ usePageSeo({
 })
 
 const { products, isLoading, fetchProducts } = useProducts()
-const { fetchBannerPage, useBannerPage } = useBanners()
-const productsBanner = useBannerPage('products')
+const { fetchBanners, useBannerPage } = useBanners()
+const productsBanner = useBannerPage('products', 'product')
 const defaultHeroImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1800&q=80'
 const fallbackImage = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'
 const heroImage = computed(() => productsBanner.value.media_url || defaultHeroImage)
@@ -117,7 +117,7 @@ const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').
 
 onMounted(() => {
   fetchProducts()
-  fetchBannerPage('products')
+  fetchBanners()
 })
 
 const categoryOptions = computed(() => [

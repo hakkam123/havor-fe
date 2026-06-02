@@ -79,6 +79,77 @@
       </div>
     </section>
 
+    <section class="admin-table-shell">
+      <div class="admin-toolbar">
+        <div>
+          <p class="text-sm font-semibold text-slate-900">Incoming Applications</p>
+          <p class="mt-1 text-xs text-[var(--admin-muted)]">Real submissions from the public Apply Now form.</p>
+        </div>
+        <button class="admin-secondary-btn" @click="fetchApplications">
+          Refresh Applications
+        </button>
+      </div>
+
+      <div v-if="isLoadingApplications && !applications.length" class="space-y-3 p-5">
+        <div v-for="index in 4" :key="`career-application-loading-${index}`" class="animate-pulse rounded-[12px] border border-[var(--admin-border)] p-4">
+          <div class="h-4 w-1/3 rounded bg-slate-100"></div>
+          <div class="mt-3 h-4 w-full rounded bg-slate-100"></div>
+        </div>
+      </div>
+
+      <div v-else class="custom-scrollbar overflow-x-auto">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Applicant</th>
+              <th>Position</th>
+              <th>Contact</th>
+              <th>Status</th>
+              <th class="text-right">Resume</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="application in applications" :key="application.id">
+              <td>
+                <div>
+                  <p class="font-semibold text-slate-900">{{ application.fullName }}</p>
+                  <p class="text-xs text-slate-400">{{ application.dateLabel || 'Latest' }}</p>
+                </div>
+              </td>
+              <td>
+                <p class="font-medium text-slate-700">{{ application.position || 'General Career Inquiry' }}</p>
+                <p class="mt-1 max-w-[320px] truncate text-xs text-slate-400">{{ application.latestEducation || 'No education summary' }}</p>
+              </td>
+              <td>
+                <p class="text-sm text-slate-600">{{ application.email }}</p>
+                <p class="mt-1 text-xs text-slate-400">{{ application.phone }}</p>
+              </td>
+              <td>
+                <span class="admin-status admin-status-success">{{ application.status }}</span>
+              </td>
+              <td class="text-right">
+                <a
+                  v-if="application.resumeUrl"
+                  :href="application.resumeUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="admin-secondary-btn inline-flex"
+                >
+                  View Resume
+                </a>
+                <span v-else class="text-xs text-slate-400">{{ application.resumeStorageKey || 'No resume link' }}</span>
+              </td>
+            </tr>
+            <tr v-if="!applications.length">
+              <td colspan="5" class="admin-empty-state">
+                {{ applicationsError || 'No applications yet.' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <AdminModal
       v-model="isModalOpen"
       kicker="Hiring Form"
@@ -153,6 +224,12 @@ import { Edit2, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 import Editor from '@tinymce/tinymce-vue'
 
 const { careers, error, fetchCareers, createCareer, updateCareer, deleteCareer } = useAdminCareers()
+const {
+  applications,
+  error: applicationsError,
+  isLoading: isLoadingApplications,
+  fetchApplications
+} = useCareerApplications()
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
@@ -204,7 +281,7 @@ const stats = computed(() => [
   { label: 'Open Roles', value: careers.value.length, meta: 'Entries exposed on the public careers route' },
   { label: 'With Thumbnail', value: careers.value.filter((item) => item.thumbnail).length, meta: 'Ready for listing cards and detail pages' },
   { label: 'Search Results', value: filteredCareers.value.length, meta: 'Current filtered role count' },
-  { label: 'Slugs', value: new Set(careers.value.map((item) => item.slug).filter(Boolean)).size, meta: 'Frontend route keys derived from titles' }
+  { label: 'Applications', value: applications.value.length, meta: 'Real submissions from the apply form' }
 ])
 
 const toSlug = (value = '') =>
@@ -299,5 +376,6 @@ const handleDelete = async (id) => {
 
 onMounted(() => {
   fetchCareers()
+  fetchApplications()
 })
 </script>

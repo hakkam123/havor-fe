@@ -32,16 +32,6 @@
         </nav>
 
         <div class="hidden items-center gap-3 lg:flex">
-          <button
-            type="button"
-            class="inline-flex items-center justify-center gap-2 px-1 py-2 text-[0.86rem] font-medium uppercase transition-all duration-300 ease-out hover:font-semibold"
-            :class="isPastHero ? 'text-slate-700 hover:text-slate-950' : 'text-white/90 hover:text-white'"
-            aria-label="Switch language"
-            @click="toggleLocale"
-          >
-            <Globe2 class="h-4 w-4" />
-            {{ locale === 'en' ? 'ID' : 'EN' }}
-          </button>
           <NuxtLink
             to="/#contact"
             class="inline-flex items-center justify-center px-1 py-2 text-[0.86rem] font-medium transition-all duration-300 ease-out hover:font-semibold"
@@ -81,16 +71,6 @@
               {{ t(item.labelKey) }}
             </NuxtLink>
           </nav>
-          <button
-            type="button"
-            class="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-medium transition-all duration-300 ease-out"
-            :class="isPastHero ? 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50' : 'border-white/25 bg-white/10 text-white hover:bg-white/15'"
-            aria-label="Switch language"
-            @click="toggleLocale"
-          >
-            <Globe2 class="h-4 w-4" />
-            {{ locale === 'en' ? 'Bahasa Indonesia' : 'English' }}
-          </button>
           <NuxtLink
             to="/#contact"
             class="mt-3 inline-flex w-full items-center justify-center rounded-full border px-5 py-3 text-sm font-semibold transition-all duration-300 ease-out"
@@ -107,13 +87,13 @@
 
 <script setup>
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { Globe2, Menu, X } from 'lucide-vue-next'
+import { Menu, X } from 'lucide-vue-next'
 
 const route = useRoute()
 const headerRef = ref(null)
 const isOpen = ref(false)
 const isPastHero = ref(false)
-const { locale, t, toggleLocale } = usePublicI18n()
+const { t } = usePublicI18n()
 
 const navItems = [
   { labelKey: 'nav.about', to: '/about-us' },

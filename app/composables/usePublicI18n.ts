@@ -380,12 +380,12 @@ const getNestedValue = (source: unknown, key: string) =>
 export const usePublicI18n = () => {
   const locale = useState<LocaleCode>('public-locale', () => 'en')
 
-  const setLocale = (value: LocaleCode) => {
-    locale.value = value
-    if (import.meta.client) localStorage.setItem(STORAGE_KEY, value)
+  const setLocale = (_value: LocaleCode) => {
+    locale.value = 'en'
+    if (import.meta.client) localStorage.setItem(STORAGE_KEY, 'en')
   }
 
-  const toggleLocale = () => setLocale(locale.value === 'en' ? 'id' : 'en')
+  const toggleLocale = () => setLocale('en')
 
   const t = (key: string) => {
     const value = getNestedValue(messages[locale.value], key)
@@ -395,8 +395,8 @@ export const usePublicI18n = () => {
   const tm = <T = unknown>(key: string): T => getNestedValue(messages[locale.value], key) as T
 
   onMounted(() => {
-    const savedLocale = localStorage.getItem(STORAGE_KEY)
-    if (savedLocale === 'en' || savedLocale === 'id') locale.value = savedLocale
+    locale.value = 'en'
+    localStorage.setItem(STORAGE_KEY, 'en')
   })
 
   return {

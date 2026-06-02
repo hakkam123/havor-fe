@@ -36,7 +36,7 @@ const parseResponse = async (response: Response) => {
 
 const getApiErrorMessage = (responseBody: unknown) => {
   if (!responseBody || typeof responseBody !== 'object') {
-    return 'Data belum berhasil dikirim. Silakan coba lagi beberapa saat.'
+    return 'We could not submit your data. Please try again in a moment.'
   }
 
   if ('errors' in responseBody && responseBody.errors && typeof responseBody.errors === 'object') {
@@ -48,7 +48,7 @@ const getApiErrorMessage = (responseBody: unknown) => {
     return String(responseBody.message)
   }
 
-  return 'Data belum berhasil dikirim. Silakan coba lagi beberapa saat.'
+  return 'We could not submit your data. Please try again in a moment.'
 }
 
 export const publicApiFetch = async <T>(path: string, options: ApiRequestOptions = {}): Promise<T> => {

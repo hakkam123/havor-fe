@@ -176,7 +176,7 @@
 
           <div class="grid gap-3 sm:grid-cols-2">
             <label class="text-sm font-semibold" for="career-full-name">
-              Nama panjang
+              Full Name
               <input
                 id="career-full-name"
                 v-model="careerForm.fullName"
@@ -209,7 +209,7 @@
             </label>
 
             <label class="text-sm font-semibold" for="career-phone">
-              Nomor telepon
+              Phone Number
               <input
                 id="career-phone"
                 v-model="careerForm.phone"
@@ -226,7 +226,7 @@
             </label>
 
             <label class="text-sm font-semibold" for="career-address">
-              Alamat
+              Address
               <input
                 id="career-address"
                 v-model="careerForm.address"
@@ -242,7 +242,7 @@
             </label>
 
             <label class="text-sm font-semibold" for="career-position">
-              Posisi yang dilamar
+              Position Applied
               <select
                 id="career-position"
                 v-model="careerForm.position"
@@ -250,7 +250,7 @@
                 :aria-invalid="Boolean(careerFieldErrors.position)"
                 @change="validateCareerField('position')"
               >
-                <option value="">Pilih posisi</option>
+                <option value="">Select a position</option>
                 <option v-for="option in careerPositionOptions" :key="option" :value="option">
                   {{ option }}
                 </option>
@@ -261,13 +261,13 @@
             </label>
 
             <label class="text-sm font-semibold" for="career-education">
-              Pendidikan terakhir
+              Latest Education
               <input
                 id="career-education"
                 v-model="careerForm.latestEducation"
                 class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
                 type="text"
-                placeholder="Contoh: S1 Informatika"
+                placeholder="Example: Bachelor of Computer Science"
                 :aria-invalid="Boolean(careerFieldErrors.latestEducation)"
                 @input="validateCareerField('latestEducation')"
               >
@@ -278,13 +278,13 @@
           </div>
 
           <label class="mt-3 block text-sm font-semibold" for="career-experience">
-            Pengalaman singkat
+            Experience Summary
             <input
               id="career-experience"
               v-model="careerForm.experienceSummary"
               class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
               type="text"
-              placeholder="Contoh: 2 tahun Frontend Developer"
+              placeholder="Example: 2 years as a Frontend Developer"
               :aria-invalid="Boolean(careerFieldErrors.experienceSummary)"
               @input="validateCareerField('experienceSummary')"
             >
@@ -311,7 +311,7 @@
           </label>
 
           <label class="mt-3 block text-sm font-semibold" for="career-message">
-            Pesan / cover letter singkat
+            Short Message / Cover Letter
             <textarea
               id="career-message"
               v-model="careerForm.message"
@@ -356,7 +356,7 @@
             class="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-60"
             :disabled="careerStatus === 'loading'"
           >
-            {{ careerStatus === 'loading' ? 'Mengirim...' : 'Kirim Lamaran' }}
+            {{ careerStatus === 'loading' ? 'Submitting...' : 'Submit Application' }}
           </button>
         </form>
       </div>
@@ -374,17 +374,17 @@
         <div class="w-full max-w-md rounded-lg border border-[#dbe6f4] bg-white p-6 text-center text-[#0e2344] shadow-[0_28px_90px_rgba(3,11,24,0.34)]">
           <CheckCircle class="mx-auto h-14 w-14 text-emerald-600" aria-hidden="true" />
           <h2 id="career-success-title" class="mt-4 text-2xl font-semibold leading-tight">
-            Lamaran Berhasil Dikirim
+            Your Application Has Been Submitted
           </h2>
           <p class="mt-3 text-sm leading-6 text-slate-600">
-            Terima kasih. Lamaran Anda sudah kami terima. Mohon tunggu sebentar, admin akan membalas melalui email jika terdapat informasi lanjutan.
+            Thank you. We have received your application. Please wait while our team reviews your submission. We will contact you by email if there is any further update.
           </p>
           <button
             type="button"
             class="btn-primary mt-5 w-full"
             @click="closeCareerSuccessModal"
           >
-            Tutup
+            Close
           </button>
         </div>
       </div>
@@ -473,60 +473,60 @@ const validateCareerField = (field) => {
   let message = ''
 
   if (field === 'fullName' && !careerForm.fullName.trim()) {
-    message = 'Nama panjang wajib diisi.'
+    message = 'Full name is required.'
   }
 
   if (field === 'email') {
     if (!careerForm.email.trim()) {
-      message = 'Email wajib diisi.'
+      message = 'Email is required.'
     } else if (!emailPattern.test(careerForm.email.trim())) {
-      message = 'Masukkan email yang valid, contoh nama@gmail.com.'
+      message = 'Please enter a valid email address, for example name@gmail.com.'
     }
   }
 
   if (field === 'phone') {
     if (!careerForm.phone.trim()) {
-      message = 'Nomor telepon wajib diisi.'
+      message = 'Phone number is required.'
     } else if (!/^[+\d\s()-]+$/.test(careerForm.phone.trim())) {
-      message = 'Nomor telepon hanya boleh berisi angka, spasi, tanda +, -, atau ().'
+      message = 'Phone number may only contain numbers, spaces, +, -, or parentheses.'
     } else if (phoneDigitCount < 10) {
-      message = 'Nomor telepon minimal 10 digit.'
+      message = 'Phone number must contain at least 10 digits.'
     } else if (phoneDigitCount > 15) {
-      message = 'Nomor telepon maksimal 15 digit.'
+      message = 'Phone number may contain up to 15 digits.'
     }
   }
 
   if (field === 'address' && !careerForm.address.trim()) {
-    message = 'Alamat wajib diisi.'
+    message = 'Address is required.'
   }
 
   if (field === 'position' && !careerForm.position.trim()) {
-    message = 'Posisi wajib dipilih.'
+    message = 'Please select the position you are applying for.'
   }
 
   if (field === 'latestEducation' && !careerForm.latestEducation.trim()) {
-    message = 'Pendidikan terakhir wajib diisi.'
+    message = 'Latest education is required.'
   }
 
   if (field === 'experienceSummary' && !careerForm.experienceSummary.trim()) {
-    message = 'Pengalaman singkat wajib diisi.'
+    message = 'Experience summary is required.'
   }
 
   if (field === 'portfolioUrl' && !isValidPortfolioUrl(careerForm.portfolioUrl)) {
-    message = 'Masukkan URL yang valid, contoh https://www.google.com.'
+    message = 'Please enter a valid URL, for example https://www.google.com.'
   }
 
   if (field === 'message' && !careerForm.message.trim()) {
-    message = 'Pesan atau cover letter singkat wajib diisi.'
+    message = 'A short message or cover letter is required.'
   }
 
   if (field === 'resume') {
     if (!careerForm.resume) {
-      message = 'Resume PDF wajib diupload.'
+      message = 'Please upload your resume as a PDF.'
     } else if (careerForm.resume.type !== 'application/pdf' && !careerForm.resume.name.toLowerCase().endsWith('.pdf')) {
-      message = 'Resume harus berupa file PDF.'
+      message = 'Resume must be a PDF file.'
     } else if (careerForm.resume.size > maxCvSize) {
-      message = 'Ukuran CV maksimal 2 MB.'
+      message = 'Resume size must be no more than 2 MB.'
     }
   }
 
@@ -683,14 +683,14 @@ const handleCareerSubmit = async () => {
     resetCareerForm()
     careerFieldErrors.value = {}
     careerStatus.value = 'success'
-    careerMessage.value = 'Lamaran berhasil dikirim. Mohon tunggu sebentar, admin akan membalas melalui email.'
+    careerMessage.value = 'Your application has been submitted successfully. Please wait while our team reviews your submission. We will contact you by email.'
     isCareerModalOpen.value = false
     isCareerSuccessModalOpen.value = true
   } catch (error) {
     careerStatus.value = 'error'
     careerMessage.value = error instanceof Error
       ? error.message
-      : 'Data belum berhasil dikirim. Silakan coba lagi beberapa saat.'
+      : 'We could not submit your application. Please try again in a moment.'
   }
 }
 </script>

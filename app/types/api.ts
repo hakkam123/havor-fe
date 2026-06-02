@@ -62,6 +62,44 @@ export type Career = {
   slug: string
 }
 
+export type ApiCareerApplication = {
+  id: ApiId
+  full_name?: string | null
+  email?: string | null
+  phone?: string | null
+  address?: string | null
+  position?: string | null
+  latest_education?: string | null
+  experience_summary?: string | null
+  portfolio_url?: string | null
+  message?: string | null
+  cv_original_name?: string | null
+  cv_storage_key?: string | null
+  cv_signed_url?: string | null
+  status?: string | null
+  createdAt?: string | null
+  updatedAt?: string | null
+}
+
+export type CareerApplication = {
+  id: number
+  fullName: string
+  email: string
+  phone: string
+  address: string
+  position: string
+  latestEducation: string
+  experienceSummary: string
+  portfolioUrl: string
+  message: string
+  resumeName: string
+  resumeStorageKey: string
+  resumeUrl: string
+  status: string
+  createdAt: string | null
+  dateLabel: string
+}
+
 export type ApiExpertise = {
   id: ApiId
   name?: string | null

@@ -203,11 +203,11 @@ usePageSeo({
 })
 
 const { company, aboutPage } = useCorporateContent()
-const { fetchBannerPage, useBannerPage } = useBanners()
+const { fetchBanners, useBannerPage } = useBanners()
 const aboutBanner = useBannerPage('about-us', 'about')
 const aboutHeroImage = computed(() => aboutBanner.value.media_url || aboutPage.hero.image)
 
 onMounted(() => {
-  fetchBannerPage('about-us')
+  fetchBanners()
 })
 </script>
