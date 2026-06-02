@@ -13,7 +13,11 @@ const { company } = useCorporateContent()
 const config = useRuntimeConfig()
 
 useHead(() => {
-  const siteUrl = String(config.public.siteUrl || 'https://havorsmarta.netlify.app').replace(/\/$/, '')
+  const siteUrl = String(config.public.siteUrl || '').replace(/\/$/, '')
+
+  if (!siteUrl) {
+    return {}
+  }
 
   return {
     script: [

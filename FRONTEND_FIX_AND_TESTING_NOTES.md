@@ -145,8 +145,8 @@
 
 1. Restart backend on cPanel after uploading the updated backend files.
 2. Push/deploy the frontend to Netlify.
-3. Open `https://havorsmarta.netlify.app/about-us` and confirm no banner 404 console error.
-4. Open `https://havorsmarta.netlify.app/products` and confirm no banner 404 console error.
+3. Open the production `/about-us` page and confirm no banner 404 console error.
+4. Open the production `/products` page and confirm no banner 404 console error.
 5. Confirm the public navbar no longer shows ID / ENG.
 6. Submit the Contact form and check the admin inbox.
 7. Submit the Careers application form with a PDF resume.

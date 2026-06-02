@@ -52,7 +52,7 @@ Frontend diperbarui agar lebih siap untuk indexing Google, lebih baik untuk Page
 - `sitemap.xml` dibuat untuk halaman publik utama.
 - `robots.txt` mengarah ke sitemap production.
 - Structured data `Organization` ditambahkan pada public layout.
-- Default `NUXT_PUBLIC_SITE_URL` diarahkan ke `https://havorsmarta.netlify.app`.
+- `NUXT_PUBLIC_SITE_URL` dibaca dari environment Netlify.
 
 ## 6. PageSpeed optimization
 
@@ -120,7 +120,7 @@ Production nanti:
 
 ```env
 VITE_API_BASE_URL=https://your-backend-domain.com
-NUXT_PUBLIC_SITE_URL=https://havorsmarta.netlify.app
+NUXT_PUBLIC_SITE_URL=https://your-frontend-domain.com
 ```
 
 ## 10. Cara menjalankan frontend local
@@ -158,16 +158,16 @@ Default Nuxt local biasanya tersedia di `http://localhost:3000`.
 3. Buka `Site configuration` atau `Build & deploy`.
 4. Masuk ke `Environment variables`.
 5. Tambahkan `VITE_API_BASE_URL` dengan URL backend production nanti.
-6. Tambahkan atau pastikan `NUXT_PUBLIC_SITE_URL=https://havorsmarta.netlify.app`.
+6. Tambahkan atau pastikan `NUXT_PUBLIC_SITE_URL` berisi URL frontend production.
 7. Redeploy site setelah env berubah.
 
 ## 14. Langkah manual Google Search Console
 
 1. Buka Google Search Console.
-2. Tambahkan property untuk `https://havorsmarta.netlify.app`.
+2. Tambahkan property untuk URL frontend production.
 3. Verifikasi ownership sesuai metode yang tersedia.
-4. Submit sitemap: `https://havorsmarta.netlify.app/sitemap.xml`.
-5. Pastikan robots dapat diakses di `https://havorsmarta.netlify.app/robots.txt`.
+4. Submit sitemap dari URL frontend production.
+5. Pastikan robots dapat diakses dari URL frontend production.
 
 ## 15. Langkah request indexing
 
