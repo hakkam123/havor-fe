@@ -1,8 +1,8 @@
 <template>
   <div class="overflow-hidden bg-white">
     <LandingHeroCarousel
-      :title="t('home.hero.title')"
-      :subtitle="t('home.hero.subtitle')"
+      :title="homeHeroTitle"
+      :subtitle="homeHeroSubtitle"
       :slides="heroSlides"
     />
 
@@ -514,6 +514,9 @@ const bannerImage = (pageName: string, fallback: string) => {
   return banner?.media_url || fallback
 }
 
+const homeBanner = computed(() => findBannerByPage('home'))
+const homeHeroTitle = computed(() => homeBanner.value?.title || t('home.hero.title'))
+const homeHeroSubtitle = computed(() => homeBanner.value?.subtitle || t('home.hero.subtitle'))
 const heroSlides = computed(() =>
   homePage.hero.slides.map((slide, index) => ({
     ...slide,

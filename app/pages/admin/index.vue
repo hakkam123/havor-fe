@@ -17,13 +17,17 @@
       </div>
 
       <div class="admin-stat-grid mt-6">
-        <button
+        <component
+          :is="stat.filter ? 'button' : 'article'"
           v-for="stat in stats"
           :key="stat.label"
           type="button"
           class="admin-stat-card text-left transition hover:border-[var(--admin-accent)] hover:bg-white"
-          :class="stat.filter && messageFilter === stat.filter ? 'border-[var(--admin-accent)] bg-white ring-4 ring-[var(--admin-accent-soft)]' : ''"
-          @click="stat.filter ? messageFilter = stat.filter : null"
+          :class="[
+            stat.filter ? 'cursor-pointer' : 'cursor-default hover:border-[var(--admin-border)] hover:bg-[var(--admin-surface-soft)]',
+            stat.filter && messageFilter === stat.filter ? 'border-[var(--admin-accent)] bg-white ring-4 ring-[var(--admin-accent-soft)]' : ''
+          ]"
+          @click="setDashboardFilter(stat.filter)"
         >
           <div class="flex items-start justify-between gap-4">
             <div>
@@ -35,7 +39,7 @@
               <component :is="stat.icon" class="h-5 w-5" :class="stat.iconClass" />
             </div>
           </div>
-        </button>
+        </component>
       </div>
     </section>
 
@@ -51,6 +55,14 @@
           <div class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
             {{ lastSyncedLabel }}
           </div>
+          <button
+            v-if="messageFilter !== 'all'"
+            type="button"
+            class="admin-secondary-btn py-2 text-xs"
+            @click="setDashboardFilter('all')"
+          >
+            Show All
+          </button>
         </div>
 
         <div v-if="isLoading" class="space-y-3 p-5">
@@ -249,6 +261,11 @@ const handleMarkAsRead = async (id: number) => {
   lastSyncedAt.value = new Date()
 }
 
+const setDashboardFilter = (filter?: 'all' | 'unread' | 'read') => {
+  if (!filter) return
+  messageFilter.value = filter
+}
+
 const sortedMessages = computed(() => {
   return [...messages.value].sort((a, b) => {
     const left = a.createdAt ? new Date(a.createdAt).getTime() : 0
@@ -269,23 +286,6 @@ const lastVisitLabel = computed(() => formatDateTime(analytics.value.lastVisited
 const lastSyncedLabel = computed(() => lastSyncedAt.value ? `Synced ${formatDateTime(lastSyncedAt.value)}` : 'Waiting for first sync')
 
 const stats = computed(() => [
-  {
-    label: 'Landing Page Visits',
-    value: analytics.value.todayVisits,
-    meta: 'Tracked locally for today on this browser',
-    icon: Globe,
-    iconWrapClass: 'bg-blue-50',
-    iconClass: 'text-blue-500'
-  },
-  {
-    label: 'Total Messages',
-    value: messages.value.length,
-    meta: 'Fetched from the public contact inbox',
-    filter: 'all',
-    icon: Inbox,
-    iconWrapClass: 'bg-slate-100',
-    iconClass: 'text-slate-600'
-  },
   {
     label: 'Unread Messages',
     value: messages.value.filter((message) => !message.is_read).length,

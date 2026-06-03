@@ -24,7 +24,7 @@
     </section>
 
     <section class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      <article v-for="banner in banners" :key="banner.id" class="admin-panel overflow-hidden">
+      <article v-for="banner in banners" :key="banner.id" class="admin-panel relative flex min-h-full flex-col overflow-hidden pb-20">
         <div class="relative">
           <div class="absolute left-4 top-4 z-10">
             <span class="admin-badge">{{ banner.page_name }}</span>
@@ -36,24 +36,27 @@
           </div>
         </div>
 
-        <div class="space-y-4 p-5">
+        <div class="flex flex-1 flex-col space-y-4 p-5">
           <div>
             <p class="text-lg font-semibold text-slate-900">{{ banner.title }}</p>
             <p class="mt-2 text-sm leading-6 text-slate-500">{{ banner.subtitle || 'No subtitle provided.' }}</p>
           </div>
 
-          <div class="flex items-center justify-between gap-3 border-t border-[var(--admin-border)] pt-4">
+          <div class="mt-auto flex items-center justify-between gap-3 border-t border-[var(--admin-border)] pt-4">
             <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
               <BadgeInfo class="h-4 w-4" />
               {{ banner.media_type }}
             </div>
-            <div class="flex items-center gap-2">
-              <button @click="openModal(banner)" class="admin-icon-btn" :aria-label="`Edit ${banner.page_name} banner`">
-                <Edit2 class="h-4 w-4" />
-              </button>
-            </div>
           </div>
         </div>
+
+        <button
+          @click="openModal(banner)"
+          class="admin-icon-btn absolute bottom-5 right-5 bg-white shadow-sm"
+          :aria-label="`Edit ${banner.page_name} banner`"
+        >
+          <Edit2 class="h-4 w-4" />
+        </button>
       </article>
     </section>
 

@@ -16,13 +16,6 @@
         </div>
       </div>
 
-      <div class="admin-stat-grid mt-6">
-        <article v-for="stat in stats" :key="stat.label" class="admin-stat-card">
-          <p class="admin-stat-label">{{ stat.label }}</p>
-          <div class="admin-stat-value">{{ stat.value }}</div>
-          <p class="admin-stat-meta">{{ stat.meta }}</p>
-        </article>
-      </div>
     </section>
 
     <section class="admin-table-shell">
@@ -32,9 +25,9 @@
             <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input v-model="searchQuery" type="text" placeholder="Search title, slug, or category..." class="admin-input pl-11">
           </div>
-          <button class="admin-secondary-btn py-2 text-xs">
+          <button class="admin-secondary-btn py-2 text-xs" type="button" @click="cycleStatusFilter">
             <Filter class="h-4 w-4" />
-            All Status
+            {{ statusFilterLabel }}
           </button>
         </div>
         <div class="text-sm text-slate-500">Showing {{ filteredNews.length }} entries</div>
@@ -191,6 +184,7 @@ const { categories: newsCategories, fetchCategories } = useCategories({ type: 'n
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
+const statusFilter = ref('all')
 const isSaving = ref(false)
 const isDeleting = ref(false)
 const formError = ref('')
@@ -219,15 +213,33 @@ const categoryOptions = computed(() => {
 })
 
 const filteredNews = computed(() => {
-  if (!searchQuery.value) return newsItems.value
+  const statusItems = newsItems.value.filter((item) => {
+    if (statusFilter.value === 'published') return item.is_published
+    if (statusFilter.value === 'draft') return !item.is_published
+    return true
+  })
+
+  if (!searchQuery.value) return statusItems
 
   const query = searchQuery.value.toLowerCase()
-  return newsItems.value.filter((item) =>
+  return statusItems.filter((item) =>
     [item.title, item.slug, item.category]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
+
+const statusFilterLabel = computed(() => {
+  if (statusFilter.value === 'published') return 'Published'
+  if (statusFilter.value === 'draft') return 'Draft'
+  return 'All Status'
+})
+
+const cycleStatusFilter = () => {
+  const filters = ['all', 'published', 'draft']
+  const currentIndex = filters.indexOf(statusFilter.value)
+  statusFilter.value = filters[(currentIndex + 1) % filters.length]
+}
 
 const stats = computed(() => [
   { label: 'Total Articles', value: newsItems.value.length, meta: 'Editorial entries in workspace' },

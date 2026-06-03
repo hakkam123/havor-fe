@@ -119,7 +119,6 @@ const menuSections = [
     label: 'Workspace',
     items: [
       { label: 'Campaign', path: '/admin/campaign', icon: BellRing },
-      { label: 'Profile', path: '/admin/profile', icon: Settings }
     ]
   }
 ]

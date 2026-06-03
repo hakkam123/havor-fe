@@ -17,18 +17,22 @@
       </div>
 
       <div class="admin-stat-grid mt-6">
-        <button
+        <component
+          :is="stat.filter ? 'button' : 'article'"
           v-for="stat in stats"
           :key="stat.label"
           type="button"
           class="admin-stat-card text-left transition hover:border-[var(--admin-accent)] hover:bg-white"
-          :class="stat.filter && messageFilter === stat.filter ? 'border-[var(--admin-accent)] bg-white ring-4 ring-[var(--admin-accent-soft)]' : ''"
-          @click="stat.filter ? messageFilter = stat.filter : null"
+          :class="[
+            stat.filter ? 'cursor-pointer' : 'cursor-default hover:border-[var(--admin-border)] hover:bg-[var(--admin-surface-soft)]',
+            stat.filter && messageFilter === stat.filter ? 'border-[var(--admin-accent)] bg-white ring-4 ring-[var(--admin-accent-soft)]' : ''
+          ]"
+          @click="setMessageFilter(stat.filter)"
         >
           <p class="admin-stat-label">{{ stat.label }}</p>
           <div class="admin-stat-value">{{ stat.value }}</div>
           <p class="admin-stat-meta">{{ stat.meta }}</p>
-        </button>
+        </component>
       </div>
     </section>
 
@@ -40,7 +44,7 @@
               <p class="text-sm font-semibold text-slate-900">Messages</p>
               <p class="mt-1 text-xs text-[var(--admin-muted)]">Latest customer inquiries</p>
             </div>
-            <button class="admin-icon-btn">
+            <button class="admin-icon-btn" type="button" :title="`Current filter: ${messageFilterLabel}`" @click="cycleMessageFilter">
               <Filter class="h-4 w-4" />
             </button>
           </div>
@@ -136,10 +140,18 @@ const messageFilter = ref('all')
 const isDeleting = ref(false)
 const deleteState = ref({ open: false, id: null, name: '' })
 
-const filteredMessages = computed(() => {
+const messagesForCurrentFilter = () => {
   if (messageFilter.value === 'unread') return messages.value.filter((msg) => !msg.is_read)
   if (messageFilter.value === 'read') return messages.value.filter((msg) => msg.is_read)
   return messages.value
+}
+
+const filteredMessages = computed(messagesForCurrentFilter)
+
+const messageFilterLabel = computed(() => {
+  if (messageFilter.value === 'unread') return 'Unread'
+  if (messageFilter.value === 'read') return 'Read'
+  return 'All'
 })
 
 const stats = computed(() => [
@@ -149,13 +161,28 @@ const stats = computed(() => [
   { label: 'Active Thread', value: selectedMessage.value ? 1 : 0, meta: selectedMessage.value ? selectedMessage.value.name : 'No message selected' }
 ])
 
+const setMessageFilter = (filter) => {
+  if (!filter) return
+  messageFilter.value = filter
+  syncSelectedMessage()
+}
+
+const cycleMessageFilter = () => {
+  const filters = ['all', 'unread', 'read']
+  const currentIndex = filters.indexOf(messageFilter.value)
+  const nextFilter = filters[(currentIndex + 1) % filters.length]
+  setMessageFilter(nextFilter)
+}
+
 const syncSelectedMessage = (preferredId = selectedMessage.value?.id) => {
-  if (!messages.value.length) {
+  const availableMessages = messagesForCurrentFilter()
+
+  if (!availableMessages.length) {
     selectedMessage.value = null
     return
   }
 
-  selectedMessage.value = messages.value.find((msg) => msg.id === preferredId) || messages.value[0]
+  selectedMessage.value = availableMessages.find((msg) => msg.id === preferredId) || availableMessages[0]
 }
 
 const refreshMessages = async () => {

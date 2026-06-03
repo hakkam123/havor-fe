@@ -79,7 +79,7 @@ export const useBanners = () => {
   const fetchBanners = async () => {
     mutationError.value = null
     try {
-      const items = await queryClient.ensureQueryData({
+      const items = await queryClient.fetchQuery({
         queryKey: BANNERS_QUERY_KEY,
         queryFn: loadBanners
       })

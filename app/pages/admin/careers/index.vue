@@ -14,13 +14,6 @@
         </button>
       </div>
 
-      <div class="admin-stat-grid mt-6">
-        <article v-for="stat in stats" :key="stat.label" class="admin-stat-card">
-          <p class="admin-stat-label">{{ stat.label }}</p>
-          <div class="admin-stat-value">{{ stat.value }}</div>
-          <p class="admin-stat-meta">{{ stat.meta }}</p>
-        </article>
-      </div>
     </section>
 
     <section class="admin-table-shell">
