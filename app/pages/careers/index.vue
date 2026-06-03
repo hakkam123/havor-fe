@@ -92,11 +92,17 @@
             class="brand-panel flex min-h-[17rem] flex-col p-5"
             v-motion-fade-up
           >
-            <p class="brand-meta">{{ roleCategoryFor(role) }}</p>
+            <p class="brand-meta">Category: {{ roleCategoryFor(role) }}</p>
             <h3 class="mt-3 text-[1.25rem] font-semibold tracking-normal text-[#0e2344]">{{ role.job_title }}</h3>
-            <p class="mt-2 line-clamp-3 text-[0.86rem] leading-6 text-slate-600">{{ role.excerpt }}</p>
-            <div class="mt-auto flex justify-end pt-5">
-              <button type="button" class="btn-primary" @click="openCareerModal(role.job_title)">
+            <div class="mt-4 border-t border-[#e2eaf5] pt-4">
+              <p class="text-xs font-semibold uppercase tracking-normal text-[#1f5dcc]">Summary</p>
+              <p class="mt-2 line-clamp-3 text-[0.86rem] leading-6 text-slate-600">{{ careerSummaryFor(role) }}</p>
+            </div>
+            <div class="mt-auto flex flex-col gap-2 pt-5 sm:flex-row sm:justify-end">
+              <button type="button" class="btn-outline w-full sm:w-auto" @click="openCareerDetailModal(role)">
+                Detail
+              </button>
+              <button type="button" class="btn-primary w-full sm:w-auto" @click="openCareerModal(role.job_title)">
                 Apply Now
               </button>
             </div>
@@ -132,6 +138,108 @@
         </button>
       </template>
     </PublicImageCta>
+
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-300 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition duration-200 ease-in"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95"
+      >
+      <div
+        v-if="isCareerDetailModalOpen && selectedCareer"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-[#031027]/72 px-4 py-6 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="career-detail-title"
+        @click.self="closeCareerDetailModal"
+      >
+        <div class="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-lg border border-[#dbe6f4] bg-white p-5 text-[#0e2344] shadow-[0_28px_90px_rgba(3,11,24,0.34)] sm:p-6">
+          <div class="flex items-start justify-between gap-4 border-b border-[#dbe6f4] pb-4">
+            <div>
+              <p class="brand-meta">Role Detail</p>
+              <h2 id="career-detail-title" class="mt-2 text-2xl font-semibold leading-tight text-[#0e2344]">
+                {{ selectedCareer.job_title }}
+              </h2>
+              <p class="mt-2 text-sm leading-6 text-slate-600">
+                Review the role scope before sending your application.
+              </p>
+            </div>
+            <button
+              type="button"
+              class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#dbe6f4] text-xl leading-none text-slate-500 transition hover:bg-[#edf4ff] hover:text-[#0e2344]"
+              aria-label="Close role detail"
+              @click="closeCareerDetailModal"
+            >
+              &times;
+            </button>
+          </div>
+
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="border-t border-[#e2eaf5] pt-3">
+              <p class="brand-meta">Role Category</p>
+              <p class="mt-1 text-sm font-semibold text-[#0e2344]">{{ roleCategoryFor(selectedCareer) }}</p>
+            </div>
+            <div v-if="selectedCareerDetail.location" class="border-t border-[#e2eaf5] pt-3">
+              <p class="brand-meta">Location / Work Type</p>
+              <p class="mt-1 text-sm font-semibold text-[#0e2344]">{{ selectedCareerDetail.location }}</p>
+            </div>
+            <div v-if="selectedCareerDetail.workType" class="border-t border-[#e2eaf5] pt-3">
+              <p class="brand-meta">Work Type</p>
+              <p class="mt-1 text-sm font-semibold text-[#0e2344]">{{ selectedCareerDetail.workType }}</p>
+            </div>
+            <div v-if="selectedCareerDetail.closingDate" class="border-t border-[#e2eaf5] pt-3">
+              <p class="brand-meta">Closing Date</p>
+              <p class="mt-1 text-sm font-semibold text-[#0e2344]">{{ selectedCareerDetail.closingDate }}</p>
+            </div>
+          </div>
+
+          <div class="mt-6 space-y-5">
+            <section v-if="selectedCareerDetail.summary">
+              <h3 class="text-sm font-semibold uppercase tracking-normal text-[#1f5dcc]">Role Summary</h3>
+              <p class="mt-2 text-sm leading-7 text-slate-600">{{ selectedCareerDetail.summary }}</p>
+            </section>
+
+            <section v-if="selectedCareerDetail.responsibilities">
+              <h3 class="text-sm font-semibold uppercase tracking-normal text-[#1f5dcc]">Responsibilities</h3>
+              <ul class="mt-2 space-y-2 text-sm leading-6 text-slate-600">
+                <li v-for="item in detailListItems(selectedCareerDetail.responsibilities)" :key="item" class="flex gap-2">
+                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#1f5dcc]"></span>
+                  <span>{{ item }}</span>
+                </li>
+              </ul>
+            </section>
+
+            <section v-if="selectedCareerDetail.requirements">
+              <h3 class="text-sm font-semibold uppercase tracking-normal text-[#1f5dcc]">Requirements / Qualifications</h3>
+              <ul class="mt-2 space-y-2 text-sm leading-6 text-slate-600">
+                <li v-for="item in detailListItems(selectedCareerDetail.requirements)" :key="item" class="flex gap-2">
+                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#1f5dcc]"></span>
+                  <span>{{ item }}</span>
+                </li>
+              </ul>
+            </section>
+
+            <section v-if="selectedCareerDetail.additionalInfo">
+              <h3 class="text-sm font-semibold uppercase tracking-normal text-[#1f5dcc]">Additional Information</h3>
+              <p class="mt-2 text-sm leading-7 text-slate-600">{{ selectedCareerDetail.additionalInfo }}</p>
+            </section>
+          </div>
+
+          <div class="mt-6 flex flex-col gap-2 border-t border-[#dbe6f4] pt-4 sm:flex-row sm:justify-end">
+            <button type="button" class="btn-outline w-full sm:w-auto" @click="closeCareerDetailModal">
+              Close
+            </button>
+            <button type="button" class="btn-primary w-full sm:w-auto" @click="applyFromCareerDetail">
+              Apply
+            </button>
+          </div>
+        </div>
+      </div>
+      </Transition>
+    </Teleport>
 
     <Teleport to="body">
       <div
@@ -419,7 +527,9 @@ const selectedCategory = ref('All categories')
 const searchQuery = ref('')
 const careerFileInput = ref(null)
 const isCareerModalOpen = ref(false)
+const isCareerDetailModalOpen = ref(false)
 const isCareerSuccessModalOpen = ref(false)
+const selectedCareer = ref(null)
 const careerStatus = ref('idle')
 const careerMessage = ref('')
 const careerFieldErrors = ref({})
@@ -458,6 +568,87 @@ const isValidPortfolioUrl = (value) => {
 
 const countPhoneDigits = (value) => String(value || '').replace(/\D/g, '').length
 const countWords = (value) => String(value || '').trim().split(/\s+/).filter(Boolean).length
+const careerDetailLabels = [
+  'Role Summary',
+  'Responsibilities',
+  'Requirements',
+  'Qualifications',
+  'Location',
+  'Work Type',
+  'Closing Date',
+  'Additional Information'
+]
+
+const toPlainCareerText = (value = '') => String(value || '')
+  .replace(/<\/li>/gi, '. ')
+  .replace(/<br\s*\/?>/gi, ' ')
+  .replace(/<\/p>|<\/h[1-6]>/gi, ' ')
+  .replace(/<[^>]+>/g, ' ')
+  .replace(/&nbsp;/gi, ' ')
+  .replace(/&amp;/gi, '&')
+  .replace(/\s+/g, ' ')
+  .trim()
+
+const withReadableCareerLabels = (value = '') => {
+  const labelPattern = new RegExp(`\\b(${careerDetailLabels.join('|')})\\b\\s*:?`, 'gi')
+
+  return toPlainCareerText(value)
+    .replace(labelPattern, (_match, label) => ` ${label}: `)
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+const careerSummaryFor = (role) => {
+  const detail = parseCareerDescription(role?.job_description)
+  return detail.summary || role?.excerpt || 'Role details will be shared during the hiring process.'
+}
+
+const detailListItems = (value = '') => String(value || '')
+  .split(/\.\s+/)
+  .map((item) => item.replace(/\.$/, '').trim())
+  .filter(Boolean)
+
+const parseCareerDescription = (description = '') => {
+  const readableText = withReadableCareerLabels(description)
+  const sectionPattern = new RegExp(`(${careerDetailLabels.join('|')}):`, 'gi')
+  const matches = [...readableText.matchAll(sectionPattern)]
+  const detail = {
+    summary: '',
+    responsibilities: '',
+    requirements: '',
+    location: '',
+    workType: '',
+    closingDate: '',
+    additionalInfo: ''
+  }
+
+  if (!matches.length) {
+    detail.summary = readableText
+    return detail
+  }
+
+  matches.forEach((match, index) => {
+    const label = match[1].toLowerCase()
+    const valueStart = Number(match.index) + match[0].length
+    const valueEnd = matches[index + 1]?.index ?? readableText.length
+    const value = readableText.slice(valueStart, valueEnd).trim()
+
+    if (!value) return
+    if (label === 'role summary') detail.summary = value
+    if (label === 'responsibilities') detail.responsibilities = value
+    if (label === 'requirements' || label === 'qualifications') detail.requirements = value
+    if (label === 'location') detail.location = value
+    if (label === 'work type') detail.workType = value
+    if (label === 'closing date') detail.closingDate = value
+    if (label === 'additional information') detail.additionalInfo = value
+  })
+
+  if (!detail.summary) {
+    detail.summary = readableText.replace(sectionPattern, '').trim()
+  }
+
+  return detail
+}
 
 const limitPhoneDigits = (value) => {
   let digitCount = 0
@@ -571,15 +762,17 @@ onBeforeUnmount(() => {
 })
 
 const roleCategoryFor = (role) => {
-  const text = `${role.job_title} ${role.job_description}`.toLowerCase()
+  const text = `${role?.job_title || ''} ${role?.job_description || ''}`.toLowerCase()
 
-  if (text.includes('qa') || text.includes('quality')) return 'Quality Assurance'
-  if (text.includes('ui') || text.includes('ux') || text.includes('design')) return 'Design'
-  if (text.includes('frontend') || text.includes('backend') || text.includes('full-stack') || text.includes('developer')) return 'Engineering'
-  if (text.includes('intern')) return 'Internship'
+  if (/\b(qa|quality assurance|quality)\b/.test(text)) return 'Quality Assurance'
+  if (/\b(ui|ux|ui\/ux|designer|design)\b/.test(text)) return 'Design'
+  if (/\b(frontend|front-end|backend|back-end|full-stack|fullstack|developer|engineer)\b/.test(text)) return 'Engineering'
+  if (/\b(intern|internship)\b/.test(text)) return 'Internship'
 
   return 'Business & Operations'
 }
+
+const selectedCareerDetail = computed(() => parseCareerDescription(selectedCareer.value?.job_description))
 
 const categoryOptions = computed(() => [
   'All categories',
@@ -607,9 +800,9 @@ const filteredCareers = computed(() => {
   })
 })
 
-watch([isCareerModalOpen, isCareerSuccessModalOpen], ([isCareerOpen, isSuccessOpen]) => {
+watch([isCareerModalOpen, isCareerDetailModalOpen, isCareerSuccessModalOpen], ([isCareerOpen, isDetailOpen, isSuccessOpen]) => {
   if (!import.meta.client) return
-  document.body.style.overflow = isCareerOpen || isSuccessOpen ? 'hidden' : ''
+  document.body.style.overflow = isCareerOpen || isDetailOpen || isSuccessOpen ? 'hidden' : ''
 })
 
 const openCareerModal = (position) => {
@@ -618,6 +811,21 @@ const openCareerModal = (position) => {
   careerMessage.value = ''
   careerFieldErrors.value = {}
   isCareerModalOpen.value = true
+}
+
+const openCareerDetailModal = (role) => {
+  selectedCareer.value = role
+  isCareerDetailModalOpen.value = true
+}
+
+const closeCareerDetailModal = () => {
+  isCareerDetailModalOpen.value = false
+}
+
+const applyFromCareerDetail = () => {
+  const position = selectedCareer.value?.job_title || 'General Career Inquiry'
+  isCareerDetailModalOpen.value = false
+  openCareerModal(position)
 }
 
 const closeCareerModal = () => {

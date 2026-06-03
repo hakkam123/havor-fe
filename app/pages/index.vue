@@ -27,10 +27,6 @@
               <p class="text-sm font-semibold leading-6 text-[#24415f]">{{ item }}</p>
             </div>
           </div>
-
-          <NuxtLink to="/about-us" class="btn-outline mt-6">
-            {{ t('home.featured.button') }}
-          </NuxtLink>
         </div>
       </div>
     </section>
@@ -51,11 +47,11 @@
             {{ t('home.about.intro') }}
           </p>
           <div class="mt-7 flex flex-wrap gap-3">
-            <NuxtLink to="/services" class="inline-flex rounded-full bg-white px-5 py-2.5 text-[0.84rem] font-semibold text-[#0e2344] transition hover:bg-[#edf4ff]">
-              {{ t('home.about.servicesCta') }}
+            <NuxtLink to="/about-us" class="inline-flex rounded-full bg-white px-5 py-2.5 text-[0.84rem] font-semibold text-[#0e2344] transition hover:bg-[#edf4ff]">
+              {{ t('home.about.learnCta') }}
             </NuxtLink>
-            <NuxtLink to="/projects" class="inline-flex rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-[0.84rem] font-semibold text-white backdrop-blur-sm transition hover:bg-white/18">
-              {{ t('home.about.projectsCta') }}
+            <NuxtLink to="/contact" class="inline-flex rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-[0.84rem] font-semibold text-white backdrop-blur-sm transition hover:bg-white/18">
+              {{ t('home.about.contactCta') }}
             </NuxtLink>
           </div>
         </div>

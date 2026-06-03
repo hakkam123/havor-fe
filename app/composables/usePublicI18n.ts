@@ -31,19 +31,19 @@ const messages = {
       featured: {
         label: 'Digital Solution',
         title: 'Integrated Digital Solutions for Scalable Business Growth',
-        description: 'Havor Smarta Digital helps businesses design, build, and scale digital platforms across web, mobile, enterprise systems, dashboards, and intelligent solutions.',
+        description: 'We help companies design, build, and scale reliable digital products through web development, enterprise systems, dashboards, and intelligent automation.',
         caption: 'Web platforms, enterprise systems, dashboards, mobile apps, and intelligent workflows.',
         button: 'Learn More'
       },
       about: {
         kicker: 'About Havor',
         title: 'About Havor Smarta Digital',
-        intro: 'Havor Smarta Digital is an Information Technology company specializing in digital solutions and application development. Since its early project journey in 2010 and official establishment as an IT startup in 2019, Havor has delivered scalable technology solutions for businesses across various industries.',
+        intro: 'Havor Smarta Digital is an IT company focused on delivering practical and scalable technology solutions for business operations, digital transformation, and long-term growth. Starting from project-based experience in 2010 and officially established as an IT startup in 2019, Havor continues to support businesses through reliable and business-oriented digital solutions.',
         pointOne: 'Started through project experience in 2010',
         pointTwo: 'Officially evolved as an IT startup in 2019',
         pointThree: 'Focused on practical digital transformation for business clients',
-        servicesCta: 'Explore Services',
-        projectsCta: 'View Projects'
+        learnCta: 'Learn More',
+        contactCta: 'Contact Us'
       },
       highlights: {
         title: 'Company Highlights',
@@ -214,19 +214,19 @@ const messages = {
       featured: {
         label: 'Solusi Digital',
         title: 'Solusi Digital Terintegrasi untuk Pertumbuhan Bisnis',
-        description: 'Havor Smarta Digital membantu bisnis merancang, membangun, dan mengembangkan platform digital melalui web, mobile, enterprise system, dashboard, dan solusi cerdas.',
+        description: 'Kami membantu perusahaan merancang, membangun, dan mengembangkan produk digital yang andal melalui web development, enterprise system, dashboard, dan intelligent automation.',
         caption: 'Web platform, enterprise system, dashboard, mobile app, dan intelligent workflow.',
         button: 'Pelajari Lebih Lanjut'
       },
       about: {
         kicker: 'Tentang Havor',
         title: 'Tentang Havor Smarta Digital',
-        intro: 'Havor Smarta Digital adalah perusahaan Information Technology yang berfokus pada solusi digital dan pengembangan aplikasi. Sejak memulai perjalanan project pada 2010 dan resmi berkembang sebagai IT startup pada 2019, Havor menghadirkan solusi teknologi yang scalable untuk berbagai kebutuhan bisnis.',
+        intro: 'Havor Smarta Digital adalah perusahaan IT yang berfokus menghadirkan solusi teknologi yang praktis dan scalable untuk operasional bisnis, transformasi digital, dan pertumbuhan jangka panjang. Berawal dari pengalaman project sejak 2010 dan resmi berdiri sebagai IT startup pada 2019, Havor terus mendukung bisnis melalui solusi digital yang andal dan berorientasi pada kebutuhan bisnis.',
         pointOne: 'Memulai perjalanan project sejak 2010',
         pointTwo: 'Resmi berkembang sebagai IT startup pada 2019',
         pointThree: 'Fokus pada transformasi digital yang praktis untuk bisnis',
-        servicesCta: 'Lihat Layanan',
-        projectsCta: 'Lihat Project'
+        learnCta: 'Pelajari Lebih Lanjut',
+        contactCta: 'Hubungi Kami'
       },
       highlights: {
         title: 'Highlight Perusahaan',

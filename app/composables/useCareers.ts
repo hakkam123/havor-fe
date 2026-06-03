@@ -9,11 +9,16 @@ export const useCareers = () => {
   const queryClient = useQueryClient()
   const fetchErrorMessage = ref<string | null>(null)
 
+  const toPlainText = (value?: string | null) => String(value || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
   const normalizeCareer = (item: ApiCareer): Career => ({
     id: Number(item.id),
     job_title: String(item.job_title || ''),
     job_description: String(item.job_description || ''),
-    excerpt: String(item.job_description || '').replace(/<[^>]*>?/gm, '').trim().slice(0, 180),
+    excerpt: toPlainText(item.job_description).slice(0, 180),
     thumbnail: resolveAssetUrl(item.thumbnail),
     slug: toSlug(item.job_title)
   })
