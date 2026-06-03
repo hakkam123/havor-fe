@@ -14,7 +14,8 @@
 
 <script setup>
 const route = useRoute()
-const isPageLoading = ref(true)
+const isPageLoading = ref(false)
+const hasMounted = ref(false)
 let loadingTimer = null
 
 const showLoader = () => {
@@ -29,9 +30,12 @@ const showLoader = () => {
   }, 1200)
 }
 
-onMounted(showLoader)
+onMounted(() => {
+  hasMounted.value = true
+})
 
 watch(() => route.fullPath, () => {
+  if (!hasMounted.value) return
   showLoader()
 })
 
@@ -50,7 +54,9 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(31, 93, 204, 0.18), transparent 34%),
+    linear-gradient(135deg, #031024 0%, #06152b 45%, #0e2d62 100%);
 }
 
 .app-loading-logo {
