@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden bg-white">
+  <div class="overflow-hidden bg-[#06152b]">
     <LandingHeroCarousel
       :title="homeHeroTitle"
       :subtitle="homeHeroSubtitle"

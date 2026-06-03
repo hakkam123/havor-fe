@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/havor/api/:path*",
+      "destination": "https://tplnext.com/havor/api/:path*"
+    },
+    {
+      "source": "/havor/uploads/:path*",
+      "destination": "https://tplnext.com/havor/uploads/:path*"
+    }
+  ]
+}

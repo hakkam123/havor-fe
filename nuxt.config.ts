@@ -1,3 +1,9 @@
+const legacyApiBase = process.env.VITE_API_BASE_URL?.replace(/\/+$/, '')
+const legacyApiEndpoint = legacyApiBase
+  ? legacyApiBase.endsWith('/api') ? legacyApiBase : `${legacyApiBase}/api`
+  : ''
+const defaultApiBase = '/havor/api'
+
 export default defineNuxtConfig({
   ssr: true,
   compatibilityDate: '2025-07-15',
@@ -36,7 +42,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/tailwind.css'],
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || '',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || legacyApiEndpoint || defaultApiBase,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || '',
       tinymceApiKey: process.env.NUXT_PUBLIC_TINYMCE_API_KEY || ''
     }

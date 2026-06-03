@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app-shell">
     <Transition name="app-loader">
       <div v-if="isPageLoading" class="app-loading-screen" aria-live="polite" aria-busy="true">
         <img src="/logo-havor.svg" alt="PT Havor Smarta Digital" class="app-loading-logo">
@@ -57,6 +57,11 @@ onBeforeUnmount(() => {
   background:
     radial-gradient(circle at 50% 42%, rgba(31, 93, 204, 0.18), transparent 34%),
     linear-gradient(135deg, #031024 0%, #06152b 45%, #0e2d62 100%);
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: #06152b;
 }
 
 .app-loading-logo {

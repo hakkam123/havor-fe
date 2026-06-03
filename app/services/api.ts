@@ -16,7 +16,9 @@ export class PublicApiError extends Error {
 
 const getApiBaseUrl = () => {
   const config = useRuntimeConfig()
-  const apiBaseUrl = String(config.public.apiBase || import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+  const legacyApiBaseUrl = String(import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+  const legacyApiEndpoint = legacyApiBaseUrl.endsWith('/api') ? legacyApiBaseUrl : `${legacyApiBaseUrl}/api`
+  const apiBaseUrl = String(config.public.apiBase || (legacyApiBaseUrl ? legacyApiEndpoint : '/havor/api')).replace(/\/+$/, '')
 
   if (!apiBaseUrl) {
     throw new PublicApiError('API endpoint is not configured. Please contact the administrator.', 0)
