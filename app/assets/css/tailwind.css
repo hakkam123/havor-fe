@@ -45,7 +45,7 @@
   body,
   #__nuxt {
     min-height: 100%;
-    background: #06152b;
+    background: #ffffff;
   }
 
   body {
@@ -127,7 +127,7 @@
   }
 
   .marketing-shell {
-    background: #06152b;
+    background: linear-gradient(180deg, #ffffff 0%, var(--marketing-bg) 100%);
     @apply min-h-screen text-slate-900;
     font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   }

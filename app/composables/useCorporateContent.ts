@@ -465,6 +465,18 @@ export const useCorporateContent = () => {
         button: 'Consult With Havor'
       }
     },
+    productsPage: {
+      hero: {
+        title: 'Products',
+        subtitle:
+          'Ready-to-adapt digital product packages and implementation starters for websites, dashboards, content operations, and integrations.',
+        image: 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1800&q=80'
+      },
+      cta: {
+        title: 'Need a custom digital product?',
+        copy: 'Discuss how Havor can adapt a product package into a website, dashboard, CMS, or business system that fits your workflow.'
+      }
+    },
     projectsPage: {
       hero: {
         title: 'Projects',

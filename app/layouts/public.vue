@@ -1,7 +1,7 @@
 <template>
   <div class="marketing-shell">
     <PublicNavbar />
-    <main>
+    <main class="bg-white">
       <slot />
     </main>
     <PublicFooter />

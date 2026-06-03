@@ -54,14 +54,12 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(31, 93, 204, 0.18), transparent 34%),
-    linear-gradient(135deg, #031024 0%, #06152b 45%, #0e2d62 100%);
+  background: #ffffff;
 }
 
 .app-shell {
   min-height: 100vh;
-  background: #06152b;
+  background: #ffffff;
 }
 
 .app-loading-logo {

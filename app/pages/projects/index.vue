@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden">
+  <div class="overflow-hidden bg-white">
     <CorporatePageHero
       :title="projectsBanner.title || projectsPage.hero.title"
       :subtitle="projectsBanner.subtitle || projectsPage.hero.subtitle"
