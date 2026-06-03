@@ -8,45 +8,29 @@
 
     <section class="brand-section bg-white">
       <div class="marketing-container">
-        <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-          <div class="relative overflow-hidden rounded-lg">
-            <img
-              :src="featuredImage"
-              alt="Integrated digital platform"
-              class="h-[18rem] w-full object-cover sm:h-[24rem]"
+        <div class="max-w-4xl">
+          <h2 class="max-w-3xl text-[clamp(2.05rem,3.2vw,3rem)] font-semibold leading-tight text-[#0e2344]">
+            {{ t('home.featured.title') }}
+          </h2>
+          <p class="mt-4 max-w-2xl text-[0.9rem] leading-7 text-slate-600">
+            {{ t('home.featured.description') }}
+          </p>
+
+          <div class="mt-6 space-y-3">
+            <div
+              v-for="item in aboutPoints"
+              :key="item"
+              class="flex gap-3 border-t border-[#e2eaf5] pt-3"
+              v-motion-fade-up
             >
-            <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,11,24,0)_34%,rgba(3,11,24,0.72)_100%)]"></div>
-            <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
-              <p class="max-w-sm text-sm font-semibold leading-6 text-white/82">
-                {{ t('home.featured.caption') }}
-              </p>
+              <CheckCircle2 class="mt-0.5 h-5 w-5 shrink-0 text-[#1f5dcc]" />
+              <p class="text-sm font-semibold leading-6 text-[#24415f]">{{ item }}</p>
             </div>
           </div>
 
-          <div class="lg:pl-8">
-            <h2 class="max-w-3xl text-[clamp(1.9rem,3vw,2.65rem)] font-semibold leading-tight text-[#0e2344]">
-              {{ t('home.featured.title') }}
-            </h2>
-            <p class="mt-4 max-w-2xl text-[0.9rem] leading-7 text-slate-600">
-              {{ t('home.featured.description') }}
-            </p>
-
-            <div class="mt-6 space-y-3">
-              <div
-                v-for="item in aboutPoints"
-                :key="item"
-                class="flex gap-3 border-t border-[#e2eaf5] pt-3"
-                v-motion-fade-up
-              >
-                <CheckCircle2 class="mt-0.5 h-5 w-5 shrink-0 text-[#1f5dcc]" />
-                <p class="text-sm font-semibold leading-6 text-[#24415f]">{{ item }}</p>
-              </div>
-            </div>
-
-            <NuxtLink to="/about-us" class="btn-outline mt-6">
-              {{ t('home.featured.button') }}
-            </NuxtLink>
-          </div>
+          <NuxtLink to="/about-us" class="btn-outline mt-6">
+            {{ t('home.featured.button') }}
+          </NuxtLink>
         </div>
       </div>
     </section>
