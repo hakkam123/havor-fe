@@ -14,7 +14,7 @@
             <img src="/logo-havor.svg" alt="PT Havor SMART Digital" width="32" height="32" class="h-8 w-8 rounded-full object-cover">
           </span>
           <div class="hidden sm:block">
-            <p class="text-[0.82rem] font-semibold uppercase tracking-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-950' : 'text-white'">Havor</p>
+            <p class="text-[0.82rem] font-semibold tracking-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-950' : 'text-white'">Havor</p>
             <p class="text-xs font-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-500' : 'text-white/80'">Smarta Digital</p>
           </div>
         </NuxtLink>
