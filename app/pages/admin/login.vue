@@ -1,6 +1,6 @@
 <template>
   <div class="admin-panel relative overflow-hidden p-8 sm:p-9" v-motion-fade-up>
-    <div class="absolute inset-x-0 top-0 h-32 bg-[linear-gradient(180deg,rgba(255,106,61,0.12),transparent)]"></div>
+    <div class="absolute inset-x-0 top-0 h-32"></div>
 
     <div class="relative">
       <div class="mb-8 text-center">

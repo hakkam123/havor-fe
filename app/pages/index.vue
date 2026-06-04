@@ -83,6 +83,41 @@
 
     <section class="brand-section bg-[#f5f8fc]">
       <div class="marketing-container">
+        <SectionHeading
+          title="Content Categories"
+          description="Browse Havor content groups managed from the CMS across products, media updates, campaigns, and career content."
+        />
+
+        <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <article
+            v-for="group in landingCategoryGroups"
+            :key="group.title"
+            class="border-t border-[#dbe6f4] pt-5"
+            v-motion-fade-up
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="brand-meta">{{ group.label }}</p>
+                <h3 class="mt-2 text-[1rem] font-semibold leading-tight text-[#0e2344]">{{ group.title }}</h3>
+              </div>
+              <NuxtLink :to="group.href" class="btn-outline px-3 py-1.5 text-[0.72rem]">
+                View
+              </NuxtLink>
+            </div>
+
+            <div v-if="group.categories.length" class="mt-4 flex flex-wrap gap-2">
+              <span v-for="category in group.categories" :key="`${group.type}-${category}`" class="brand-chip">
+                {{ category }}
+              </span>
+            </div>
+            <p v-else class="mt-4 text-sm leading-6 text-slate-500">No categories available yet.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="brand-section bg-[#f5f8fc]">
+      <div class="marketing-container">
         <div class="grid gap-7 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div>
             <p class="brand-meta">{{ t('home.clients.label') }}</p>
@@ -508,6 +543,10 @@ const { expertise, isLoading: isLoadingExpertise, fetchExpertise } = useExpertis
 const { works, isLoading: isLoadingWorks, fetchWorks } = useWorks()
 const { news, isLoading: isLoadingNews, fetchNews } = useNews()
 const { campaigns, fetchCampaigns } = useCampaigns()
+const { categories: productCategories, fetchCategories: fetchProductCategories } = useCategories({ type: 'Product' })
+const { categories: newsCategories, fetchCategories: fetchNewsCategories } = useCategories({ type: 'News' })
+const { categories: campaignCategories, fetchCategories: fetchCampaignCategories } = useCategories({ type: 'Campaign' })
+const { categories: careerCategories, fetchCategories: fetchCareerCategories } = useCategories({ type: 'Career' })
 const { clients, isLoading: isLoadingClients, fetchClients } = useClients()
 const { fetchBanners, findBannerByPage } = useBanners()
 const contactStatus = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -708,13 +747,63 @@ const whyPoints = computed(() =>
   tm<Array<{ title: string, description: string }>>('home.whyHavor.points') || []
 )
 
+const uniqueNames = (items: string[]) => [...new Set(items.map((item) => String(item || '').trim()).filter(Boolean))]
+const productCategoryNames = computed(() => uniqueNames([
+  ...productCategories.value.map((category) => category.name),
+  ...works.value.map((work) => work.categoryName)
+]))
+const newsCategoryNames = computed(() => uniqueNames([
+  ...newsCategories.value.map((category) => category.name),
+  ...news.value.map((item) => item.category)
+]))
+const campaignCategoryNames = computed(() => uniqueNames([
+  ...campaignCategories.value.map((category) => category.name),
+  ...campaigns.value.map((campaign) => campaign.category)
+]))
+const careerCategoryNames = computed(() => uniqueNames(careerCategories.value.map((category) => category.name)))
+
+const landingCategoryGroups = computed(() => [
+  {
+    type: 'Product',
+    label: 'Product',
+    title: 'Product Categories',
+    href: '/products',
+    categories: productCategoryNames.value
+  },
+  {
+    type: 'News',
+    label: 'News',
+    title: 'News Categories',
+    href: '/media-news',
+    categories: newsCategoryNames.value.length
+      ? newsCategoryNames.value
+      : uniqueNames(homePage.insights.items.map((item) => item.category))
+  },
+  {
+    type: 'Campaign',
+    label: 'Campaign',
+    title: 'Campaign Categories',
+    href: '/media-news',
+    categories: campaignCategoryNames.value.length
+      ? campaignCategoryNames.value
+      : uniqueNames(fallbackCampaignItems.value.map((item) => item.category))
+  },
+  {
+    type: 'Career',
+    label: 'Career',
+    title: 'Career Categories',
+    href: '/careers',
+    categories: careerCategoryNames.value
+  }
+])
+
 const displayNews = computed(() => {
   if (news.value.length) return news.value
 
   return homePage.insights.items.map((item, index) => ({
     id: -(index + 1),
     title: item.title,
-    category: item.category,
+    category: newsCategoryNames.value[index] || item.category,
     excerpt: item.summary,
     image_url: item.image,
     slug: ''
@@ -722,19 +811,19 @@ const displayNews = computed(() => {
 })
 const fallbackCampaignItems = computed(() => [
   {
-    category: 'Digital Readiness',
+    category: campaignCategoryNames.value[0] || 'Digital Readiness',
     title: 'Operational Assessment for Growing Teams',
     excerpt: 'A focused campaign to map workflow gaps, clarify priorities, and prepare practical implementation steps.',
     image: featuredImage.value
   },
   {
-    category: 'Implementation Support',
+    category: campaignCategoryNames.value[1] || 'Implementation Support',
     title: 'Build, Improve, and Maintain Core Systems',
     excerpt: 'Support for companies that need dependable execution across web platforms, internal tools, and integrations.',
     image: aboutImage.value
   },
   {
-    category: 'Long-Term Partnership',
+    category: campaignCategoryNames.value[2] || 'Long-Term Partnership',
     title: 'Technology Care for Business Continuity',
     excerpt: 'A structured support model for monitoring, iteration, and ongoing improvement after launch.',
     image: ctaImage.value
@@ -767,6 +856,10 @@ const fetchHomepageData = async () => {
     fetchWorks(),
     fetchNews(),
     fetchCampaigns(),
+    fetchProductCategories(),
+    fetchNewsCategories(),
+    fetchCampaignCategories(),
+    fetchCareerCategories(),
     fetchClients(),
     fetchBanners()
   ])
