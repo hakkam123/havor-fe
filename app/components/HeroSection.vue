@@ -1,14 +1,14 @@
 <template>
   <section data-public-hero="true" class="relative isolate min-h-screen overflow-hidden text-white">
     <img
-      v-if="image"
-      :src="image"
+      :src="imageSrc(image)"
       :alt="imageAlt || title"
       :style="styleFor(0.05, -16, 1.08)"
       loading="eager"
       decoding="async"
       fetchpriority="high"
       class="absolute inset-0 h-full w-full object-cover transition-transform duration-300"
+      @error="handleImageError"
     >
     <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,12,26,0.82)_0%,rgba(4,12,26,0.48)_42%,rgba(4,12,26,0.34)_100%)]"></div>
     <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,7,16,0.54)_0%,rgba(2,7,16,0.1)_24%,rgba(2,7,16,0.5)_100%)]"></div>
@@ -35,6 +35,7 @@
 
 <script setup lang="ts">
 const { styleFor } = useParallax()
+const { imageSrc, handleImageError } = useImageFallback()
 
 defineProps<{
   title: string

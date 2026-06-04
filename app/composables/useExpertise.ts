@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiExpertise, Expertise } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
+import { toApiArray } from '~/utils/apiData'
 
 const EXPERTISE_QUERY_KEY = ['expertise'] as const
 
@@ -18,8 +19,8 @@ export const useExpertise = () => {
   })
 
   const loadExpertise = async () => {
-    const res = await apiFetch<ApiExpertise[]>('/expertise')
-    return (res || []).map(normalizeExpertise)
+    const res = await apiFetch<unknown>('/expertise')
+    return toApiArray<ApiExpertise>(res).map(normalizeExpertise)
   }
 
   const expertiseQuery = useQuery({

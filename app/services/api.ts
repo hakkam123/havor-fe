@@ -72,7 +72,9 @@ export const publicApiFetch = async <T>(path: string, options: ApiRequestOptions
   const response = await fetch(buildUrl(path), {
     ...options,
     headers,
-    body: body as BodyInit | null | undefined
+    body: body as BodyInit | null | undefined,
+    cache: 'no-store',
+
   })
 
   const responseBody = await parseResponse(response)

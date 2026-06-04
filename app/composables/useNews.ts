@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiNewsItem, NewsItem } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
+import { toApiArray } from '~/utils/apiData'
 
 type UseNewsOptions = {
   includeDrafts?: boolean
@@ -37,8 +38,8 @@ export const useNews = (options: UseNewsOptions = {}) => {
   })
 
   const loadNews = async () => {
-    const res = await apiFetch<ApiNewsItem[]>('/news')
-    const normalizedItems = (res || []).map(normalizeNewsItem)
+    const res = await apiFetch<unknown>('/news')
+    const normalizedItems = toApiArray<ApiNewsItem>(res).map(normalizeNewsItem)
     return includeDrafts ? normalizedItems : normalizedItems.filter((item) => item.is_published)
   }
 

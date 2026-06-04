@@ -2,11 +2,12 @@
   <section>
     <div class="relative isolate overflow-hidden py-16 text-white sm:py-20">
       <img
-        :src="image"
+        :src="imageSrc(image)"
         :alt="imageAlt || title"
         loading="lazy"
         decoding="async"
         class="absolute inset-0 h-full w-full object-cover"
+        @error="handleImageError"
       >
       <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,12,24,0.9)_0%,rgba(5,12,24,0.72)_52%,rgba(5,12,24,0.38)_100%)]"></div>
       <div class="marketing-container relative">
@@ -60,4 +61,6 @@ defineProps<{
   href?: string
   anchorId?: string
 }>()
+
+const { imageSrc, handleImageError } = useImageFallback()
 </script>

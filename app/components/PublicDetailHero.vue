@@ -1,12 +1,13 @@
 <template>
   <section data-public-hero="true" class="relative isolate min-h-screen overflow-hidden bg-[#071529] text-white">
     <img
-      :src="image"
+      :src="imageSrc(image)"
       :alt="imageAlt"
       loading="eager"
       decoding="async"
       fetchpriority="high"
       class="absolute inset-0 h-full w-full object-cover"
+      @error="handleImageError"
     >
     <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,10,22,0.5)_0%,rgba(3,10,22,0.08)_40%,rgba(3,10,22,0.36)_100%)]"></div>
     <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,10,22,0.3)_0%,rgba(3,10,22,0.06)_46%,rgba(3,10,22,0.22)_100%)]"></div>
@@ -25,4 +26,6 @@ defineProps<{
   imageAlt: string
   label?: string
 }>()
+
+const { imageSrc, handleImageError } = useImageFallback()
 </script>

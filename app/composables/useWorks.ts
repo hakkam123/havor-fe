@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiWork, Work } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
+import { toApiArray } from '~/utils/apiData'
 
 const WORKS_QUERY_KEY = ['works'] as const
 
@@ -22,8 +23,8 @@ export const useWorks = () => {
   })
 
   const loadWorks = async () => {
-    const res = await apiFetch<ApiWork[]>('/works')
-    return (res || []).map(normalizeWork)
+    const res = await apiFetch<unknown>('/works')
+    return toApiArray<ApiWork>(res).map(normalizeWork)
   }
 
   const worksQuery = useQuery({

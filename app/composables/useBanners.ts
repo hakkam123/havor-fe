@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiBanner, Banner } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
+import { toApiArray } from '~/utils/apiData'
 
 const BANNERS_QUERY_KEY = ['banners'] as const
 
@@ -34,8 +35,8 @@ export const useBanners = () => {
   const bannerPageQueryKey = (pageName: string) => ['banners', 'page', normalizePageName(pageName)] as const
 
   const loadBanners = async () => {
-    const res = await apiFetch<ApiBanner[]>('/banners')
-    return (res || []).map(normalizeBanner)
+    const res = await apiFetch<unknown>('/banners')
+    return toApiArray<ApiBanner>(res).map(normalizeBanner)
   }
 
   const bannersQuery = useQuery({
@@ -101,8 +102,8 @@ export const useBanners = () => {
       const normalizedBanner = await queryClient.ensureQueryData({
         queryKey: bannerPageQueryKey(normalizedPageName),
         queryFn: async () => {
-          const res = await apiFetch<ApiBanner | ApiBanner[]>(`/banners/${normalizedPageName}`)
-          const banner = Array.isArray(res) ? res[0] : res
+          const res = await apiFetch<unknown>(`/banners/${normalizedPageName}`)
+          const banner = toApiArray<ApiBanner>(res)[0] || (res && typeof res === 'object' ? res as ApiBanner : null)
           return banner ? normalizeBanner(banner) : null
         }
       })

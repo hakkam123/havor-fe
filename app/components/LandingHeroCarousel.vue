@@ -1,12 +1,13 @@
 <template>
   <section data-public-hero="true" class="relative isolate min-h-screen overflow-hidden bg-[#06152b] text-white">
     <img
-      :src="activeSlide.image"
+      :src="imageSrc(activeSlide.image, defaultImageFallback)"
       :alt="activeSlide.title"
       loading="eager"
       decoding="async"
       fetchpriority="high"
       class="absolute inset-0 h-full w-full object-cover"
+      @error="handleImageError($event, defaultImageFallback)"
     >
     <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,11,24,0.84)_0%,rgba(3,11,24,0.56)_46%,rgba(3,11,24,0.3)_100%)]"></div>
     <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,11,24,0.38)_0%,rgba(3,11,24,0.12)_30%,rgba(3,11,24,0.72)_100%)]"></div>
@@ -41,14 +42,31 @@ const props = defineProps<{
 const activeIndex = ref(0)
 let timer: ReturnType<typeof setInterval> | null = null
 
-const activeSlide = computed(() => props.slides[activeIndex.value] ?? props.slides[0])
+const { defaultImageFallback, imageSrc, handleImageError } = useImageFallback()
+const fallbackSlide = computed(() => ({
+  title: props.title,
+  description: props.subtitle,
+  image: defaultImageFallback
+}))
+const safeSlides = computed(() => {
+  const slides = props.slides
+    .filter((slide) => slide && slide.title)
+    .map((slide) => ({
+      ...slide,
+      image: imageSrc(slide.image, defaultImageFallback)
+    }))
+
+  return slides.length ? slides : [fallbackSlide.value]
+})
+const activeSlide = computed(() => safeSlides.value[activeIndex.value] ?? safeSlides.value[0])
 
 const next = () => {
-  activeIndex.value = (activeIndex.value + 1) % props.slides.length
+  if (safeSlides.value.length <= 1) return
+  activeIndex.value = (activeIndex.value + 1) % safeSlides.value.length
 }
 
 onMounted(() => {
-  if (props.slides.length <= 1) return
+  if (safeSlides.value.length <= 1) return
   timer = setInterval(next, props.autoPlayMs ?? 5000)
 })
 

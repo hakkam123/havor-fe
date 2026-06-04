@@ -3,10 +3,12 @@ export const useApi = () => {
   const authStore = useAuthStore()
 
   const resolveAssetUrl = (path?: string | null) => {
-    if (!path) return ''
-    if (/^(https?:|data:|blob:)/i.test(path)) return path
+    const assetPath = String(path || '').trim()
+    const normalizedAssetPath = assetPath.toLowerCase()
+    if (!assetPath || normalizedAssetPath === 'null' || normalizedAssetPath === 'undefined') return ''
+    if (/^(https?:|data:|blob:)/i.test(assetPath)) return assetPath
 
-    const normalizedPath = path.startsWith('/') ? path : `/${path}`
+    const normalizedPath = assetPath.startsWith('/') ? assetPath : `/${assetPath}`
     const apiBase = String(config.public.apiBase || '')
 
     if (/^https?:/i.test(apiBase)) {

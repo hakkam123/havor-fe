@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiClient, Client } from '~/types/api'
+import { toApiArray } from '~/utils/apiData'
 
 const CLIENTS_QUERY_KEY = ['clients'] as const
 
@@ -23,8 +24,8 @@ export const useClients = () => {
   })
 
   const loadClients = async () => {
-    const res = await apiFetch<ApiClient[]>('/clients')
-    return (res || []).map(normalizeClient)
+    const res = await apiFetch<unknown>('/clients')
+    return toApiArray<ApiClient>(res).map(normalizeClient)
   }
 
   const clientsQuery = useQuery({

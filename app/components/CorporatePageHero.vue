@@ -4,12 +4,13 @@
     class="relative isolate min-h-screen overflow-hidden text-white"
   >
     <img
-      :src="image"
+      :src="imageSrc(image)"
       :alt="imageAlt || title"
       loading="eager"
       decoding="async"
       fetchpriority="high"
       class="absolute inset-0 h-full w-full object-cover"
+      @error="handleImageError"
     >
     <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,12,26,0.8)_0%,rgba(4,12,26,0.44)_42%,rgba(4,12,26,0.28)_100%)]"></div>
     <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,7,16,0.52)_0%,rgba(2,7,16,0.08)_24%,rgba(2,7,16,0.46)_100%)]"></div>
@@ -76,4 +77,6 @@ withDefaults(defineProps<{
   sideCopy: 'Professional, structured, and designed to support modern organizations.',
   heroSize: 'screen'
 })
+
+const { imageSrc, handleImageError } = useImageFallback()
 </script>

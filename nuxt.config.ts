@@ -44,7 +44,7 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || legacyApiEndpoint || defaultApiBase,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || '',
-      tinymceApiKey: process.env.NUXT_PUBLIC_TINYMCE_API_KEY || ''
+      tinymceApiKey: process.env.NUXT_PUBLIC_TINYMCE_API_KEY || '88silew48dnac4zpntprubmilq8z9lqfe5by76mvrkvas4nt'
     }
   }
 })

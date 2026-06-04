@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiCampaignItem, CampaignItem } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
+import { toApiArray } from '~/utils/apiData'
 
 type UseCampaignOptions = {
   includeDrafts?: boolean
@@ -37,8 +38,8 @@ export const useCampaigns = (options: UseCampaignOptions = {}) => {
   })
 
   const loadCampaigns = async () => {
-    const res = await apiFetch<ApiCampaignItem[]>('/campaigns')
-    const normalizedItems = (res || []).map(normalizeCampaignItem)
+    const res = await apiFetch<unknown>('/campaigns')
+    const normalizedItems = toApiArray<ApiCampaignItem>(res).map(normalizeCampaignItem)
     return includeDrafts ? normalizedItems : normalizedItems.filter((item) => item.is_published)
   }
 

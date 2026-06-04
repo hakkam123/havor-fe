@@ -33,9 +33,10 @@
 
     <section id="about" class="relative isolate overflow-hidden py-16 text-white sm:py-20">
       <img
-        :src="aboutImage"
+        :src="imageSrc(aboutImage, defaultAboutImage)"
         alt="About Havor Smarta Digital"
         class="absolute inset-0 h-full w-full object-cover"
+        @error="handleImageError($event, defaultAboutImage)"
       >
       <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,14,31,0.88)_0%,rgba(4,14,31,0.62)_48%,rgba(4,14,31,0.18)_100%)]"></div>
       <div class="marketing-container">
@@ -105,9 +106,10 @@
               v-motion-fade-up
             >
               <img
-                :src="client.client_icon || '/logo-havor.svg'"
+                :src="imageSrc(client.client_icon, defaultClientImage)"
                 :alt="`${client.name} logo`"
                 class="h-12 w-12 shrink-0 rounded-md object-contain"
+                @error="handleImageError($event, defaultClientImage)"
               >
               <div>
                 <h3 class="text-sm font-semibold leading-6 text-[#0e2344]">{{ client.name }}</h3>
@@ -180,7 +182,12 @@
                   class="group relative h-[30rem] w-full shrink-0 overflow-hidden bg-[#08162e] sm:w-1/2 lg:w-1/4"
                   :aria-label="`Open service detail: ${service.title}`"
                 >
-                  <img :src="service.image" :alt="service.title" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]">
+                  <img
+                    :src="imageSrc(service.image, defaultServiceImage)"
+                    :alt="service.title"
+                    class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
+                    @error="handleImageError($event, defaultServiceImage)"
+                  >
                   <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,14,31,0.04)_0%,rgba(4,14,31,0.36)_43%,rgba(4,14,31,0.82)_100%)]"></div>
                   <div class="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
                     <p class="mb-3 max-w-[15rem] truncate text-[0.72rem] font-medium uppercase tracking-normal text-white/78">
@@ -228,9 +235,10 @@
               v-motion-fade-up
             >
               <img
-                :src="project.image_url || defaultProjectImage"
+                :src="imageSrc(project.image_url, defaultProjectImage)"
                 :alt="project.title"
                 class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                @error="handleImageError($event, defaultProjectImage)"
               >
               <div class="p-4">
                 <div class="flex flex-wrap gap-2">
@@ -319,7 +327,12 @@
             :aria-label="`Open news detail: ${article.title}`"
             v-motion-fade-up
           >
-            <img :src="article.image_url" :alt="article.title" class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]">
+            <img
+              :src="imageSrc(article.image_url, defaultNewsImage)"
+              :alt="article.title"
+              class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+              @error="handleImageError($event, defaultNewsImage)"
+            >
             <div class="p-4">
               <p class="brand-meta">{{ article.category }}</p>
               <h3 class="mt-2 line-clamp-2 text-[1.02rem] font-semibold leading-snug text-[#0e2344]">{{ article.title }}</h3>
@@ -361,7 +374,12 @@
             :aria-label="`Discuss campaign: ${campaign.title}`"
             v-motion-fade-up
           >
-            <img :src="campaign.image" :alt="campaign.title" class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]">
+            <img
+              :src="imageSrc(campaign.image, defaultCampaignImage)"
+              :alt="campaign.title"
+              class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+              @error="handleImageError($event, defaultCampaignImage)"
+            >
             <div class="p-4">
               <p class="brand-meta">{{ campaign.category }}</p>
               <h3 class="mt-2 line-clamp-2 text-[1.02rem] font-semibold leading-snug text-[#0e2344]">{{ campaign.title }}</h3>
@@ -505,8 +523,13 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const homeProjectLimit = ref(4)
 const homeNewsLimit = ref(6)
 
-const defaultServiceImage = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80'
-const defaultProjectImage = 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=80'
+const { imageSrc, handleImageError } = useImageFallback()
+const defaultAboutImage = '/images/banner/002.jpg'
+const defaultClientImage = '/logo-havor.svg'
+const defaultServiceImage = '/images/banner/003.jpg'
+const defaultProjectImage = '/images/banner/004.jpg'
+const defaultNewsImage = '/images/banner/005.jpg'
+const defaultCampaignImage = '/images/banner/006.jpg'
 const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').trim()
 const homeHeroBannerPages = ['home', 'services', 'projects', 'media-news', 'careers']
 const bannerImage = (pageName: string, fallback: string) => {
@@ -738,13 +761,19 @@ const showMoreHomeNews = () => {
   homeNewsLimit.value += 3
 }
 
+const fetchHomepageData = async () => {
+  await Promise.allSettled([
+    fetchExpertise(),
+    fetchWorks(),
+    fetchNews(),
+    fetchCampaigns(),
+    fetchClients(),
+    fetchBanners()
+  ])
+}
+
 onMounted(() => {
-  fetchExpertise()
-  fetchWorks()
-  fetchNews()
-  fetchCampaigns()
-  fetchClients()
-  fetchBanners()
+  fetchHomepageData()
   startServiceCarousel()
 })
 
