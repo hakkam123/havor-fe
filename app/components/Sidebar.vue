@@ -9,11 +9,6 @@
           </div>
         </div>
       </div>
-
-      <div class="relative mt-5">
-        <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-        <input type="text" placeholder="Search" class="admin-input pl-11" >
-      </div>
     </div>
 
     <div class="flex-1 space-y-6 px-4 py-5">
