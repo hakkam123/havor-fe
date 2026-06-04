@@ -41,6 +41,12 @@ export default defineNuxtPlugin((nuxtApp) => {
       target.classList.add(revealClass)
     }
 
+    const rect = target.getBoundingClientRect()
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      target.classList.add(visibleClass)
+      return
+    }
+
     observer.observe(target)
   }
 
@@ -55,7 +61,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   const preparePublicSections = () => {
     const sections = document.querySelectorAll<HTMLElement>(
-      '.marketing-shell main > *:not([data-public-hero="true"]), .marketing-shell .brand-section, .marketing-shell .marketing-section, .marketing-shell footer'
+      '.marketing-shell .brand-section, .marketing-shell .marketing-section, .marketing-shell footer'
     )
 
     sections.forEach((section, index) => {

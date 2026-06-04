@@ -9,7 +9,7 @@
         <NuxtLink to="/" class="flex items-center gap-3">
           <span
             class="flex h-10 w-10 items-center justify-center rounded-full border p-1 transition-all duration-300 ease-out"
-            :class="isPastHero ? 'border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]' : 'border-white/25 bg-white/[0.92] shadow-[0_12px_32px_rgba(2,6,23,0.28)]'"
+            :class="isPastHero ? 'border-slate-200 bg-white' : 'border-white/25 bg-white/[0.92]'"
           >
             <img src="/logo-havor.svg" alt="PT Havor SMART Digital" width="32" height="32" class="h-8 w-8 rounded-full object-cover">
           </span>
