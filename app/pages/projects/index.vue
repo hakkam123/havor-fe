@@ -136,6 +136,7 @@ usePageSeo({
 
 const { projectsPage } = useCorporateContent()
 const { works, fetchWorks } = useWorks()
+const { categories: productCategories, fetchCategories: fetchProductCategories } = useCategories({ type: 'Product' })
 const { fetchBannerPage, useBannerPage } = useBanners()
 const projectsBanner = useBannerPage('projects')
 const projectsHeroImage = computed(() => projectsBanner.value.media_url || projectsPage.hero.image)
@@ -147,12 +148,16 @@ const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').
 
 onMounted(() => {
   fetchWorks()
+  fetchProductCategories()
   fetchBannerPage('projects')
 })
 
 const categoryOptions = computed(() => [
   'All categories',
-  ...new Set(works.value.map((project) => project.categoryName).filter(Boolean))
+  ...new Set([
+    ...productCategories.value.map((category) => category.name),
+    ...works.value.map((project) => project.categoryName)
+  ].filter(Boolean))
 ])
 
 const filteredProjects = computed(() => {

@@ -52,17 +52,19 @@
               Auto-refreshes every 30 seconds from the public contact endpoint.
             </p>
           </div>
-          <div class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-            {{ lastSyncedLabel }}
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+              {{ lastSyncedLabel }}
+            </div>
+            <div class="relative min-w-[160px]">
+              <select v-model="messageFilter" class="admin-select py-2 pl-9 text-xs" aria-label="Filter dashboard message status">
+                <option value="all">All Status</option>
+                <option value="unread">Unread</option>
+                <option value="read">Read</option>
+              </select>
+              <Filter class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            </div>
           </div>
-          <button
-            v-if="messageFilter !== 'all'"
-            type="button"
-            class="admin-secondary-btn py-2 text-xs"
-            @click="setDashboardFilter('all')"
-          >
-            Show All
-          </button>
         </div>
 
         <div v-if="isLoading" class="space-y-3 p-5">
@@ -223,7 +225,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { BriefcaseBusiness, Eye, Globe, Inbox, RefreshCw } from 'lucide-vue-next'
+import { BriefcaseBusiness, Eye, Filter, Globe, Inbox, RefreshCw } from 'lucide-vue-next'
 
 const { analytics, readAnalytics } = useLandingAnalytics()
 const { messages, error, isLoading, fetchMessages, markAsRead } = useContact()

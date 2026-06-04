@@ -180,7 +180,7 @@ import { computed, onMounted, ref } from 'vue'
 import { Edit2, ExternalLink, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { products, fetchProducts, createProduct, updateProduct, deleteProduct } = useProducts()
-const { categories, fetchCategories } = useCategories({ type: 'product' })
+const { categories, fetchCategories } = useCategories({ type: 'Product' })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')

@@ -44,9 +44,14 @@
               <p class="text-sm font-semibold text-slate-900">Messages</p>
               <p class="mt-1 text-xs text-[var(--admin-muted)]">Latest customer inquiries</p>
             </div>
-            <button class="admin-icon-btn" type="button" :title="`Current filter: ${messageFilterLabel}`" @click="cycleMessageFilter">
-              <Filter class="h-4 w-4" />
-            </button>
+            <div class="relative w-36">
+              <select v-model="messageFilter" class="admin-select py-2 pl-9 text-xs" aria-label="Filter message status" @change="syncSelectedMessage()">
+                <option value="all">All Status</option>
+                <option value="unread">Unread</option>
+                <option value="read">Read</option>
+              </select>
+              <Filter class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            </div>
           </div>
 
           <div class="custom-scrollbar max-h-[620px] overflow-y-auto">
@@ -148,12 +153,6 @@ const messagesForCurrentFilter = () => {
 
 const filteredMessages = computed(messagesForCurrentFilter)
 
-const messageFilterLabel = computed(() => {
-  if (messageFilter.value === 'unread') return 'Unread'
-  if (messageFilter.value === 'read') return 'Read'
-  return 'All'
-})
-
 const stats = computed(() => [
   { label: 'Total Messages', value: messages.value.length, meta: 'Customer inquiries in inbox', filter: 'all' },
   { label: 'Unread', value: messages.value.filter((msg) => !msg.is_read).length, meta: 'Need your attention', filter: 'unread' },
@@ -165,13 +164,6 @@ const setMessageFilter = (filter) => {
   if (!filter) return
   messageFilter.value = filter
   syncSelectedMessage()
-}
-
-const cycleMessageFilter = () => {
-  const filters = ['all', 'unread', 'read']
-  const currentIndex = filters.indexOf(messageFilter.value)
-  const nextFilter = filters[(currentIndex + 1) % filters.length]
-  setMessageFilter(nextFilter)
 }
 
 const syncSelectedMessage = (preferredId = selectedMessage.value?.id) => {

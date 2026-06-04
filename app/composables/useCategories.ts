@@ -1,38 +1,43 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
-import type { ApiCategory, Category } from '~/types/api'
+import type { ApiCategory, Category, CategoryType } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
-
-type CategoryType = 'news' | 'product'
 
 type UseCategoriesOptions = {
   type?: CategoryType
 }
 
-const isCategoryType = (value: unknown): value is CategoryType => value === 'news' || value === 'product'
+export const CATEGORY_TYPES: CategoryType[] = ['News', 'Career', 'Campaign', 'Product']
 const ALL_CATEGORIES_QUERY_KEY = ['categories'] as const
+
+export const normalizeCategoryType = (value: unknown): CategoryType | null => {
+  const normalizedValue = String(value || '').trim().toLowerCase()
+  return CATEGORY_TYPES.find((type) => type.toLowerCase() === normalizedValue) || null
+}
+
+export const isCategoryType = (value: unknown): value is CategoryType => Boolean(normalizeCategoryType(value))
 
 export const useCategories = (options: UseCategoriesOptions = {}) => {
   const { apiFetch } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
-  const selectedType = computed(() => isCategoryType(options.type) ? options.type : null)
+  const selectedType = computed(() => normalizeCategoryType(options.type))
   const categoriesQueryKey = computed(() => ['categories', { type: selectedType.value }] as const)
 
   const normalizeCategory = (item: ApiCategory): Category => ({
     id: Number(item.id),
     name: String(item.name || ''),
     slug: toSlug(item.name),
-    type: isCategoryType(item.type) ? item.type : 'product'
+    type: normalizeCategoryType(item.type) || 'Product'
   })
 
   const toCategoryPayload = (payload: string | { name: string, type?: CategoryType }) => {
     if (typeof payload === 'string') {
-      return { name: payload, type: selectedType.value || 'product' }
+      return { name: payload, type: selectedType.value || 'Product' }
     }
 
     return {
       name: payload.name,
-      type: payload.type || selectedType.value || 'product'
+      type: normalizeCategoryType(payload.type) || selectedType.value || 'Product'
     }
   }
 
@@ -55,6 +60,8 @@ export const useCategories = (options: UseCategoriesOptions = {}) => {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ALL_CATEGORIES_QUERY_KEY }),
       queryClient.invalidateQueries({ queryKey: ['news'] }),
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] }),
+      queryClient.invalidateQueries({ queryKey: ['careers'] }),
       queryClient.invalidateQueries({ queryKey: ['works'] }),
       queryClient.invalidateQueries({ queryKey: ['products'] })
     ])

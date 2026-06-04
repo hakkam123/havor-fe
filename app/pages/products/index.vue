@@ -105,6 +105,7 @@ usePageSeo({
 })
 
 const { products, isLoading, fetchProducts } = useProducts()
+const { categories: productCategories, fetchCategories: fetchProductCategories } = useCategories({ type: 'Product' })
 const { fetchBanners, useBannerPage } = useBanners()
 const { productsPage } = useCorporateContent()
 const productsBanner = useBannerPage('products', 'product')
@@ -117,12 +118,16 @@ const stripHtml = (value = '') => String(value || '').replace(/<[^>]*>?/gm, '').
 
 onMounted(() => {
   fetchProducts()
+  fetchProductCategories()
   fetchBanners()
 })
 
 const categoryOptions = computed(() => [
   'All categories',
-  ...new Set(products.value.map((product) => product.categoryName || 'Uncategorized'))
+  ...new Set([
+    ...productCategories.value.map((category) => category.name),
+    ...products.value.map((product) => product.categoryName || 'Uncategorized')
+  ].filter(Boolean))
 ])
 
 const filteredProducts = computed(() => {

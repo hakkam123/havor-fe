@@ -8,9 +8,6 @@
             <p class="text-sm font-semibold text-[var(--admin-text)]">Havor CMS</p>
           </div>
         </div>
-        <button class="admin-icon-btn h-8 w-8 rounded-[10px]">
-          <PanelLeftClose class="h-4 w-4" />
-        </button>
       </div>
 
       <div class="relative mt-5">

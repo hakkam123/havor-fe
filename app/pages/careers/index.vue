@@ -519,6 +519,7 @@ usePageSeo({
 
 const { careersPage } = useCorporateContent()
 const { careers, fetchCareers } = useCareers()
+const { categories: careerCategories, fetchCategories: fetchCareerCategories } = useCategories({ type: 'Career' })
 const { fetchBannerPage, useBannerPage } = useBanners()
 const route = useRoute()
 const careersBanner = useBannerPage('careers')
@@ -747,6 +748,7 @@ const validateCareerField = (field) => {
 
 onMounted(() => {
   fetchCareers()
+  fetchCareerCategories()
   fetchBannerPage('careers')
 
   const requestedPosition = String(route.query.position || '')
@@ -776,7 +778,10 @@ const selectedCareerDetail = computed(() => parseCareerDescription(selectedCaree
 
 const categoryOptions = computed(() => [
   'All categories',
-  ...new Set(careers.value.map(roleCategoryFor))
+  ...new Set([
+    ...careerCategories.value.map((category) => category.name),
+    ...careers.value.map(roleCategoryFor)
+  ].filter(Boolean))
 ])
 
 const careerPositionOptions = computed(() => {

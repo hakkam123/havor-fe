@@ -249,6 +249,7 @@ usePageSeo({
 const { company, mediaPage } = useCorporateContent()
 const { news, fetchNews } = useNews()
 const { campaigns, fetchCampaigns } = useCampaigns()
+const { categories: newsCategories, fetchCategories: fetchNewsCategories } = useCategories({ type: 'News' })
 const { fetchBannerPage, useBannerPage } = useBanners()
 const mediaBanner = useBannerPage('media-news', 'news')
 const mediaHeroImage = computed(() => mediaBanner.value.media_url || mediaPage.hero.image)
@@ -259,6 +260,7 @@ const visibleNewsCount = ref(7)
 onMounted(() => {
   fetchNews()
   fetchCampaigns()
+  fetchNewsCategories()
   fetchBannerPage('media-news')
 })
 
@@ -280,7 +282,10 @@ const newsColumns = computed(() => {
 })
 const categoryOptions = computed(() => [
   'All categories',
-  ...new Set(news.value.map((item) => item.category).filter(Boolean))
+  ...new Set([
+    ...newsCategories.value.map((category) => category.name),
+    ...news.value.map((item) => item.category)
+  ].filter(Boolean))
 ])
 const filteredNews = computed(() => {
   const keyword = searchQuery.value.trim().toLowerCase()

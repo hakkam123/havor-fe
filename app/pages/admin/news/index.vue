@@ -25,10 +25,14 @@
             <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input v-model="searchQuery" type="text" placeholder="Search title, slug, or category..." class="admin-input pl-11">
           </div>
-          <button class="admin-secondary-btn py-2 text-xs" type="button" @click="cycleStatusFilter">
-            <Filter class="h-4 w-4" />
-            {{ statusFilterLabel }}
-          </button>
+          <div class="relative min-w-[180px]">
+            <select v-model="statusFilter" class="admin-select py-2 pl-9 text-xs" aria-label="Filter news status">
+              <option value="all">All Status</option>
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+            </select>
+            <Filter class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          </div>
         </div>
         <div class="text-sm text-slate-500">Showing {{ filteredNews.length }} entries</div>
       </div>
@@ -180,7 +184,7 @@ import { computed, onMounted, ref } from 'vue'
 import { Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { news: newsItems, fetchNews, createNews, updateNews, deleteNews } = useNews({ includeDrafts: true })
-const { categories: newsCategories, fetchCategories } = useCategories({ type: 'news' })
+const { categories: newsCategories, fetchCategories } = useCategories({ type: 'News' })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
@@ -228,18 +232,6 @@ const filteredNews = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
-
-const statusFilterLabel = computed(() => {
-  if (statusFilter.value === 'published') return 'Published'
-  if (statusFilter.value === 'draft') return 'Draft'
-  return 'All Status'
-})
-
-const cycleStatusFilter = () => {
-  const filters = ['all', 'published', 'draft']
-  const currentIndex = filters.indexOf(statusFilter.value)
-  statusFilter.value = filters[(currentIndex + 1) % filters.length]
-}
 
 const stats = computed(() => [
   { label: 'Total Articles', value: newsItems.value.length, meta: 'Editorial entries in workspace' },

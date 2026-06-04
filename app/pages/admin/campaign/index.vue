@@ -25,9 +25,19 @@
 
     <section class="admin-table-shell">
       <div class="admin-toolbar">
-        <div class="relative min-w-0 xl:w-[320px]">
-          <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input v-model="searchQuery" type="text" placeholder="Search campaign, slug, or category..." class="admin-input pl-11">
+        <div class="flex flex-col gap-3 xl:flex-row xl:items-center">
+          <div class="relative min-w-0 xl:w-[320px]">
+            <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input v-model="searchQuery" type="text" placeholder="Search campaign, slug, or category..." class="admin-input pl-11">
+          </div>
+          <div class="relative min-w-[180px]">
+            <select v-model="statusFilter" class="admin-select py-2 pl-9 text-xs" aria-label="Filter campaign status">
+              <option value="all">All Status</option>
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+            </select>
+            <Filter class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          </div>
         </div>
         <div class="text-sm text-slate-500">Showing {{ filteredCampaigns.length }} entries</div>
       </div>
@@ -176,13 +186,14 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { Edit2, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
+import { Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { campaigns, error, fetchCampaigns, createCampaign, updateCampaign, deleteCampaign } = useCampaigns({ includeDrafts: true })
-const { categories: newsCategories, fetchCategories } = useCategories({ type: 'news' })
+const { categories: campaignCategories, fetchCategories } = useCategories({ type: 'Campaign' })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
+const statusFilter = ref('all')
 const isSaving = ref(false)
 const isDeleting = ref(false)
 const formError = ref('')
@@ -202,15 +213,21 @@ const form = ref({
 })
 
 const categoryOptions = computed(() => {
-  const options = newsCategories.value.map((category) => category.name).filter(Boolean)
+  const options = campaignCategories.value.map((category) => category.name).filter(Boolean)
   return options.length ? options : ['Digital Readiness', 'Implementation Support', 'Long-Term Partnership']
 })
 
 const filteredCampaigns = computed(() => {
-  if (!searchQuery.value) return campaigns.value
+  const statusItems = campaigns.value.filter((item) => {
+    if (statusFilter.value === 'published') return item.is_published
+    if (statusFilter.value === 'draft') return !item.is_published
+    return true
+  })
+
+  if (!searchQuery.value) return statusItems
 
   const query = searchQuery.value.toLowerCase()
-  return campaigns.value.filter((item) =>
+  return statusItems.filter((item) =>
     [item.title, item.slug, item.category]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query))

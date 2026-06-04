@@ -23,14 +23,16 @@ export type Banner = {
 export type ApiCategory = {
   id: ApiId
   name?: string | null
-  type?: 'news' | 'product' | string | null
+  type?: CategoryType | string | null
 }
+
+export type CategoryType = 'News' | 'Career' | 'Campaign' | 'Product'
 
 export type Category = {
   id: number
   name: string
   slug: string
-  type: 'news' | 'product'
+  type: CategoryType
 }
 
 export type ApiClient = {

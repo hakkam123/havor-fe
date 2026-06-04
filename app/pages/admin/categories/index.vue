@@ -5,13 +5,8 @@
         <div>
           <p class="admin-kicker">Taxonomy</p>
           <h1 class="admin-title">Content Categories</h1>
-          <p class="admin-copy">Maintain category labels by scope so product and editorial content stay cleanly separated.</p>
+          <p class="admin-copy">Maintain fixed category groups for news, careers, campaigns, and products.</p>
         </div>
-
-        <button @click="openModal()" class="admin-primary-btn">
-          <Plus class="h-4 w-4" />
-          Create Category
-        </button>
       </div>
 
       <div class="admin-stat-grid mt-6">
@@ -25,53 +20,66 @@
 
     <section class="admin-table-shell">
       <div class="admin-toolbar">
-        <div class="relative min-w-0 xl:w-[320px]">
+        <div class="relative min-w-0 xl:w-[360px]">
           <Search class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input v-model="searchQuery" type="text" placeholder="Search category or slug..." class="admin-input pl-11">
         </div>
         <div class="text-sm text-slate-500">Showing {{ filteredCategories.length }} entries</div>
       </div>
+    </section>
 
-      <div class="custom-scrollbar overflow-x-auto">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Slug</th>
-              <th class="text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in filteredCategories" :key="item.id">
-              <td class="font-semibold text-slate-900">{{ item.name }}</td>
-              <td><span class="admin-badge capitalize">{{ item.type }}</span></td>
-              <td><span class="admin-badge">{{ item.slug }}</span></td>
-              <td>
-                <div class="flex items-center justify-end gap-2">
-                  <button @click="openModal(item)" class="admin-icon-btn" :aria-label="`Edit ${item.name}`">
-                    <Edit2 class="h-4 w-4" />
-                  </button>
-                  <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" :aria-label="`Delete ${item.name}`">
-                    <Trash2 class="h-4 w-4" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr v-if="!filteredCategories.length">
-              <td colspan="4" class="admin-empty-state">
-                {{ error ? error : 'No categories found.' }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <section class="grid gap-6 xl:grid-cols-2">
+      <article v-for="section in categorySections" :key="section.type" class="admin-table-shell">
+        <div class="admin-toolbar">
+          <div>
+            <p class="text-sm font-semibold text-slate-900">{{ section.title }}</p>
+            <p class="mt-1 text-xs text-[var(--admin-muted)]">{{ section.description }}</p>
+          </div>
+          <button type="button" class="admin-primary-btn" @click="openModal(null, section.type)">
+            <Plus class="h-4 w-4" />
+            {{ section.createLabel }}
+          </button>
+        </div>
+
+        <div class="custom-scrollbar overflow-x-auto">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in categoriesByType(section.type)" :key="item.id">
+                <td class="font-semibold text-slate-900">{{ item.name }}</td>
+                <td><span class="admin-badge">{{ item.slug }}</span></td>
+                <td>
+                  <div class="flex items-center justify-end gap-2">
+                    <button @click="openModal(item, section.type)" class="admin-icon-btn" :aria-label="`Edit ${item.name}`">
+                      <Edit2 class="h-4 w-4" />
+                    </button>
+                    <button @click="handleDelete(item.id)" class="admin-icon-btn hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600" :aria-label="`Delete ${item.name}`">
+                      <Trash2 class="h-4 w-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="!categoriesByType(section.type).length">
+                <td colspan="3" class="admin-empty-state">
+                  {{ error ? error : `No ${section.type.toLowerCase()} categories found.` }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
     </section>
 
     <AdminModal
       v-model="isModalOpen"
       kicker="Taxonomy Form"
-      :title="form.id ? 'Edit Category' : 'Create Category'"
+      :title="form.id ? 'Edit Category' : `Create ${form.type} Category`"
       max-width-class="max-w-2xl"
       :can-close="!isSaving"
     >
@@ -82,9 +90,8 @@
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-600">Type <span class="text-rose-500">*</span></label>
-          <select v-model="form.type" class="admin-select">
-            <option value="news">News</option>
-            <option value="product">Product</option>
+          <select v-model="form.type" class="admin-select" :disabled="!form.id">
+            <option v-for="type in categoryTypes" :key="type" :value="type">{{ type }}</option>
           </select>
         </div>
         <div>
@@ -125,6 +132,34 @@
 import { computed, onMounted, ref } from 'vue'
 import { Edit2, Plus, Search, Trash2 } from 'lucide-vue-next'
 
+const categoryTypes = ['News', 'Career', 'Campaign', 'Product']
+const categorySections = [
+  {
+    type: 'News',
+    title: 'Categories for News',
+    description: 'Editorial labels used by media and news articles.',
+    createLabel: 'Create News Category'
+  },
+  {
+    type: 'Career',
+    title: 'Categories for Career',
+    description: 'Role grouping labels for career-related surfaces.',
+    createLabel: 'Create Career Category'
+  },
+  {
+    type: 'Campaign',
+    title: 'Categories for Campaign',
+    description: 'Campaign labels used by public campaign content.',
+    createLabel: 'Create Campaign Category'
+  },
+  {
+    type: 'Product',
+    title: 'Categories for Product',
+    description: 'Catalog grouping labels for products and related work entries.',
+    createLabel: 'Create Product Category'
+  }
+]
+
 const { categories, error, fetchCategories, createCategory, updateCategory, deleteCategory } = useCategories()
 const { products, fetchProducts } = useProducts()
 const { news: newsItems, fetchNews } = useNews({ includeDrafts: true })
@@ -135,12 +170,8 @@ const searchQuery = ref('')
 const formError = ref('')
 const isSaving = ref(false)
 const isDeleting = ref(false)
-const successState = ref({
-  open: false,
-  title: '',
-  message: ''
-})
-const form = ref({ id: null, name: '', type: 'product' })
+const successState = ref({ open: false, title: '', message: '' })
+const form = ref({ id: null, name: '', type: 'Product' })
 const deleteState = ref({ open: false, id: null, name: '' })
 
 const toSlug = (value = '') =>
@@ -151,23 +182,26 @@ const toSlug = (value = '') =>
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
 
+const isValidCategoryType = (type) => categoryTypes.includes(type)
+
 const filteredCategories = computed(() => {
   if (!searchQuery.value) return categories.value
 
   const query = searchQuery.value.toLowerCase()
   return categories.value.filter((item) =>
-    [item.name, item.slug]
+    [item.name, item.slug, item.type]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
 
-const stats = computed(() => [
-  { label: 'Total Categories', value: categories.value.length, meta: 'Shared labels returned from the API' },
-  { label: 'News Categories', value: categories.value.filter((item) => item.type === 'news').length, meta: 'Editorial and campaign labels' },
-  { label: 'Product Categories', value: categories.value.filter((item) => item.type === 'product').length, meta: 'Product catalog labels' },
-  { label: 'Search Results', value: filteredCategories.value.length, meta: 'Current filtered category count' }
-])
+const categoriesByType = (type) => filteredCategories.value.filter((item) => item.type === type)
+
+const stats = computed(() => categorySections.map((section) => ({
+  label: section.title,
+  value: categories.value.filter((item) => item.type === section.type).length,
+  meta: section.description
+})))
 
 onMounted(() => {
   fetchCategories()
@@ -176,11 +210,12 @@ onMounted(() => {
   fetchCampaigns()
 })
 
-const openModal = (item = null) => {
+const openModal = (item = null, type = 'Product') => {
+  const selectedType = isValidCategoryType(item?.type) ? item.type : type
   formError.value = ''
   form.value = item
-    ? { id: item.id, name: item.name || '', type: item.type || 'product' }
-    : { id: null, name: '', type: 'product' }
+    ? { id: item.id, name: item.name || '', type: selectedType }
+    : { id: null, name: '', type: isValidCategoryType(selectedType) ? selectedType : 'Product' }
 
   isModalOpen.value = true
 }
@@ -198,15 +233,21 @@ const saveCategory = async () => {
     return
   }
 
+  if (!isValidCategoryType(form.value.type)) {
+    formError.value = 'Category type must be News, Career, Campaign, or Product.'
+    return
+  }
+
   isSaving.value = true
 
   try {
     const isEditing = Boolean(form.value.id)
+    const payload = { name: form.value.name.trim(), type: form.value.type }
 
     if (isEditing) {
-      await updateCategory(form.value.id, { name: form.value.name, type: form.value.type })
+      await updateCategory(form.value.id, payload)
     } else {
-      await createCategory({ name: form.value.name, type: form.value.type })
+      await createCategory(payload)
     }
 
     isModalOpen.value = false
@@ -215,11 +256,11 @@ const saveCategory = async () => {
       title: isEditing ? 'Category updated' : 'Category created',
       message: isEditing
         ? 'The category changes have been saved successfully.'
-        : 'The new category has been added successfully.'
+        : `${form.value.type} category has been added successfully.`
     }
   } catch (error) {
     const fieldErrors = getApiFieldErrors(error)
-    formError.value = fieldErrors.name || getApiErrorMessage(error)
+    formError.value = fieldErrors.name || fieldErrors.type || getApiErrorMessage(error)
   } finally {
     isSaving.value = false
   }
@@ -229,9 +270,9 @@ const categoryUsageMessage = (id) => {
   const category = categories.value.find((item) => item.id === id)
   if (!category) return ''
 
-  const usedByProduct = products.value.some((product) => String(product.categoryId) === String(id) || product.categoryName === category.name)
-  const usedByNews = newsItems.value.some((news) => news.category === category.name)
-  const usedByCampaign = campaigns.value.some((campaign) => campaign.category === category.name)
+  const usedByProduct = category.type === 'Product' && products.value.some((product) => String(product.categoryId) === String(id) || product.categoryName === category.name)
+  const usedByNews = category.type === 'News' && newsItems.value.some((news) => news.category === category.name)
+  const usedByCampaign = category.type === 'Campaign' && campaigns.value.some((campaign) => campaign.category === category.name)
 
   if (!usedByProduct && !usedByNews && !usedByCampaign) return ''
 
