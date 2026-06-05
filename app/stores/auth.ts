@@ -41,9 +41,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   const getApiBase = () => {
     const apiBase = String(config.public.apiBase || '').replace(/\/+$/, '')
+    const serverApiBase = String(config.apiServerBase || '').replace(/\/+$/, '')
 
     if (!apiBase) {
       throw new Error('NUXT_PUBLIC_API_BASE is not configured')
+    }
+
+    if (import.meta.server && apiBase.startsWith('/') && serverApiBase) {
+      return serverApiBase
     }
 
     return apiBase

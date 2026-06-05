@@ -46,6 +46,7 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/tailwind.css'],
   runtimeConfig: {
+    apiServerBase: process.env.NUXT_API_SERVER_BASE || legacyApiEndpoint || '',
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || legacyApiEndpoint || defaultApiBase,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || '',

@@ -95,8 +95,8 @@
 
       <AdminPagination
         v-model:page="currentPage"
-        :total="filteredProducts.length"
-        :page-size="pageSize"
+        v-model:page-size="pageSize"
+        :total="paginationMeta.total"
         label="products"
       />
     </section>
@@ -183,10 +183,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { Edit2, ExternalLink, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
-const { products, fetchProducts, createProduct, updateProduct, deleteProduct } = useProducts()
+const { products, paginationMeta, fetchProducts, createProduct, updateProduct, deleteProduct } = useProducts({ immediate: false })
 const { categories, fetchCategories } = useCategories({ type: 'Product' })
 
 const isModalOpen = ref(false)
@@ -227,16 +228,27 @@ const filteredProducts = computed(() => {
 
 const { currentPage, pageSize, paginatedItems: paginatedProducts } = useAdminPagination(filteredProducts)
 
+const fetchProductPage = () => fetchProducts({
+  page: currentPage.value,
+  limit: pageSize.value,
+  search: searchQuery.value.trim(),
+  categoryId: selectedCategoryId.value
+})
+
 const stats = computed(() => [
-  { label: 'Total Products', value: products.value.length, meta: 'Catalog entries in workspace' },
+  { label: 'Total Products', value: paginationMeta.value.total, meta: 'Catalog entries in workspace' },
   { label: 'Linked Products', value: products.value.filter((item) => item.external_link).length, meta: 'Connected to external destination' },
   { label: 'With Images', value: products.value.filter((item) => item.image_url).length, meta: 'Ready for visual listing' },
   { label: 'Categories', value: categories.value.length, meta: 'Available category groups' }
 ])
 
 onMounted(async () => {
-  await Promise.all([fetchProducts(), fetchCategories()])
+  await fetchCategories()
 })
+
+watch([currentPage, pageSize, searchQuery, selectedCategoryId], () => {
+  fetchProductPage()
+}, { immediate: true })
 
 const openModal = (item = null) => {
   form.value = item
@@ -301,6 +313,7 @@ const saveProduct = async () => {
     }
 
     isModalOpen.value = false
+    await fetchProductPage()
     successState.value = {
       open: true,
       title: isEditing ? 'Product updated' : 'Product created',
@@ -328,6 +341,7 @@ const confirmDelete = async () => {
   try {
     await deleteProduct(deleteState.value.id)
     deleteState.value = { open: false, id: null, name: '' }
+    await fetchProductPage()
   } finally {
     isDeleting.value = false
   }

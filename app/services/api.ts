@@ -19,6 +19,11 @@ const getApiBaseUrl = () => {
   const legacyApiBaseUrl = String(import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
   const legacyApiEndpoint = legacyApiBaseUrl.endsWith('/api') ? legacyApiBaseUrl : `${legacyApiBaseUrl}/api`
   const apiBaseUrl = String(config.public.apiBase || (legacyApiBaseUrl ? legacyApiEndpoint : '/havor/api')).replace(/\/+$/, '')
+  const serverApiBaseUrl = String(config.apiServerBase || '').replace(/\/+$/, '')
+
+  if (import.meta.server && apiBaseUrl.startsWith('/') && serverApiBaseUrl) {
+    return serverApiBaseUrl
+  }
 
   if (!apiBaseUrl) {
     throw new PublicApiError('API endpoint is not configured. Please contact the administrator.', 0)

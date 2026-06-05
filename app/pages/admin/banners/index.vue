@@ -63,8 +63,8 @@
 
       <AdminPagination
         v-model:page="currentPage"
-        :total="banners.length"
-        :page-size="pageSize"
+        v-model:page-size="pageSize"
+        :total="paginationMeta.total"
         label="banners"
       />
     </section>
@@ -131,10 +131,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { BadgeInfo, Edit2, Upload } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
-const { banners, fetchBanners, createBanner, updateBanner } = useBanners()
+const { banners, paginationMeta, fetchBanners, createBanner, updateBanner } = useBanners({ immediate: false })
 const isModalOpen = ref(false)
 const isSaving = ref(false)
 const formError = ref('')
@@ -157,16 +158,21 @@ const form = ref({
 
 const { currentPage, pageSize, paginatedItems: paginatedBanners } = useAdminPagination(banners, 9)
 
+const fetchBannerPage = () => fetchBanners({
+  page: currentPage.value,
+  limit: pageSize.value
+})
+
 const stats = computed(() => [
-  { label: 'Total Banners', value: banners.value.length, meta: 'Media items in workspace' },
+  { label: 'Total Banners', value: paginationMeta.value.total, meta: 'Media items in workspace' },
   { label: 'Image Banners', value: banners.value.filter((item) => item.media_type === 'image').length, meta: 'Static hero visuals' },
   { label: 'Video Banners', value: banners.value.filter((item) => item.media_type === 'video').length, meta: 'Motion hero visuals' },
   { label: 'Pages Covered', value: new Set(banners.value.map((item) => item.page_name).filter(Boolean)).size, meta: 'Distinct banner destinations' }
 ])
 
-onMounted(() => {
-  fetchBanners()
-})
+watch([currentPage, pageSize], () => {
+  fetchBannerPage()
+}, { immediate: true })
 
 const openModal = (item = null) => {
   form.value = item
@@ -243,6 +249,7 @@ const saveBanner = async () => {
     }
 
     isModalOpen.value = false
+    await fetchBannerPage()
     successState.value = {
       open: true,
       title: isEditing ? 'Banner updated' : 'Banner created',

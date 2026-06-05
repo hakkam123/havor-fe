@@ -1,14 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiWork, Work } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
-import { toApiArray } from '~/utils/apiData'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 const WORKS_QUERY_KEY = ['works'] as const
 
-export const useWorks = () => {
+type UseWorksOptions = {
+  immediate?: boolean
+}
+
+type WorkListParams = {
+  page?: number
+  limit?: number
+  search?: string
+  categoryId?: string | number
+  category?: string
+}
+
+export const useWorks = (options: UseWorksOptions = {}) => {
   const { apiFetch, resolveAssetUrl } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
 
   const normalizeWork = (item: ApiWork): Work => ({
     id: Number(item.id),
@@ -22,18 +36,20 @@ export const useWorks = () => {
     categoryName: String(item.categoryName ?? item.category_name ?? '')
   })
 
-  const loadWorks = async () => {
-    const res = await apiFetch<unknown>('/works')
+  const loadWorks = async (params: WorkListParams = {}) => {
+    const res = await apiFetch<unknown>(`/works${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
     return toApiArray<ApiWork>(res).map(normalizeWork)
   }
 
   const worksQuery = useQuery({
     queryKey: WORKS_QUERY_KEY,
-    queryFn: loadWorks
+    queryFn: () => loadWorks(),
+    enabled: options.immediate !== false
   })
 
   const works = computed(() => worksQuery.data.value || [])
-  const isLoading = computed(() => worksQuery.isLoading.value || worksQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || worksQuery.isLoading.value || worksQuery.isFetching.value)
   const error = computed(() => mutationError.value || (worksQuery.error.value ? 'Unable to load works right now.' : null))
 
   const toWorkFormData = (payload: any) => toFormData({
@@ -45,17 +61,19 @@ export const useWorks = () => {
     image_url: payload.imageFile ?? payload.image_url
   })
 
-  const fetchWorks = async () => {
+  const fetchWorks = async (params: WorkListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: WORKS_QUERY_KEY,
-        queryFn: loadWorks
-      })
+      const items = await loadWorks(params)
+      queryClient.setQueryData(WORKS_QUERY_KEY, items)
+      return items
     } catch (fetchError) {
       console.error('Failed to fetch works', fetchError)
       mutationError.value = 'Unable to load works right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -111,6 +129,7 @@ export const useWorks = () => {
     works,
     isLoading,
     error,
+    paginationMeta,
     fetchWorks,
     createWork,
     updateWork,

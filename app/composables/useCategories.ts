@@ -1,9 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiCategory, Category, CategoryType } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
+import { toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 type UseCategoriesOptions = {
   type?: CategoryType
+  immediate?: boolean
+}
+
+type CategoryListParams = {
+  page?: number
+  limit?: number
+  search?: string
 }
 
 export const CATEGORY_TYPES: CategoryType[] = ['News', 'Career', 'Campaign', 'Product']
@@ -20,6 +28,8 @@ export const useCategories = (options: UseCategoriesOptions = {}) => {
   const { apiFetch } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
   const selectedType = computed(() => normalizeCategoryType(options.type))
   const categoriesQueryKey = computed(() => ['categories', { type: selectedType.value }] as const)
 
@@ -41,19 +51,30 @@ export const useCategories = (options: UseCategoriesOptions = {}) => {
     }
   }
 
-  const loadCategories = async () => {
-    const query = selectedType.value ? `?type=${selectedType.value}` : ''
-    const res = await apiFetch<ApiCategory[]>(`/categories${query}`)
-    return (res || []).map(normalizeCategory)
+  const loadCategories = async (params: CategoryListParams = {}) => {
+    const query = toQueryString({
+      ...params,
+      type: selectedType.value || undefined
+    })
+    const res = await apiFetch<unknown>(`/categories${query}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
+    const items = Array.isArray(res)
+      ? res
+      : res && typeof res === 'object' && Array.isArray((res as { data?: unknown }).data)
+        ? (res as { data: ApiCategory[] }).data
+        : []
+
+    return items.map(normalizeCategory)
   }
 
   const categoriesQuery = useQuery({
     queryKey: categoriesQueryKey.value,
-    queryFn: loadCategories
+    queryFn: () => loadCategories(),
+    enabled: options.immediate !== false
   })
 
   const categories = computed(() => categoriesQuery.data.value || [])
-  const isLoading = computed(() => categoriesQuery.isLoading.value || categoriesQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || categoriesQuery.isLoading.value || categoriesQuery.isFetching.value)
   const error = computed(() => mutationError.value || (categoriesQuery.error.value ? 'Unable to load categories right now.' : null))
 
   const invalidateCategories = async () => {
@@ -67,17 +88,19 @@ export const useCategories = (options: UseCategoriesOptions = {}) => {
     ])
   }
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (params: CategoryListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: categoriesQueryKey.value,
-        queryFn: loadCategories
-      })
+      const items = await loadCategories(params)
+      queryClient.setQueryData(categoriesQueryKey.value, items)
+      return items
     } catch (fetchError) {
       console.error(fetchError)
       mutationError.value = 'Unable to load categories right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -123,5 +146,5 @@ export const useCategories = (options: UseCategoriesOptions = {}) => {
     return deleteCategoryMutation.mutateAsync(id)
   }
 
-  return { categories, isLoading, error, fetchCategories, createCategory, updateCategory, deleteCategory }
+  return { categories, isLoading, error, paginationMeta, fetchCategories, createCategory, updateCategory, deleteCategory }
 }

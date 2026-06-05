@@ -80,8 +80,8 @@
 
       <AdminPagination
         v-model:page="currentPage"
-        :total="filteredClients.length"
-        :page-size="pageSize"
+        v-model:page-size="pageSize"
+        :total="paginationMeta.total"
         label="clients"
       />
     </section>
@@ -152,10 +152,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Building2, Edit2, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
-const { clients, error, fetchClients, createClient, updateClient, deleteClient } = useClients()
+const { clients, error, paginationMeta, fetchClients, createClient, updateClient, deleteClient } = useClients({ immediate: false })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
@@ -183,9 +184,15 @@ const filteredClients = computed(() => {
 
 const { currentPage, pageSize, paginatedItems: paginatedClients } = useAdminPagination(filteredClients)
 
-onMounted(() => {
-  fetchClients()
+const fetchClientPage = () => fetchClients({
+  page: currentPage.value,
+  limit: pageSize.value,
+  search: searchQuery.value.trim()
 })
+
+watch([currentPage, pageSize, searchQuery], () => {
+  fetchClientPage()
+}, { immediate: true })
 
 const emptyForm = () => ({
   id: null,
@@ -253,6 +260,7 @@ const saveClient = async () => {
     }
 
     isModalOpen.value = false
+    await fetchClientPage()
     successState.value = {
       open: true,
       title: isEditing ? 'Client updated' : 'Client created',
@@ -280,6 +288,7 @@ const confirmDelete = async () => {
   try {
     await deleteClient(deleteState.value.id)
     deleteState.value = { open: false, id: null, name: '' }
+    await fetchClientPage()
   } finally {
     isDeleting.value = false
   }

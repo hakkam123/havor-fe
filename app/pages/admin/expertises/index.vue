@@ -68,8 +68,8 @@
 
       <AdminPagination
         v-model:page="currentPage"
-        :total="filteredExpertises.length"
-        :page-size="pageSize"
+        v-model:page-size="pageSize"
+        :total="paginationMeta.total"
         label="expertises"
       />
     </section>
@@ -148,8 +148,9 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Cpu, Edit2, Plus, Search, ShieldCheck, Smartphone, Star, Trash2, Upload, Wifi } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
 const iconMap = {
   Cpu,
@@ -161,7 +162,7 @@ const iconMap = {
 const getIcon = (name) => iconMap[name] || Star
 const hasBuiltinIcon = (name) => Boolean(name && iconMap[name])
 
-const { expertise: expertises, fetchExpertise, createExpertise, updateExpertise, deleteExpertise } = useExpertise()
+const { expertise: expertises, paginationMeta, fetchExpertise, createExpertise, updateExpertise, deleteExpertise } = useExpertise({ immediate: false })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
@@ -200,16 +201,22 @@ const filteredExpertises = computed(() => {
 
 const { currentPage, pageSize, paginatedItems: paginatedExpertises } = useAdminPagination(filteredExpertises)
 
+const fetchExpertisePage = () => fetchExpertise({
+  page: currentPage.value,
+  limit: pageSize.value,
+  search: searchQuery.value.trim()
+})
+
 const stats = computed(() => [
-  { label: 'Total Expertise', value: expertises.value.length, meta: 'Capabilities in the service list' },
+  { label: 'Total Expertise', value: paginationMeta.value.total, meta: 'Capabilities in the service list' },
   { label: 'With Icon', value: expertises.value.filter((item) => item.icon_url).length, meta: 'Ready for visual display' },
   { label: 'Built-in Icons', value: expertises.value.filter((item) => hasBuiltinIcon(item.icon_url)).length, meta: 'Using existing icon set' },
   { label: 'Search Results', value: filteredExpertises.value.length, meta: 'Current filtered expertise count' }
 ])
 
-onMounted(() => {
-  fetchExpertise()
-})
+watch([currentPage, pageSize, searchQuery], () => {
+  fetchExpertisePage()
+}, { immediate: true })
 
 const openModal = (item = null) => {
   form.value = item
@@ -268,6 +275,7 @@ const saveExpertiseItem = async () => {
     }
 
     isModalOpen.value = false
+    await fetchExpertisePage()
     successState.value = {
       open: true,
       title: isEditing ? 'Expertise updated' : 'Expertise created',
@@ -295,6 +303,7 @@ const confirmDelete = async () => {
   try {
     await deleteExpertise(deleteState.value.id)
     deleteState.value = { open: false, id: null, name: '' }
+    await fetchExpertisePage()
   } finally {
     isDeleting.value = false
   }

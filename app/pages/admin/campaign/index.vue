@@ -94,8 +94,8 @@
 
       <AdminPagination
         v-model:page="currentPage"
-        :total="filteredCampaigns.length"
-        :page-size="pageSize"
+        v-model:page-size="pageSize"
+        :total="paginationMeta.total"
         label="campaigns"
       />
     </section>
@@ -192,10 +192,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
-const { campaigns, error, fetchCampaigns, createCampaign, updateCampaign, deleteCampaign } = useCampaigns({ includeDrafts: true })
+const { campaigns, error, paginationMeta, fetchCampaigns, createCampaign, updateCampaign, deleteCampaign } = useCampaigns({ includeDrafts: true, immediate: false })
 const { categories: campaignCategories, fetchCategories } = useCategories({ type: 'Campaign' })
 
 const isModalOpen = ref(false)
@@ -243,8 +244,15 @@ const filteredCampaigns = computed(() => {
 
 const { currentPage, pageSize, paginatedItems: paginatedCampaigns } = useAdminPagination(filteredCampaigns)
 
+const fetchCampaignPage = () => fetchCampaigns({
+  page: currentPage.value,
+  limit: pageSize.value,
+  search: searchQuery.value.trim(),
+  status: statusFilter.value
+})
+
 const stats = computed(() => [
-  { label: 'Total Campaigns', value: campaigns.value.length, meta: 'Campaign entries in workspace' },
+  { label: 'Total Campaigns', value: paginationMeta.value.total, meta: 'Campaign entries in workspace' },
   { label: 'Published', value: campaigns.value.filter((item) => item.is_published).length, meta: 'Visible on public pages' },
   { label: 'Drafts', value: campaigns.value.filter((item) => !item.is_published).length, meta: 'Waiting for approval' },
   { label: 'With Image', value: campaigns.value.filter((item) => item.image_url).length, meta: 'Ready for homepage highlight' }
@@ -328,6 +336,7 @@ const saveForm = async () => {
     }
 
     isModalOpen.value = false
+    await fetchCampaignPage()
     successState.value = {
       open: true,
       title: isEditing ? 'Campaign updated' : 'Campaign created',
@@ -355,13 +364,17 @@ const confirmDelete = async () => {
   try {
     await deleteCampaign(deleteState.value.id)
     deleteState.value = { open: false, id: null, name: '' }
+    await fetchCampaignPage()
   } finally {
     isDeleting.value = false
   }
 }
 
 onMounted(() => {
-  fetchCampaigns()
   fetchCategories()
 })
+
+watch([currentPage, pageSize, searchQuery, statusFilter], () => {
+  fetchCampaignPage()
+}, { immediate: true })
 </script>

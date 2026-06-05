@@ -1,14 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiBanner, Banner } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
-import { toApiArray } from '~/utils/apiData'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 const BANNERS_QUERY_KEY = ['banners'] as const
 
-export const useBanners = () => {
+type UseBannersOptions = {
+  immediate?: boolean
+}
+
+type BannerListParams = {
+  page?: number
+  limit?: number
+  search?: string
+}
+
+export const useBanners = (options: UseBannersOptions = {}) => {
   const { apiFetch, resolveAssetUrl } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
   const pageBanners = ref<Record<string, Banner>>({})
 
   const normalizePageName = (value?: string | null) =>
@@ -34,18 +46,20 @@ export const useBanners = () => {
 
   const bannerPageQueryKey = (pageName: string) => ['banners', 'page', normalizePageName(pageName)] as const
 
-  const loadBanners = async () => {
-    const res = await apiFetch<unknown>('/banners')
+  const loadBanners = async (params: BannerListParams = {}) => {
+    const res = await apiFetch<unknown>(`/banners${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
     return toApiArray<ApiBanner>(res).map(normalizeBanner)
   }
 
   const bannersQuery = useQuery({
     queryKey: BANNERS_QUERY_KEY,
-    queryFn: loadBanners
+    queryFn: () => loadBanners(),
+    enabled: options.immediate !== false
   })
 
   const banners = computed(() => bannersQuery.data.value || [])
-  const isLoading = computed(() => bannersQuery.isLoading.value || bannersQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || bannersQuery.isLoading.value || bannersQuery.isFetching.value)
   const error = computed(() => mutationError.value || (bannersQuery.error.value ? 'Unable to load banners right now.' : null))
 
   watch(
@@ -77,19 +91,20 @@ export const useBanners = () => {
 
   const useBannerPage = (...pageNames: string[]) => computed(() => findBannerByPage(...pageNames))
 
-  const fetchBanners = async () => {
+  const fetchBanners = async (params: BannerListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      const items = await queryClient.fetchQuery({
-        queryKey: BANNERS_QUERY_KEY,
-        queryFn: loadBanners
-      })
+      const items = await loadBanners(params)
+      queryClient.setQueryData(BANNERS_QUERY_KEY, items)
       items.forEach(setPageBanner)
       return items
     } catch (fetchError) {
       console.error('Failed to fetch banners', fetchError)
       mutationError.value = 'Unable to load banners right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -188,6 +203,7 @@ export const useBanners = () => {
     banners,
     isLoading,
     error,
+    paginationMeta,
     fetchBanners,
     fetchBannerPage,
     findBannerByPage,

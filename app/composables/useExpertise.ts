@@ -1,14 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiExpertise, Expertise } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
-import { toApiArray } from '~/utils/apiData'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 const EXPERTISE_QUERY_KEY = ['expertise'] as const
 
-export const useExpertise = () => {
+type UseExpertiseOptions = {
+  immediate?: boolean
+}
+
+type ExpertiseListParams = {
+  page?: number
+  limit?: number
+  search?: string
+}
+
+export const useExpertise = (options: UseExpertiseOptions = {}) => {
   const { apiFetch, resolveAssetUrl } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
 
   const normalizeExpertise = (item: ApiExpertise): Expertise => ({
     id: Number(item.id),
@@ -18,18 +30,20 @@ export const useExpertise = () => {
     icon_url: resolveAssetUrl(item.icon_url)
   })
 
-  const loadExpertise = async () => {
-    const res = await apiFetch<unknown>('/expertise')
+  const loadExpertise = async (params: ExpertiseListParams = {}) => {
+    const res = await apiFetch<unknown>(`/expertise${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
     return toApiArray<ApiExpertise>(res).map(normalizeExpertise)
   }
 
   const expertiseQuery = useQuery({
     queryKey: EXPERTISE_QUERY_KEY,
-    queryFn: loadExpertise
+    queryFn: () => loadExpertise(),
+    enabled: options.immediate !== false
   })
 
   const expertise = computed(() => expertiseQuery.data.value || [])
-  const isLoading = computed(() => expertiseQuery.isLoading.value || expertiseQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || expertiseQuery.isLoading.value || expertiseQuery.isFetching.value)
   const error = computed(() => mutationError.value || (expertiseQuery.error.value ? 'Unable to load expertise right now.' : null))
 
   const toExpertiseFormData = (payload: any) => toFormData({
@@ -38,17 +52,19 @@ export const useExpertise = () => {
     icon_url: payload.iconFile ?? payload.icon_url
   })
 
-  const fetchExpertise = async () => {
+  const fetchExpertise = async (params: ExpertiseListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: EXPERTISE_QUERY_KEY,
-        queryFn: loadExpertise
-      })
+      const items = await loadExpertise(params)
+      queryClient.setQueryData(EXPERTISE_QUERY_KEY, items)
+      return items
     } catch (fetchError) {
       console.error('Failed to fetch expertise', fetchError)
       mutationError.value = 'Unable to load expertise right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -104,6 +120,7 @@ export const useExpertise = () => {
     expertise,
     isLoading,
     error,
+    paginationMeta,
     fetchExpertise,
     createExpertise,
     updateExpertise,

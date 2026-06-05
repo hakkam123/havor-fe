@@ -77,8 +77,8 @@
 
       <AdminPagination
         v-model:page="careersPage"
-        :total="filteredCareers.length"
-        :page-size="careersPageSize"
+        v-model:page-size="careersPageSize"
+        :total="careersPaginationMeta.total"
         label="positions"
       />
     </section>
@@ -89,7 +89,7 @@
           <p class="text-sm font-semibold text-slate-900">Incoming Applications</p>
           <p class="mt-1 text-xs text-[var(--admin-muted)]">Real submissions from the public Apply Now form.</p>
         </div>
-        <button class="admin-secondary-btn" @click="fetchApplications">
+        <button class="admin-secondary-btn" @click="fetchApplicationsPage">
           Refresh Applications
         </button>
       </div>
@@ -155,8 +155,8 @@
 
       <AdminPagination
         v-model:page="applicationsPage"
-        :total="applications.length"
-        :page-size="applicationsPageSize"
+        v-model:page-size="applicationsPageSize"
+        :total="applicationsPaginationMeta.total"
         label="applications"
       />
     </section>
@@ -242,15 +242,17 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { Edit2, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
-const { careers, error, fetchCareers, createCareer, updateCareer, deleteCareer } = useAdminCareers()
+const { careers, error, paginationMeta: careersPaginationMeta, fetchCareers, createCareer, updateCareer, deleteCareer } = useAdminCareers({ immediate: false })
 const { categories: careerCategories, fetchCategories } = useCategories({ type: 'Career' })
 const {
   applications,
   error: applicationsError,
   isLoading: isLoadingApplications,
+  paginationMeta: applicationsPaginationMeta,
   fetchApplications
-} = useCareerApplications()
+} = useCareerApplications({ immediate: false })
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
@@ -293,6 +295,12 @@ const {
   paginatedItems: paginatedCareers
 } = useAdminPagination(filteredCareers)
 
+const fetchCareersPage = () => fetchCareers({
+  page: careersPage.value,
+  limit: careersPageSize.value,
+  search: searchQuery.value.trim()
+})
+
 const applicationsSource = computed(() => applications.value)
 const {
   currentPage: applicationsPage,
@@ -300,11 +308,16 @@ const {
   paginatedItems: paginatedApplications
 } = useAdminPagination(applicationsSource)
 
+const fetchApplicationsPage = () => fetchApplications({
+  page: applicationsPage.value,
+  limit: applicationsPageSize.value
+})
+
 const stats = computed(() => [
-  { label: 'Open Roles', value: careers.value.length, meta: 'Entries exposed on the public careers route' },
+  { label: 'Open Roles', value: careersPaginationMeta.value.total, meta: 'Entries exposed on the public careers route' },
   { label: 'With Thumbnail', value: careers.value.filter((item) => item.thumbnail).length, meta: 'Ready for listing cards and detail pages' },
   { label: 'Search Results', value: filteredCareers.value.length, meta: 'Current filtered role count' },
-  { label: 'Applications', value: applications.value.length, meta: 'Real submissions from the apply form' }
+  { label: 'Applications', value: applicationsPaginationMeta.value.total, meta: 'Real submissions from the apply form' }
 ])
 
 const toSlug = (value = '') =>
@@ -385,6 +398,7 @@ const saveForm = async () => {
     }
 
     isModalOpen.value = false
+    await fetchCareersPage()
     successState.value = {
       open: true,
       title: isEditing ? 'Career updated' : 'Career created',
@@ -413,13 +427,21 @@ const confirmDelete = async () => {
   try {
     await deleteCareer(deleteState.value.id)
     deleteState.value = { open: false, id: null, name: '' }
+    await fetchCareersPage()
   } finally {
     isDeleting.value = false
   }
 }
 
 onMounted(() => {
-  Promise.all([fetchCareers(), fetchCategories()])
-  fetchApplications()
+  fetchCategories()
 })
+
+watch([careersPage, careersPageSize, searchQuery], () => {
+  fetchCareersPage()
+}, { immediate: true })
+
+watch([applicationsPage, applicationsPageSize], () => {
+  fetchApplicationsPage()
+}, { immediate: true })
 </script>

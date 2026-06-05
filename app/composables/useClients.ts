@@ -1,13 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiClient, Client } from '~/types/api'
-import { toApiArray } from '~/utils/apiData'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 const CLIENTS_QUERY_KEY = ['clients'] as const
 
-export const useClients = () => {
+type UseClientsOptions = {
+  immediate?: boolean
+}
+
+type ClientListParams = {
+  page?: number
+  limit?: number
+  search?: string
+}
+
+export const useClients = (options: UseClientsOptions = {}) => {
   const { apiFetch, resolveAssetUrl } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
 
   const normalizeClient = (item: ApiClient): Client => ({
     id: Number(item.id),
@@ -23,31 +35,35 @@ export const useClients = () => {
     client_icon: payload.clientFile ?? payload.client_icon
   })
 
-  const loadClients = async () => {
-    const res = await apiFetch<unknown>('/clients')
+  const loadClients = async (params: ClientListParams = {}) => {
+    const res = await apiFetch<unknown>(`/clients${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
     return toApiArray<ApiClient>(res).map(normalizeClient)
   }
 
   const clientsQuery = useQuery({
     queryKey: CLIENTS_QUERY_KEY,
-    queryFn: loadClients
+    queryFn: () => loadClients(),
+    enabled: options.immediate !== false
   })
 
   const clients = computed(() => clientsQuery.data.value || [])
-  const isLoading = computed(() => clientsQuery.isLoading.value || clientsQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || clientsQuery.isLoading.value || clientsQuery.isFetching.value)
   const error = computed(() => mutationError.value || (clientsQuery.error.value ? 'Unable to load client data right now.' : null))
 
-  const fetchClients = async () => {
+  const fetchClients = async (params: ClientListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: CLIENTS_QUERY_KEY,
-        queryFn: loadClients
-      })
+      const items = await loadClients(params)
+      queryClient.setQueryData(CLIENTS_QUERY_KEY, items)
+      return items
     } catch (fetchError) {
       console.error('Failed to fetch clients', fetchError)
       mutationError.value = 'Unable to load client data right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -103,6 +119,7 @@ export const useClients = () => {
     clients,
     isLoading,
     error,
+    paginationMeta,
     fetchClients,
     createClient,
     updateClient,

@@ -1,48 +1,46 @@
 <template>
   <nav
-    v-if="pageCount > 1"
-    class="flex flex-col gap-3 border-t border-[var(--admin-border)] bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5"
+    class="flex justify-end border-t border-[var(--admin-border)] bg-white px-4 py-4 sm:px-5"
     aria-label="Table pagination"
   >
-    <p class="text-xs font-medium text-slate-500">
-      Showing
-      <span class="font-semibold text-slate-700">{{ startItem }}</span>-<span class="font-semibold text-slate-700">{{ endItem }}</span>
-      of <span class="font-semibold text-slate-700">{{ normalizedTotal }}</span>
-      {{ label }}
-    </p>
+    <div class="flex flex-wrap items-center justify-end gap-3 text-xs font-medium text-slate-500">
+      <div class="flex items-center gap-2">
+        <span>Rows</span>
+        <select
+          :value="normalizedPageSize"
+          class="rounded-[10px] border border-[var(--admin-border)] bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none transition focus:border-[var(--admin-accent)] focus:ring-4 focus:ring-[var(--admin-accent-soft)]"
+          aria-label="Rows per page"
+          @change="updatePageSize"
+        >
+          <option v-for="option in pageSizeOptions" :key="option" :value="option">{{ option }}</option>
+        </select>
+      </div>
 
-    <div class="flex flex-wrap items-center gap-2">
+      <p class="min-w-[9rem] text-right">
+        {{ startItem }}-{{ endItem }} of {{ normalizedTotal }} {{ label }}
+      </p>
+
       <button
         type="button"
-        class="admin-icon-btn h-9 w-9"
+        class="inline-flex h-9 items-center justify-center gap-2 rounded-[10px] border border-[var(--admin-border)] bg-white px-3 font-semibold text-slate-600 transition hover:border-[var(--admin-accent)] hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="safePage === 1"
-        aria-label="Previous page"
         @click="goToPage(safePage - 1)"
       >
         <ChevronLeft class="h-4 w-4" />
+        Previous
       </button>
 
-      <button
-        v-for="pageNumber in visiblePages"
-        :key="pageNumber"
-        type="button"
-        class="inline-flex h-9 min-w-9 items-center justify-center rounded-[10px] border px-3 text-xs font-semibold transition disabled:cursor-not-allowed"
-        :class="pageNumber === safePage
-          ? 'border-[var(--admin-accent)] bg-[var(--admin-accent)] text-white shadow-sm'
-          : 'border-[var(--admin-border)] bg-white text-slate-600 hover:border-[var(--admin-accent)] hover:text-slate-900'"
-        :aria-current="pageNumber === safePage ? 'page' : undefined"
-        @click="goToPage(pageNumber)"
-      >
-        {{ pageNumber }}
-      </button>
+      <span class="inline-flex h-9 min-w-9 items-center justify-center rounded-[10px] border border-[var(--admin-accent)] bg-[var(--admin-accent)] px-3 font-semibold text-white">
+        {{ safePage }}
+      </span>
 
       <button
         type="button"
-        class="admin-icon-btn h-9 w-9"
+        class="inline-flex h-9 items-center justify-center gap-2 rounded-[10px] border border-[var(--admin-border)] bg-white px-3 font-semibold text-slate-600 transition hover:border-[var(--admin-accent)] hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="safePage === pageCount"
-        aria-label="Next page"
         @click="goToPage(safePage + 1)"
       >
+        Next
         <ChevronRight class="h-4 w-4" />
       </button>
     </div>
@@ -58,13 +56,16 @@ const props = withDefaults(defineProps<{
   page: number
   pageSize?: number
   label?: string
+  pageSizeOptions?: number[]
 }>(), {
   pageSize: 10,
-  label: 'entries'
+  label: 'entries',
+  pageSizeOptions: () => [1, 5, 10, 25, 100]
 })
 
 const emit = defineEmits<{
   'update:page': [value: number]
+  'update:pageSize': [value: number]
 }>()
 
 const normalizedTotal = computed(() => Math.max(0, Number(props.total) || 0))
@@ -74,20 +75,17 @@ const safePage = computed(() => clampPage(props.page))
 const startItem = computed(() => normalizedTotal.value ? ((safePage.value - 1) * normalizedPageSize.value) + 1 : 0)
 const endItem = computed(() => Math.min(safePage.value * normalizedPageSize.value, normalizedTotal.value))
 
-const visiblePages = computed(() => {
-  const windowSize = 5
-  const firstPage = Math.max(1, Math.min(safePage.value - 2, pageCount.value - windowSize + 1))
-  const lastPage = Math.min(pageCount.value, firstPage + windowSize - 1)
-
-  return Array.from({ length: lastPage - firstPage + 1 }, (_, index) => firstPage + index)
-})
-
 function clampPage(value: number) {
   return Math.min(Math.max(1, Number(value) || 1), pageCount.value)
 }
 
 function goToPage(pageNumber: number) {
   emit('update:page', clampPage(pageNumber))
+}
+
+function updatePageSize(event: Event) {
+  const value = Number((event.target as HTMLSelectElement).value) || 10
+  emit('update:pageSize', value)
 }
 
 watch(safePage, (pageNumber) => {

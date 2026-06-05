@@ -1,13 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiProduct, Product } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 const PRODUCTS_QUERY_KEY = ['products'] as const
 
-export const useProducts = () => {
+type UseProductsOptions = {
+  immediate?: boolean
+}
+
+type ProductListParams = {
+  page?: number
+  limit?: number
+  search?: string
+  categoryId?: string | number
+  category?: string
+}
+
+export const useProducts = (options: UseProductsOptions = {}) => {
   const { apiFetch, resolveAssetUrl } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
 
   const normalizeProduct = (item: ApiProduct): Product => ({
     id: Number(item.id),
@@ -20,18 +35,20 @@ export const useProducts = () => {
     categoryName: String(item.categoryName ?? item.category_name ?? '')
   })
 
-  const loadProducts = async () => {
-    const res = await apiFetch<ApiProduct[]>('/products')
-    return (res || []).map(normalizeProduct)
+  const loadProducts = async (params: ProductListParams = {}) => {
+    const res = await apiFetch<unknown>(`/products${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
+    return toApiArray<ApiProduct>(res).map(normalizeProduct)
   }
 
   const productsQuery = useQuery({
     queryKey: PRODUCTS_QUERY_KEY,
-    queryFn: loadProducts
+    queryFn: () => loadProducts(),
+    enabled: options.immediate !== false
   })
 
   const products = computed(() => productsQuery.data.value || [])
-  const isLoading = computed(() => productsQuery.isLoading.value || productsQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || productsQuery.isLoading.value || productsQuery.isFetching.value)
   const error = computed(() => mutationError.value || (productsQuery.error.value ? 'Unable to load products right now.' : null))
 
   const toProductFormData = (payload: any) => toFormData({
@@ -42,17 +59,19 @@ export const useProducts = () => {
     image_url: payload.imageFile ?? payload.image_url
   })
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (params: ProductListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: PRODUCTS_QUERY_KEY,
-        queryFn: loadProducts
-      })
+      const items = await loadProducts(params)
+      queryClient.setQueryData(PRODUCTS_QUERY_KEY, items)
+      return items
     } catch (fetchError) {
       console.error(fetchError)
       mutationError.value = 'Unable to load products right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -99,5 +118,5 @@ export const useProducts = () => {
     return deleteProductMutation.mutateAsync(id)
   }
 
-  return { products, isLoading, error, fetchProducts, createProduct, updateProduct, deleteProduct }
+  return { products, isLoading, error, paginationMeta, fetchProducts, createProduct, updateProduct, deleteProduct }
 }

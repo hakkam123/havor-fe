@@ -1,16 +1,27 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiCampaignItem, CampaignItem } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
-import { toApiArray } from '~/utils/apiData'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 type UseCampaignOptions = {
   includeDrafts?: boolean
+  immediate?: boolean
+}
+
+type CampaignListParams = {
+  page?: number
+  limit?: number
+  search?: string
+  status?: string
+  category?: string
 }
 
 export const useCampaigns = (options: UseCampaignOptions = {}) => {
   const { apiFetch, resolveAssetUrl } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
   const includeDrafts = Boolean(options.includeDrafts)
   const campaignQueryKey = ['campaigns', { includeDrafts }] as const
 
@@ -37,32 +48,36 @@ export const useCampaigns = (options: UseCampaignOptions = {}) => {
     updatedAt: item.updatedAt || null
   })
 
-  const loadCampaigns = async () => {
-    const res = await apiFetch<unknown>('/campaigns')
+  const loadCampaigns = async (params: CampaignListParams = {}) => {
+    const res = await apiFetch<unknown>(`/campaigns${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
     const normalizedItems = toApiArray<ApiCampaignItem>(res).map(normalizeCampaignItem)
     return includeDrafts ? normalizedItems : normalizedItems.filter((item) => item.is_published)
   }
 
   const campaignsQuery = useQuery({
     queryKey: campaignQueryKey,
-    queryFn: loadCampaigns
+    queryFn: () => loadCampaigns(),
+    enabled: options.immediate !== false
   })
 
   const campaigns = computed(() => campaignsQuery.data.value || [])
-  const isLoading = computed(() => campaignsQuery.isLoading.value || campaignsQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || campaignsQuery.isLoading.value || campaignsQuery.isFetching.value)
   const error = computed(() => mutationError.value || (campaignsQuery.error.value ? 'Unable to load campaigns right now.' : null))
 
-  const fetchCampaigns = async () => {
+  const fetchCampaigns = async (params: CampaignListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: campaignQueryKey,
-        queryFn: loadCampaigns
-      })
+      const items = await loadCampaigns(params)
+      queryClient.setQueryData(campaignQueryKey.value, items)
+      return items
     } catch (fetchError) {
       console.error('Failed to fetch campaigns', fetchError)
       mutationError.value = 'Unable to load campaigns right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -154,6 +169,7 @@ export const useCampaigns = (options: UseCampaignOptions = {}) => {
     campaigns,
     isLoading,
     error,
+    paginationMeta,
     fetchCampaigns,
     fetchCampaignBySlug,
     createCampaign,

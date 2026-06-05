@@ -116,8 +116,8 @@
 
         <AdminPagination
           v-model:page="currentPage"
-          :total="dashboardMessages.length"
-          :page-size="pageSize"
+          v-model:page-size="pageSize"
+          :total="messagesPaginationMeta.total"
           label="messages"
         />
       </div>
@@ -228,17 +228,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { BriefcaseBusiness, Eye, Filter, Globe, Inbox, RefreshCw } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
 const { analytics, readAnalytics } = useLandingAnalytics()
-const { messages, error, isLoading, fetchMessages, markAsRead } = useContact()
+const { messages, error, isLoading, paginationMeta: messagesPaginationMeta, fetchMessages, markAsRead } = useContact({ immediate: false })
 const {
   applications,
   error: applicationsError,
   isLoading: isLoadingApplications,
+  paginationMeta: applicationsPaginationMeta,
   fetchApplications
-} = useCareerApplications()
+} = useCareerApplications({ immediate: false })
 
 const lastSyncedAt = ref<Date | null>(null)
 const messageFilter = ref<'all' | 'unread' | 'read'>('all')
@@ -258,18 +260,27 @@ const formatDateTime = (value?: string | Date | null) => {
 
 const refreshDashboard = async () => {
   readAnalytics()
-  await Promise.allSettled([fetchMessages(), fetchApplications()])
+  await Promise.allSettled([
+    fetchMessages({
+      page: currentPage.value,
+      limit: pageSize.value,
+      status: messageFilter.value
+    }),
+    fetchApplications({ page: 1, limit: 4 })
+  ])
   lastSyncedAt.value = new Date()
 }
 
 const handleMarkAsRead = async (id: number) => {
   await markAsRead(id)
+  await refreshDashboard()
   lastSyncedAt.value = new Date()
 }
 
 const setDashboardFilter = (filter?: 'all' | 'unread' | 'read') => {
   if (!filter) return
   messageFilter.value = filter
+  currentPage.value = 1
 }
 
 const sortedMessages = computed(() => {
@@ -313,7 +324,7 @@ const stats = computed(() => [
   },
   {
     label: 'Career Applications',
-    value: applications.value.length,
+    value: applicationsPaginationMeta.value.total,
     meta: 'Fetched from the public apply form',
     icon: BriefcaseBusiness,
     iconWrapClass: 'bg-indigo-50',
@@ -324,6 +335,10 @@ const stats = computed(() => [
 onMounted(async () => {
   await refreshDashboard()
   refreshTimer = setInterval(refreshDashboard, 30000)
+})
+
+watch([currentPage, pageSize, messageFilter], () => {
+  refreshDashboard()
 })
 
 onBeforeUnmount(() => {

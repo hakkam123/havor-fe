@@ -1,13 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiCareer, Career } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 const CAREERS_QUERY_KEY = ['careers'] as const
 
-export const useAdminCareers = () => {
+type UseAdminCareersOptions = {
+  immediate?: boolean
+}
+
+type CareerListParams = {
+  page?: number
+  limit?: number
+  search?: string
+  categoryId?: string | number
+  category?: string
+}
+
+export const useAdminCareers = (options: UseAdminCareersOptions = {}) => {
   const { apiFetch, resolveAssetUrl } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
 
   const normalizeCareerItem = (item: ApiCareer): Career => ({
     id: Number(item.id),
@@ -20,18 +35,20 @@ export const useAdminCareers = () => {
     slug: toSlug(item.job_title)
   })
 
-  const loadCareers = async () => {
-    const res = await apiFetch<ApiCareer[]>('/careers')
-    return (res || []).map(normalizeCareerItem)
+  const loadCareers = async (params: CareerListParams = {}) => {
+    const res = await apiFetch<unknown>(`/careers${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
+    return toApiArray<ApiCareer>(res).map(normalizeCareerItem)
   }
 
   const careersQuery = useQuery({
     queryKey: CAREERS_QUERY_KEY,
-    queryFn: loadCareers
+    queryFn: () => loadCareers(),
+    enabled: options.immediate !== false
   })
 
   const careers = computed(() => careersQuery.data.value || [])
-  const isLoading = computed(() => careersQuery.isLoading.value || careersQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || careersQuery.isLoading.value || careersQuery.isFetching.value)
   const error = computed(() => mutationError.value || (careersQuery.error.value ? 'Unable to load careers right now.' : null))
 
   const toCareerFormData = (payload: any) => toFormData({
@@ -41,17 +58,19 @@ export const useAdminCareers = () => {
     thumbnail: payload.thumbnailFile ?? payload.thumbnail
   })
 
-  const fetchCareers = async () => {
+  const fetchCareers = async (params: CareerListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: CAREERS_QUERY_KEY,
-        queryFn: loadCareers
-      })
+      const items = await loadCareers(params)
+      queryClient.setQueryData(CAREERS_QUERY_KEY, items)
+      return items
     } catch (fetchError) {
       console.error('Failed to fetch careers', fetchError)
       mutationError.value = 'Unable to load careers right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -107,6 +126,7 @@ export const useAdminCareers = () => {
     careers,
     isLoading,
     error,
+    paginationMeta,
     fetchCareers,
     createCareer,
     updateCareer,

@@ -89,8 +89,8 @@
 
       <AdminPagination
         v-model:page="currentPage"
-        :total="filteredNews.length"
-        :page-size="pageSize"
+        v-model:page-size="pageSize"
+        :total="paginationMeta.total"
         label="articles"
       />
     </section>
@@ -187,10 +187,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { Edit2, Filter, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
-const { news: newsItems, fetchNews, createNews, updateNews, deleteNews } = useNews({ includeDrafts: true })
+const { news: newsItems, paginationMeta, fetchNews, createNews, updateNews, deleteNews } = useNews({ includeDrafts: true, immediate: false })
 const { categories: newsCategories, fetchCategories } = useCategories({ type: 'News' })
 
 const isModalOpen = ref(false)
@@ -242,8 +243,15 @@ const filteredNews = computed(() => {
 
 const { currentPage, pageSize, paginatedItems: paginatedNews } = useAdminPagination(filteredNews)
 
+const fetchNewsPage = () => fetchNews({
+  page: currentPage.value,
+  limit: pageSize.value,
+  search: searchQuery.value.trim(),
+  status: statusFilter.value
+})
+
 const stats = computed(() => [
-  { label: 'Total Articles', value: newsItems.value.length, meta: 'Editorial entries in workspace' },
+  { label: 'Total Articles', value: paginationMeta.value.total, meta: 'Editorial entries in workspace' },
   { label: 'Published', value: newsItems.value.filter((item) => item.is_published).length, meta: 'Live on the website' },
   { label: 'Drafts', value: newsItems.value.filter((item) => !item.is_published).length, meta: 'Waiting for approval' },
   { label: 'With Image', value: newsItems.value.filter((item) => item.image_url).length, meta: 'Ready for feature placement' }
@@ -327,6 +335,7 @@ const saveForm = async () => {
     }
 
     isModalOpen.value = false
+    await fetchNewsPage()
     successState.value = {
       open: true,
       title: isEditing ? 'News updated' : 'News created',
@@ -354,13 +363,17 @@ const confirmDelete = async () => {
   try {
     await deleteNews(deleteState.value.id)
     deleteState.value = { open: false, id: null, name: '' }
+    await fetchNewsPage()
   } finally {
     isDeleting.value = false
   }
 }
 
 onMounted(() => {
-  fetchNews()
   fetchCategories()
 })
+
+watch([currentPage, pageSize, searchQuery, statusFilter], () => {
+  fetchNewsPage()
+}, { immediate: true })
 </script>

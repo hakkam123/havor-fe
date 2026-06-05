@@ -79,8 +79,8 @@
 
           <AdminPagination
             v-model:page="currentPage"
-            :total="filteredMessages.length"
-            :page-size="pageSize"
+            v-model:page-size="pageSize"
+            :total="paginationMeta.total"
             label="messages"
           />
         </div>
@@ -143,10 +143,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Check, Filter, Mail, RefreshCw, Trash2 } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
-const { messages, fetchMessages, markAsRead, deleteMessage } = useContact()
+const { messages, paginationMeta, fetchMessages, markAsRead, deleteMessage } = useContact({ immediate: false })
 const selectedMessage = ref(null)
 const messageFilter = ref('all')
 const isDeleting = ref(false)
@@ -161,6 +162,15 @@ const messagesForCurrentFilter = () => {
 const filteredMessages = computed(messagesForCurrentFilter)
 const { currentPage, pageSize, paginatedItems: paginatedMessages } = useAdminPagination(filteredMessages, 8)
 
+const fetchMessagePage = async () => {
+  await fetchMessages({
+    page: currentPage.value,
+    limit: pageSize.value,
+    status: messageFilter.value
+  })
+  syncSelectedMessage()
+}
+
 const stats = computed(() => [
   { label: 'Total Messages', value: messages.value.length, meta: 'Customer inquiries in inbox', filter: 'all' },
   { label: 'Unread', value: messages.value.filter((msg) => !msg.is_read).length, meta: 'Need your attention', filter: 'unread' },
@@ -171,7 +181,7 @@ const stats = computed(() => [
 const setMessageFilter = (filter) => {
   if (!filter) return
   messageFilter.value = filter
-  syncSelectedMessage()
+  currentPage.value = 1
 }
 
 const syncSelectedMessage = (preferredId = selectedMessage.value?.id) => {
@@ -186,12 +196,12 @@ const syncSelectedMessage = (preferredId = selectedMessage.value?.id) => {
 }
 
 const refreshMessages = async () => {
-  await fetchMessages()
-  syncSelectedMessage()
+  await fetchMessagePage()
 }
 
 const handleMarkAsRead = async (msg) => {
   await markAsRead(msg.id)
+  await fetchMessagePage()
   syncSelectedMessage(msg.id)
 }
 
@@ -207,13 +217,13 @@ const confirmDelete = async () => {
   try {
     await deleteMessage(deleteState.value.id)
     deleteState.value = { open: false, id: null, name: '' }
-    syncSelectedMessage()
+    await fetchMessagePage()
   } finally {
     isDeleting.value = false
   }
 }
 
-onMounted(() => {
-  refreshMessages()
-})
+watch([currentPage, pageSize, messageFilter], () => {
+  fetchMessagePage()
+}, { immediate: true })
 </script>

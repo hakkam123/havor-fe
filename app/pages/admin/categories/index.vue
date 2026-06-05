@@ -76,10 +76,11 @@
 
         <AdminPagination
           :page="categoryPages[section.type]"
-          :total="categoriesByType(section.type).length"
-          :page-size="categoryPageSize"
+          :total="categoryTotalByType(section.type)"
+          :page-size="categoryPageSizes[section.type]"
           :label="`${section.type.toLowerCase()} categories`"
           @update:page="setCategoryPage(section.type, $event)"
+          @update:page-size="setCategoryPageSize(section.type, $event)"
         />
       </article>
     </section>
@@ -137,7 +138,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { Edit2, Plus, Search, Trash2 } from 'lucide-vue-next'
 
 const categoryTypes = ['News', 'Career', 'Campaign', 'Product']
@@ -168,10 +169,10 @@ const categorySections = [
   }
 ]
 
-const { categories, error, fetchCategories, createCategory, updateCategory, deleteCategory } = useCategories()
-const { products, fetchProducts } = useProducts()
-const { news: newsItems, fetchNews } = useNews({ includeDrafts: true })
-const { campaigns, fetchCampaigns } = useCampaigns({ includeDrafts: true })
+const { error, createCategory, updateCategory, deleteCategory } = useCategories({ immediate: false })
+const categoryResources = Object.fromEntries(
+  categoryTypes.map((type) => [type, useCategories({ type, immediate: false })])
+)
 
 const isModalOpen = ref(false)
 const searchQuery = ref('')
@@ -181,8 +182,8 @@ const isDeleting = ref(false)
 const successState = ref({ open: false, title: '', message: '' })
 const form = ref({ id: null, name: '', type: 'Product' })
 const deleteState = ref({ open: false, id: null, name: '' })
-const categoryPageSize = 8
 const categoryPages = ref(Object.fromEntries(categoryTypes.map((type) => [type, 1])))
+const categoryPageSizes = ref(Object.fromEntries(categoryTypes.map((type) => [type, 10])))
 
 const toSlug = (value = '') =>
   value
@@ -194,41 +195,44 @@ const toSlug = (value = '') =>
 
 const isValidCategoryType = (type) => categoryTypes.includes(type)
 
-const filteredCategories = computed(() => {
-  if (!searchQuery.value) return categories.value
+const filteredCategories = computed(() => categoryTypes.flatMap((type) => categoriesByType(type)))
 
-  const query = searchQuery.value.toLowerCase()
-  return categories.value.filter((item) =>
-    [item.name, item.slug, item.type]
-      .filter(Boolean)
-      .some((value) => String(value).toLowerCase().includes(query))
-  )
+const categoriesByType = (type) => categoryResources[type]?.categories.value || []
+const paginatedCategoriesByType = (type) => categoriesByType(type)
+const categoryTotalByType = (type) => categoryResources[type]?.paginationMeta.value.total || 0
+
+const fetchCategoryPage = (type) => categoryResources[type]?.fetchCategories({
+  page: categoryPages.value[type],
+  limit: categoryPageSizes.value[type],
+  search: searchQuery.value.trim()
 })
-
-const categoriesByType = (type) => filteredCategories.value.filter((item) => item.type === type)
-const paginatedCategoriesByType = (type) => {
-  const items = categoriesByType(type)
-  const currentPage = Math.min(Math.max(categoryPages.value[type] || 1, 1), Math.max(1, Math.ceil(items.length / categoryPageSize)))
-  const startIndex = (currentPage - 1) * categoryPageSize
-
-  return items.slice(startIndex, startIndex + categoryPageSize)
-}
 
 const setCategoryPage = (type, page) => {
   categoryPages.value[type] = page
+  fetchCategoryPage(type)
+}
+
+const setCategoryPageSize = (type, pageSize) => {
+  categoryPageSizes.value[type] = pageSize
+  categoryPages.value[type] = 1
+  fetchCategoryPage(type)
 }
 
 const stats = computed(() => categorySections.map((section) => ({
   label: section.title,
-  value: categories.value.filter((item) => item.type === section.type).length,
+  value: categoryTotalByType(section.type),
   meta: section.description
 })))
 
 onMounted(() => {
-  fetchCategories()
-  fetchProducts()
-  fetchNews()
-  fetchCampaigns()
+  categoryTypes.forEach(fetchCategoryPage)
+})
+
+watch(searchQuery, () => {
+  categoryTypes.forEach((type) => {
+    categoryPages.value[type] = 1
+    fetchCategoryPage(type)
+  })
 })
 
 const openModal = (item = null, type = 'Product') => {
@@ -272,6 +276,7 @@ const saveCategory = async () => {
     }
 
     isModalOpen.value = false
+    categoryTypes.forEach(fetchCategoryPage)
     successState.value = {
       open: true,
       title: isEditing ? 'Category updated' : 'Category created',
@@ -287,51 +292,19 @@ const saveCategory = async () => {
   }
 }
 
-const categoryUsageMessage = (id) => {
-  const category = categories.value.find((item) => item.id === id)
-  if (!category) return ''
-
-  const usedByProduct = category.type === 'Product' && products.value.some((product) => String(product.categoryId) === String(id) || product.categoryName === category.name)
-  const usedByNews = category.type === 'News' && newsItems.value.some((news) => news.category === category.name)
-  const usedByCampaign = category.type === 'Campaign' && campaigns.value.some((campaign) => campaign.category === category.name)
-
-  if (!usedByProduct && !usedByNews && !usedByCampaign) return ''
-
-  const usages = [
-    usedByProduct ? 'products' : '',
-    usedByNews ? 'news' : '',
-    usedByCampaign ? 'campaigns' : ''
-  ].filter(Boolean).join(' and ')
-
-  return `This category is still used by ${usages}. Move or update those records before deleting it.`
-}
-
 const handleDelete = (id) => {
-  const category = categories.value.find((item) => item.id === id)
-  const usageMessage = categoryUsageMessage(id)
-
-  if (usageMessage) {
-    formError.value = usageMessage
-    return
-  }
-
+  const category = filteredCategories.value.find((item) => item.id === id)
   deleteState.value = { open: true, id, name: category?.name || `Category ID ${id}` }
 }
 
 const confirmDelete = async () => {
   if (!deleteState.value.id || isDeleting.value) return
 
-  const usageMessage = categoryUsageMessage(deleteState.value.id)
-  if (usageMessage) {
-    formError.value = usageMessage
-    deleteState.value.open = false
-    return
-  }
-
   isDeleting.value = true
   try {
     await deleteCategory(deleteState.value.id)
     deleteState.value = { open: false, id: null, name: '' }
+    categoryTypes.forEach(fetchCategoryPage)
   } catch (error) {
     formError.value = getApiErrorMessage(error)
   } finally {

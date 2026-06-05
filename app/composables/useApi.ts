@@ -2,6 +2,17 @@ export const useApi = () => {
   const config = useRuntimeConfig()
   const authStore = useAuthStore()
 
+  const getApiBase = () => {
+    const apiBase = String(config.public.apiBase || '').replace(/\/+$/, '')
+    const serverApiBase = String(config.apiServerBase || '').replace(/\/+$/, '')
+
+    if (import.meta.server && apiBase.startsWith('/') && serverApiBase) {
+      return serverApiBase
+    }
+
+    return apiBase
+  }
+
   const resolveAssetUrl = (path?: string | null) => {
     const assetPath = String(path || '').trim()
     const normalizedAssetPath = assetPath.toLowerCase()
@@ -37,7 +48,7 @@ export const useApi = () => {
   }
 
   const apiFetch = $fetch.create({
-    baseURL: config.public.apiBase
+    baseURL: getApiBase()
   })
 
   const execute = async <T = any>(req: string, opts?: any, allowRefresh = true): Promise<T> => {

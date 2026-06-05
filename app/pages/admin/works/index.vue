@@ -76,8 +76,8 @@
 
       <AdminPagination
         v-model:page="currentPage"
-        :total="filteredWorks.length"
-        :page-size="pageSize"
+        v-model:page-size="pageSize"
+        :total="paginationMeta.total"
         label="works"
       />
     </section>
@@ -174,10 +174,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { Edit2, Image as ImageIcon, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
+import { useAdminPagination } from '~/composables/useAdminPagination'
 
-const { works, fetchWorks, createWork, updateWork, deleteWork } = useWorks()
+const { works, paginationMeta, fetchWorks, createWork, updateWork, deleteWork } = useWorks({ immediate: false })
 const { categories, fetchCategories } = useCategories({ type: 'Product' })
 const { clients, fetchClients } = useClients()
 
@@ -210,16 +211,26 @@ const filteredWorks = computed(() => {
 
 const { currentPage, pageSize, paginatedItems: paginatedWorks } = useAdminPagination(filteredWorks)
 
+const fetchWorkPage = () => fetchWorks({
+  page: currentPage.value,
+  limit: pageSize.value,
+  search: searchQuery.value.trim()
+})
+
 const stats = computed(() => [
-  { label: 'Total Works', value: works.value.length, meta: 'Portfolio entries in workspace' },
+  { label: 'Total Works', value: paginationMeta.value.total, meta: 'Portfolio entries in workspace' },
   { label: 'With Client', value: works.value.filter((item) => item.client).length, meta: 'Entries linked to client details' },
   { label: 'With Image', value: works.value.filter((item) => item.image_url).length, meta: 'Ready for project showcase' },
   { label: 'Categories', value: categories.value.length, meta: 'Available grouping options' }
 ])
 
 onMounted(async () => {
-  await Promise.all([fetchWorks(), fetchCategories(), fetchClients()])
+  await Promise.all([fetchCategories(), fetchClients()])
 })
+
+watch([currentPage, pageSize, searchQuery], () => {
+  fetchWorkPage()
+}, { immediate: true })
 
 const openModal = (item = null) => {
   form.value = item
@@ -285,6 +296,7 @@ const saveWork = async () => {
     }
 
     isModalOpen.value = false
+    await fetchWorkPage()
     successState.value = {
       open: true,
       title: isEditing ? 'Work updated' : 'Work created',
@@ -312,6 +324,7 @@ const confirmDelete = async () => {
   try {
     await deleteWork(deleteState.value.id)
     deleteState.value = { open: false, id: null, name: '' }
+    await fetchWorkPage()
   } finally {
     isDeleting.value = false
   }

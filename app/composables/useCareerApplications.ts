@@ -1,12 +1,26 @@
 import { useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiCareerApplication, CareerApplication } from '~/types/api'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 const CAREER_APPLICATIONS_QUERY_KEY = ['career-applications'] as const
 
-export const useCareerApplications = () => {
+type UseCareerApplicationsOptions = {
+  immediate?: boolean
+}
+
+type CareerApplicationListParams = {
+  page?: number
+  limit?: number
+  search?: string
+  status?: string
+}
+
+export const useCareerApplications = (options: UseCareerApplicationsOptions = {}) => {
   const { apiFetch } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
 
   const formatDate = (value?: string | null) => {
     if (!value) return ''
@@ -37,33 +51,37 @@ export const useCareerApplications = () => {
     dateLabel: formatDate(item.createdAt)
   })
 
-  const loadApplications = async () => {
-    const res = await apiFetch<ApiCareerApplication[]>('/careers/applications')
-    return (res || []).map(normalizeApplication)
+  const loadApplications = async (params: CareerApplicationListParams = {}) => {
+    const res = await apiFetch<unknown>(`/careers/applications${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
+    return toApiArray<ApiCareerApplication>(res).map(normalizeApplication)
   }
 
   const applicationsQuery = useQuery({
     queryKey: CAREER_APPLICATIONS_QUERY_KEY,
-    queryFn: loadApplications,
-    refetchInterval: 30_000
+    queryFn: () => loadApplications(),
+    refetchInterval: options.immediate === false ? false : 30_000,
+    enabled: options.immediate !== false
   })
 
   const applications = computed(() => applicationsQuery.data.value || [])
-  const isLoading = computed(() => applicationsQuery.isLoading.value || applicationsQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || applicationsQuery.isLoading.value || applicationsQuery.isFetching.value)
   const error = computed(() => mutationError.value || (applicationsQuery.error.value ? 'Unable to load career applications right now.' : null))
 
-  const fetchApplications = async () => {
+  const fetchApplications = async (params: CareerApplicationListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
 
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: CAREER_APPLICATIONS_QUERY_KEY,
-        queryFn: loadApplications
-      })
+      const items = await loadApplications(params)
+      queryClient.setQueryData(CAREER_APPLICATIONS_QUERY_KEY, items)
+      return items
     } catch (fetchError) {
       console.error('Failed to fetch career applications', fetchError)
       mutationError.value = 'Unable to load career applications right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -71,6 +89,7 @@ export const useCareerApplications = () => {
     applications,
     isLoading,
     error,
+    paginationMeta,
     fetchApplications
   }
 }

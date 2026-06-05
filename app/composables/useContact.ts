@@ -1,12 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiContactMessage, ContactMessage } from '~/types/api'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 const CONTACT_MESSAGES_QUERY_KEY = ['contact-messages'] as const
 
-export const useContact = () => {
+type UseContactOptions = {
+  immediate?: boolean
+}
+
+type ContactListParams = {
+  page?: number
+  limit?: number
+  search?: string
+  status?: string
+}
+
+export const useContact = (options: UseContactOptions = {}) => {
   const { apiFetch } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
 
   const formatDate = (value?: string | null) => {
     if (!value) return ''
@@ -38,32 +52,36 @@ export const useContact = () => {
     dateLabel: formatDate(item.createdAt)
   })
 
-  const loadMessages = async () => {
-    const res = await apiFetch<ApiContactMessage[]>('/contact')
-    return (res || []).map(normalizeMessage)
+  const loadMessages = async (params: ContactListParams = {}) => {
+    const res = await apiFetch<unknown>(`/contact${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
+    return toApiArray<ApiContactMessage>(res).map(normalizeMessage)
   }
 
   const messagesQuery = useQuery({
     queryKey: CONTACT_MESSAGES_QUERY_KEY,
-    queryFn: loadMessages,
-    refetchInterval: 30_000
+    queryFn: () => loadMessages(),
+    refetchInterval: options.immediate === false ? false : 30_000,
+    enabled: options.immediate !== false
   })
 
   const messages = computed(() => messagesQuery.data.value || [])
-  const isLoading = computed(() => messagesQuery.isLoading.value || messagesQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || messagesQuery.isLoading.value || messagesQuery.isFetching.value)
   const error = computed(() => mutationError.value || (messagesQuery.error.value ? 'Unable to load inbox messages right now.' : null))
 
-  const fetchMessages = async () => {
+  const fetchMessages = async (params: ContactListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: CONTACT_MESSAGES_QUERY_KEY,
-        queryFn: loadMessages
-      })
+      const items = await loadMessages(params)
+      queryClient.setQueryData(CONTACT_MESSAGES_QUERY_KEY, items)
+      return items
     } catch (fetchError) {
       console.error('Failed to fetch contact messages', fetchError)
       mutationError.value = 'Unable to load inbox messages right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -127,6 +145,7 @@ export const useContact = () => {
     messages,
     isLoading,
     error,
+    paginationMeta,
     fetchMessages,
     createMessage,
     markAsRead,

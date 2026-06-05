@@ -1,16 +1,27 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { ApiNewsItem, NewsItem } from '~/types/api'
 import { toSlug } from '~/composables/useSlug'
-import { toApiArray } from '~/utils/apiData'
+import { toApiArray, toApiPaginationMeta, toQueryString, type ApiPaginationMeta } from '~/utils/apiData'
 
 type UseNewsOptions = {
   includeDrafts?: boolean
+  immediate?: boolean
+}
+
+type NewsListParams = {
+  page?: number
+  limit?: number
+  search?: string
+  status?: string
+  category?: string
 }
 
 export const useNews = (options: UseNewsOptions = {}) => {
   const { apiFetch, resolveAssetUrl } = useApi()
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
+  const manualLoading = ref(false)
+  const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
   const includeDrafts = Boolean(options.includeDrafts)
   const newsQueryKey = ['news', { includeDrafts }] as const
 
@@ -37,32 +48,36 @@ export const useNews = (options: UseNewsOptions = {}) => {
     updatedAt: item.updatedAt || null
   })
 
-  const loadNews = async () => {
-    const res = await apiFetch<unknown>('/news')
+  const loadNews = async (params: NewsListParams = {}) => {
+    const res = await apiFetch<unknown>(`/news${toQueryString(params)}`)
+    paginationMeta.value = toApiPaginationMeta(res, Number(params.limit) || 10)
     const normalizedItems = toApiArray<ApiNewsItem>(res).map(normalizeNewsItem)
     return includeDrafts ? normalizedItems : normalizedItems.filter((item) => item.is_published)
   }
 
   const newsQuery = useQuery({
     queryKey: newsQueryKey,
-    queryFn: loadNews
+    queryFn: () => loadNews(),
+    enabled: options.immediate !== false
   })
 
   const news = computed(() => newsQuery.data.value || [])
-  const isLoading = computed(() => newsQuery.isLoading.value || newsQuery.isFetching.value)
+  const isLoading = computed(() => manualLoading.value || newsQuery.isLoading.value || newsQuery.isFetching.value)
   const error = computed(() => mutationError.value || (newsQuery.error.value ? 'Unable to load news right now.' : null))
 
-  const fetchNews = async () => {
+  const fetchNews = async (params: NewsListParams = {}) => {
     mutationError.value = null
+    manualLoading.value = true
     try {
-      return await queryClient.ensureQueryData({
-        queryKey: newsQueryKey,
-        queryFn: loadNews
-      })
+      const items = await loadNews(params)
+      queryClient.setQueryData(newsQueryKey.value, items)
+      return items
     } catch (fetchError) {
       console.error('Failed to fetch news', fetchError)
       mutationError.value = 'Unable to load news right now.'
       return []
+    } finally {
+      manualLoading.value = false
     }
   }
 
@@ -154,6 +169,7 @@ export const useNews = (options: UseNewsOptions = {}) => {
     news,
     isLoading,
     error,
+    paginationMeta,
     fetchNews,
     fetchNewsBySlug,
     createNews,

@@ -181,17 +181,13 @@
               <p class="brand-meta">Role Category</p>
               <p class="mt-1 text-sm font-semibold text-[#0e2344]">{{ roleCategoryFor(selectedCareer) }}</p>
             </div>
-            <div v-if="selectedCareerDetail.location" class="border-t border-[#e2eaf5] pt-3">
+            <div v-if="selectedCareerDetail.location" class="pt-3">
               <p class="brand-meta">Location / Work Type</p>
               <p class="mt-1 text-sm font-semibold text-[#0e2344]">{{ selectedCareerDetail.location }}</p>
             </div>
-            <div v-if="selectedCareerDetail.workType" class="border-t border-[#e2eaf5] pt-3">
+            <div v-if="selectedCareerDetail.workType" class="pt-3">
               <p class="brand-meta">Work Type</p>
               <p class="mt-1 text-sm font-semibold text-[#0e2344]">{{ selectedCareerDetail.workType }}</p>
-            </div>
-            <div v-if="selectedCareerDetail.closingDate" class="border-t border-[#e2eaf5] pt-3">
-              <p class="brand-meta">Closing Date</p>
-              <p class="mt-1 text-sm font-semibold text-[#0e2344]">{{ selectedCareerDetail.closingDate }}</p>
             </div>
           </div>
 
@@ -618,7 +614,6 @@ const parseCareerDescription = (description = '') => {
     requirements: '',
     location: '',
     workType: '',
-    closingDate: '',
     additionalInfo: ''
   }
 
@@ -639,7 +634,6 @@ const parseCareerDescription = (description = '') => {
     if (label === 'requirements' || label === 'qualifications') detail.requirements = value
     if (label === 'location') detail.location = value
     if (label === 'work type') detail.workType = value
-    if (label === 'closing date') detail.closingDate = value
     if (label === 'additional information') detail.additionalInfo = value
   })
 
