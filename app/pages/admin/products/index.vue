@@ -46,7 +46,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredProducts" :key="item.id">
+            <tr v-for="item in paginatedProducts" :key="item.id">
               <td>
                 <div class="flex items-center gap-3">
                   <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)]">
@@ -92,6 +92,13 @@
           </tbody>
         </table>
       </div>
+
+      <AdminPagination
+        v-model:page="currentPage"
+        :total="filteredProducts.length"
+        :page-size="pageSize"
+        label="products"
+      />
     </section>
 
     <AdminModal
@@ -217,6 +224,8 @@ const filteredProducts = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
+
+const { currentPage, pageSize, paginatedItems: paginatedProducts } = useAdminPagination(filteredProducts)
 
 const stats = computed(() => [
   { label: 'Total Products', value: products.value.length, meta: 'Catalog entries in workspace' },

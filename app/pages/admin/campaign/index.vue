@@ -54,7 +54,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredCampaigns" :key="item.id">
+            <tr v-for="item in paginatedCampaigns" :key="item.id">
               <td>
                 <div class="flex items-center gap-3">
                   <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)]">
@@ -91,6 +91,13 @@
           </tbody>
         </table>
       </div>
+
+      <AdminPagination
+        v-model:page="currentPage"
+        :total="filteredCampaigns.length"
+        :page-size="pageSize"
+        label="campaigns"
+      />
     </section>
 
     <AdminModal
@@ -233,6 +240,8 @@ const filteredCampaigns = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
+
+const { currentPage, pageSize, paginatedItems: paginatedCampaigns } = useAdminPagination(filteredCampaigns)
 
 const stats = computed(() => [
   { label: 'Total Campaigns', value: campaigns.value.length, meta: 'Campaign entries in workspace' },

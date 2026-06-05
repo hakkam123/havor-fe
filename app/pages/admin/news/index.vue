@@ -49,7 +49,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredNews" :key="item.id">
+            <tr v-for="item in paginatedNews" :key="item.id">
               <td>
                 <div class="flex items-center gap-3">
                   <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)]">
@@ -86,6 +86,13 @@
           </tbody>
         </table>
       </div>
+
+      <AdminPagination
+        v-model:page="currentPage"
+        :total="filteredNews.length"
+        :page-size="pageSize"
+        label="articles"
+      />
     </section>
 
     <AdminModal
@@ -232,6 +239,8 @@ const filteredNews = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
+
+const { currentPage, pageSize, paginatedItems: paginatedNews } = useAdminPagination(filteredNews)
 
 const stats = computed(() => [
   { label: 'Total Articles', value: newsItems.value.length, meta: 'Editorial entries in workspace' },

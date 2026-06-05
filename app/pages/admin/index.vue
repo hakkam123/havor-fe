@@ -77,7 +77,7 @@
 
         <div v-else-if="dashboardMessages.length" class="divide-y divide-[var(--admin-border)]">
           <article
-            v-for="message in dashboardMessages"
+            v-for="message in paginatedDashboardMessages"
             :key="message.id"
             class="flex flex-col gap-4 px-5 py-5 transition hover:bg-slate-50/70 md:flex-row md:items-start md:justify-between"
           >
@@ -113,6 +113,13 @@
         <div v-else class="admin-empty-state">
           {{ error || 'No incoming messages yet.' }}
         </div>
+
+        <AdminPagination
+          v-model:page="currentPage"
+          :total="dashboardMessages.length"
+          :page-size="pageSize"
+          label="messages"
+        />
       </div>
 
       <div class="space-y-6">
@@ -278,6 +285,7 @@ const dashboardMessages = computed(() => {
   if (messageFilter.value === 'read') return sortedMessages.value.filter((message) => message.is_read)
   return sortedMessages.value
 })
+const { currentPage, pageSize, paginatedItems: paginatedDashboardMessages } = useAdminPagination(dashboardMessages)
 const unreadMessages = computed(() => sortedMessages.value.filter((message) => !message.is_read).slice(0, 4))
 const latestApplications = computed(() => applications.value.slice(0, 4))
 

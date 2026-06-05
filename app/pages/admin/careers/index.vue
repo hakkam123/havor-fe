@@ -37,7 +37,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredCareers" :key="item.id || item.slug">
+            <tr v-for="item in paginatedCareers" :key="item.id || item.slug">
               <td>
                 <div>
                   <p class="font-semibold text-slate-900">{{ item.job_title }}</p>
@@ -74,6 +74,13 @@
           </tbody>
         </table>
       </div>
+
+      <AdminPagination
+        v-model:page="careersPage"
+        :total="filteredCareers.length"
+        :page-size="careersPageSize"
+        label="positions"
+      />
     </section>
 
     <section class="admin-table-shell">
@@ -106,7 +113,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="application in applications" :key="application.id">
+            <tr v-for="application in paginatedApplications" :key="application.id">
               <td>
                 <div>
                   <p class="font-semibold text-slate-900">{{ application.fullName }}</p>
@@ -145,6 +152,13 @@
           </tbody>
         </table>
       </div>
+
+      <AdminPagination
+        v-model:page="applicationsPage"
+        :total="applications.length"
+        :page-size="applicationsPageSize"
+        label="applications"
+      />
     </section>
 
     <AdminModal
@@ -272,6 +286,19 @@ const filteredCareers = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
+
+const {
+  currentPage: careersPage,
+  pageSize: careersPageSize,
+  paginatedItems: paginatedCareers
+} = useAdminPagination(filteredCareers)
+
+const applicationsSource = computed(() => applications.value)
+const {
+  currentPage: applicationsPage,
+  pageSize: applicationsPageSize,
+  paginatedItems: paginatedApplications
+} = useAdminPagination(applicationsSource)
 
 const stats = computed(() => [
   { label: 'Open Roles', value: careers.value.length, meta: 'Entries exposed on the public careers route' },

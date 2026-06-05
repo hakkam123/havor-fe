@@ -23,8 +23,9 @@
       </div>
     </section>
 
-    <section class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      <article v-for="banner in banners" :key="banner.id" class="admin-panel relative flex min-h-full flex-col overflow-hidden pb-20">
+    <section class="space-y-4">
+      <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <article v-for="banner in paginatedBanners" :key="banner.id" class="admin-panel relative flex min-h-full flex-col overflow-hidden pb-20">
         <div class="relative">
           <div class="absolute left-4 top-4 z-10">
             <span class="admin-badge">{{ banner.page_name }}</span>
@@ -57,7 +58,15 @@
         >
           <Edit2 class="h-4 w-4" />
         </button>
-      </article>
+        </article>
+      </div>
+
+      <AdminPagination
+        v-model:page="currentPage"
+        :total="banners.length"
+        :page-size="pageSize"
+        label="banners"
+      />
     </section>
 
     <AdminModal
@@ -145,6 +154,8 @@ const form = ref({
   mediaFile: null,
   mediaFileName: ''
 })
+
+const { currentPage, pageSize, paginatedItems: paginatedBanners } = useAdminPagination(banners, 9)
 
 const stats = computed(() => [
   { label: 'Total Banners', value: banners.value.length, meta: 'Media items in workspace' },

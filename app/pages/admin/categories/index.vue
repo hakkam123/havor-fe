@@ -51,7 +51,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in categoriesByType(section.type)" :key="item.id">
+              <tr v-for="item in paginatedCategoriesByType(section.type)" :key="item.id">
                 <td class="font-semibold text-slate-900">{{ item.name }}</td>
                 <td><span class="admin-badge">{{ item.slug }}</span></td>
                 <td>
@@ -73,6 +73,14 @@
             </tbody>
           </table>
         </div>
+
+        <AdminPagination
+          :page="categoryPages[section.type]"
+          :total="categoriesByType(section.type).length"
+          :page-size="categoryPageSize"
+          :label="`${section.type.toLowerCase()} categories`"
+          @update:page="setCategoryPage(section.type, $event)"
+        />
       </article>
     </section>
 
@@ -173,6 +181,8 @@ const isDeleting = ref(false)
 const successState = ref({ open: false, title: '', message: '' })
 const form = ref({ id: null, name: '', type: 'Product' })
 const deleteState = ref({ open: false, id: null, name: '' })
+const categoryPageSize = 8
+const categoryPages = ref(Object.fromEntries(categoryTypes.map((type) => [type, 1])))
 
 const toSlug = (value = '') =>
   value
@@ -196,6 +206,17 @@ const filteredCategories = computed(() => {
 })
 
 const categoriesByType = (type) => filteredCategories.value.filter((item) => item.type === type)
+const paginatedCategoriesByType = (type) => {
+  const items = categoriesByType(type)
+  const currentPage = Math.min(Math.max(categoryPages.value[type] || 1, 1), Math.max(1, Math.ceil(items.length / categoryPageSize)))
+  const startIndex = (currentPage - 1) * categoryPageSize
+
+  return items.slice(startIndex, startIndex + categoryPageSize)
+}
+
+const setCategoryPage = (type, page) => {
+  categoryPages.value[type] = page
+}
 
 const stats = computed(() => categorySections.map((section) => ({
   label: section.title,

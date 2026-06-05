@@ -90,9 +90,6 @@
             <h2 class="mt-3 text-[clamp(1.85rem,3vw,2.4rem)] font-semibold leading-tight text-[#0e2344]">
               {{ t('home.clients.title') }}
             </h2>
-            <p class="mt-3 text-[0.9rem] leading-7 text-slate-600">
-              {{ t('home.clients.intro') }}
-            </p>
           </div>
 
           <div v-if="isLoadingClients && !clients.length" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -191,9 +188,6 @@
                   >
                   <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,14,31,0.04)_0%,rgba(4,14,31,0.36)_43%,rgba(4,14,31,0.82)_100%)]"></div>
                   <div class="absolute inset-x-0 bottom-0 p-6 text-white sm:p-7">
-                    <p class="mb-3 max-w-[15rem] truncate text-[0.72rem] font-medium uppercase tracking-normal text-white/78">
-                      {{ service.shortLabel }}
-                    </p>
                     <h3 class="line-clamp-2 max-w-[17rem] text-[1.28rem] font-semibold leading-tight">{{ service.title }}</h3>
                     <p class="mt-3 line-clamp-2 max-w-[17rem] text-[0.82rem] leading-5 text-white/76">{{ service.description }}</p>
                   </div>

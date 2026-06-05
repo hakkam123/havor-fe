@@ -35,7 +35,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredExpertises" :key="item.id">
+            <tr v-for="item in paginatedExpertises" :key="item.id">
               <td>
                 <div class="flex items-center gap-3">
                   <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)]">
@@ -65,6 +65,13 @@
           </tbody>
         </table>
       </div>
+
+      <AdminPagination
+        v-model:page="currentPage"
+        :total="filteredExpertises.length"
+        :page-size="pageSize"
+        label="expertises"
+      />
     </section>
 
     <AdminModal
@@ -190,6 +197,8 @@ const filteredExpertises = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
+
+const { currentPage, pageSize, paginatedItems: paginatedExpertises } = useAdminPagination(filteredExpertises)
 
 const stats = computed(() => [
   { label: 'Total Expertise', value: expertises.value.length, meta: 'Capabilities in the service list' },

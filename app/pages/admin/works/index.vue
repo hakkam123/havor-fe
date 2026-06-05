@@ -39,7 +39,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredWorks" :key="item.id">
+            <tr v-for="item in paginatedWorks" :key="item.id">
               <td>
                 <div class="flex items-center gap-3">
                   <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)]">
@@ -73,6 +73,13 @@
           </tbody>
         </table>
       </div>
+
+      <AdminPagination
+        v-model:page="currentPage"
+        :total="filteredWorks.length"
+        :page-size="pageSize"
+        label="works"
+      />
     </section>
 
     <AdminModal
@@ -200,6 +207,8 @@ const filteredWorks = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
+
+const { currentPage, pageSize, paginatedItems: paginatedWorks } = useAdminPagination(filteredWorks)
 
 const stats = computed(() => [
   { label: 'Total Works', value: works.value.length, meta: 'Portfolio entries in workspace' },

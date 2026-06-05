@@ -56,7 +56,7 @@
 
           <div class="custom-scrollbar max-h-[620px] overflow-y-auto">
             <button
-              v-for="msg in filteredMessages"
+              v-for="msg in paginatedMessages"
               :key="msg.id"
               type="button"
               @click="selectedMessage = msg"
@@ -76,6 +76,13 @@
 
             <div v-if="!filteredMessages.length" class="admin-empty-state">No messages match this filter.</div>
           </div>
+
+          <AdminPagination
+            v-model:page="currentPage"
+            :total="filteredMessages.length"
+            :page-size="pageSize"
+            label="messages"
+          />
         </div>
 
         <div class="flex min-h-[680px] flex-col bg-white">
@@ -152,6 +159,7 @@ const messagesForCurrentFilter = () => {
 }
 
 const filteredMessages = computed(messagesForCurrentFilter)
+const { currentPage, pageSize, paginatedItems: paginatedMessages } = useAdminPagination(filteredMessages, 8)
 
 const stats = computed(() => [
   { label: 'Total Messages', value: messages.value.length, meta: 'Customer inquiries in inbox', filter: 'all' },

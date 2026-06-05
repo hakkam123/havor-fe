@@ -38,7 +38,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredClients" :key="item.id">
+            <tr v-for="item in paginatedClients" :key="item.id">
               <td>
                 <div class="flex items-center gap-3">
                   <div class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-[12px] border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-2">
@@ -77,6 +77,13 @@
           </tbody>
         </table>
       </div>
+
+      <AdminPagination
+        v-model:page="currentPage"
+        :total="filteredClients.length"
+        :page-size="pageSize"
+        label="clients"
+      />
     </section>
 
     <AdminModal
@@ -173,6 +180,8 @@ const filteredClients = computed(() => {
       .some((value) => String(value).toLowerCase().includes(query))
   )
 })
+
+const { currentPage, pageSize, paginatedItems: paginatedClients } = useAdminPagination(filteredClients)
 
 onMounted(() => {
   fetchClients()
