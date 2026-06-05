@@ -2,7 +2,7 @@
   <header
     ref="headerRef"
     class="fixed inset-x-0 top-0 z-50 transition-all duration-300 ease-out"
-    :class="isPastHero ? 'bg-white/96 shadow-[0_18px_60px_rgba(15,23,42,0.12)] backdrop-blur-xl' : 'bg-transparent'"
+    :class="isPastHero ? 'bg-white/96 backdrop-blur-xl' : 'bg-transparent'"
   >
     <div class="marketing-container">
       <div class="flex min-h-[76px] items-center justify-between gap-5">
@@ -13,10 +13,6 @@
           >
             <img src="/logo-havor.svg" alt="PT Havor SMART Digital" width="32" height="32" class="h-8 w-8 rounded-full object-cover">
           </span>
-          <!-- <div class="hidden sm:block">
-            <p class="text-[0.82rem] font-semibold tracking-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-950' : 'text-white'">Havor</p>
-            <p class="text-xs font-normal transition-colors duration-300 ease-out" :class="isPastHero ? 'text-slate-500' : 'text-white/80'">Smarta Digital</p>
-          </div> -->
         </NuxtLink>
 
         <nav class="hidden items-center gap-2 lg:flex">

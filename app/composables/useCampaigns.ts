@@ -66,6 +66,27 @@ export const useCampaigns = (options: UseCampaignOptions = {}) => {
     }
   }
 
+  const fetchCampaignBySlug = async (slug: string) => {
+    const normalizedSlug = String(slug || '').trim()
+    if (!normalizedSlug) return null
+
+    mutationError.value = null
+    try {
+      return await queryClient.ensureQueryData({
+        queryKey: ['campaigns', 'slug', normalizedSlug, { includeDrafts }],
+        queryFn: async () => {
+          const res = await apiFetch<ApiCampaignItem>(`/campaigns/${normalizedSlug}`)
+          const item = normalizeCampaignItem(res)
+          return !includeDrafts && !item.is_published ? null : item
+        }
+      })
+    } catch (fetchError) {
+      console.error(`Failed to fetch campaign "${normalizedSlug}"`, fetchError)
+      mutationError.value = 'Unable to load the selected campaign right now.'
+      return null
+    }
+  }
+
   const toCampaignFormData = (payload: any) => toFormData({
     title: payload.title,
     slug: payload.slug,
@@ -134,6 +155,7 @@ export const useCampaigns = (options: UseCampaignOptions = {}) => {
     isLoading,
     error,
     fetchCampaigns,
+    fetchCampaignBySlug,
     createCampaign,
     updateCampaign,
     deleteCampaign

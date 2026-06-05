@@ -206,9 +206,9 @@
           <NuxtLink
             v-for="campaign in campaignItems"
             :key="campaign.title"
-            to="/contact"
+            :to="campaign.slug ? `/campaign/${campaign.slug}` : '/contact'"
             class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.1)]"
-            :aria-label="`Discuss campaign: ${campaign.title}`"
+            :aria-label="campaign.slug ? `Open campaign detail: ${campaign.title}` : `Discuss campaign: ${campaign.title}`"
             v-motion-fade-up
           >
             <img :src="campaign.image" :alt="campaign.title" class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]">
@@ -311,19 +311,22 @@ const fallbackCampaignItems = computed(() => [
     category: 'Digital Readiness',
     title: 'Operational Assessment for Growing Teams',
     excerpt: 'A focused campaign to map workflow gaps, clarify priorities, and prepare practical implementation steps.',
-    image: mediaHeroImage.value
+    image: mediaHeroImage.value,
+    slug: ''
   },
   {
     category: 'Implementation Support',
     title: 'Build, Improve, and Maintain Core Systems',
     excerpt: 'Support for companies that need dependable execution across web platforms, internal tools, and integrations.',
-    image: mediaHeroImage.value
+    image: mediaHeroImage.value,
+    slug: ''
   },
   {
     category: 'Long-Term Partnership',
     title: 'Technology Care for Business Continuity',
     excerpt: 'A structured support model for monitoring, iteration, and ongoing improvement after launch.',
-    image: mediaHeroImage.value
+    image: mediaHeroImage.value,
+    slug: ''
   }
 ])
 const campaignItems = computed(() => {
@@ -333,7 +336,8 @@ const campaignItems = computed(() => {
     category: campaign.category,
     title: campaign.title,
     excerpt: campaign.excerpt,
-    image: campaign.image_url || fallbackCampaignItems.value[index]?.image || mediaHeroImage.value
+    image: campaign.image_url || fallbackCampaignItems.value[index]?.image || mediaHeroImage.value,
+    slug: campaign.slug
   }))
 })
 

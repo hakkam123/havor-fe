@@ -55,6 +55,9 @@ export type ApiCareer = {
   job_title?: string | null
   job_description?: string | null
   thumbnail?: string | null
+  categoryId?: ApiId | null
+  category_name?: string | null
+  categoryName?: string | null
 }
 
 export type Career = {
@@ -63,6 +66,8 @@ export type Career = {
   job_description: string
   excerpt: string
   thumbnail: string
+  categoryId: number | null
+  categoryName: string
   slug: string
 }
 

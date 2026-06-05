@@ -209,11 +209,11 @@
   }
 
   .admin-secondary-btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-[10px] border border-[var(--admin-border-strong)] bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50;
+    @apply inline-flex items-center justify-center gap-2  px-4 py-2.5 text-sm font-semibold text-slate-700 transition;
   }
 
   .admin-icon-btn {
-    @apply inline-flex h-10 w-10 items-center justify-center rounded-[10px] border border-[var(--admin-border-strong)] bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700;
+    @apply inline-flex h-10 w-10 items-center justify-center  text-slate-500 transition hover:text-slate-700;
   }
 
   .admin-input {

@@ -15,9 +15,6 @@
           <h1 class="mt-4 text-[clamp(2rem,4.2vw,3.65rem)] font-semibold leading-tight tracking-normal text-[#0e2344]">
             {{ product.name }}
           </h1>
-          <p class="mx-auto mt-5 max-w-2xl text-[0.94rem] leading-7 text-slate-600">
-            {{ productSummary }}
-          </p>
         </div>
 
         <div v-else class="brand-panel p-6 text-center">

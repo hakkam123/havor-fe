@@ -138,25 +138,25 @@ const categorySections = [
     type: 'News',
     title: 'Categories for News',
     description: 'Editorial labels used by media and news articles.',
-    createLabel: 'Create News Category'
+    createLabel: 'Create'
   },
   {
     type: 'Career',
     title: 'Categories for Career',
     description: 'Role grouping labels for career-related surfaces.',
-    createLabel: 'Create Career Category'
+    createLabel: 'Create'
   },
   {
     type: 'Campaign',
     title: 'Categories for Campaign',
     description: 'Campaign labels used by public campaign content.',
-    createLabel: 'Create Campaign Category'
+    createLabel: 'Create'
   },
   {
     type: 'Product',
     title: 'Categories for Product',
     description: 'Catalog grouping labels for products and related work entries.',
-    createLabel: 'Create Product Category'
+    createLabel: 'Create'
   }
 ]
 

@@ -763,6 +763,8 @@ onBeforeUnmount(() => {
 })
 
 const roleCategoryFor = (role) => {
+  if (role?.categoryName) return role.categoryName
+
   const text = `${role?.job_title || ''} ${role?.job_description || ''}`.toLowerCase()
 
   if (/\b(qa|quality assurance|quality)\b/.test(text)) return 'Quality Assurance'

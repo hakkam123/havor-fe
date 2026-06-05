@@ -30,6 +30,7 @@
           <thead>
             <tr>
               <th>Position</th>
+              <th>Category</th>
               <th>Description</th>
               <th>Thumbnail</th>
               <th class="text-right">Actions</th>
@@ -42,6 +43,9 @@
                   <p class="font-semibold text-slate-900">{{ item.job_title }}</p>
                   <p class="text-xs text-slate-400">/{{ item.slug }}</p>
                 </div>
+              </td>
+              <td>
+                <span class="admin-badge">{{ item.categoryName || 'Unassigned' }}</span>
               </td>
               <td class="max-w-[420px] text-slate-500">
                 <p class="line-clamp-2">{{ item.excerpt || '-' }}</p>
@@ -63,7 +67,7 @@
               </td>
             </tr>
             <tr v-if="!filteredCareers.length">
-              <td colspan="4" class="admin-empty-state">
+              <td colspan="5" class="admin-empty-state">
                 {{ error ? error : 'No career positions found.' }}
               </td>
             </tr>
@@ -162,6 +166,13 @@
               <input :value="toSlug(form.job_title)" type="text" class="admin-input bg-slate-50 text-slate-500" readonly>
             </div>
             <div>
+              <label class="mb-2 block text-sm font-medium text-slate-600">Category <span class="text-rose-500">*</span></label>
+              <select v-model="form.categoryId" class="admin-select" required>
+                <option value="" disabled>Select career category</option>
+                <option v-for="cat in careerCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+              </select>
+            </div>
+            <div>
               <label class="mb-2 block text-sm font-medium text-slate-600">Thumbnail <span class="text-rose-500">*</span></label>
               <div class="relative flex h-[220px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-[var(--admin-border-strong)] bg-[var(--admin-surface-soft)] transition hover:border-slate-300 hover:bg-white">
                 <div v-if="form.thumbnail" class="absolute inset-0">
@@ -215,10 +226,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { Edit2, Plus, Search, Trash2, Upload } from 'lucide-vue-next'
 
 const { careers, error, fetchCareers, createCareer, updateCareer, deleteCareer } = useAdminCareers()
+const { categories: careerCategories, fetchCategories } = useCategories({ type: 'Career' })
 const {
   applications,
   error: applicationsError,
@@ -242,6 +254,7 @@ const initialForm = () => ({
   id: null,
   job_title: '',
   job_description: '',
+  categoryId: careerCategories.value[0]?.id || '',
   thumbnail: '',
   thumbnailFile: null,
   thumbnailFileName: ''
@@ -254,7 +267,7 @@ const filteredCareers = computed(() => {
 
   const query = searchQuery.value.toLowerCase()
   return careers.value.filter((item) =>
-    [item.job_title, item.job_description]
+    [item.job_title, item.categoryName, item.job_description]
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query))
   )
@@ -282,6 +295,7 @@ const openModal = (item = null) => {
   form.value = item
     ? {
       ...item,
+      categoryId: item.categoryId || '',
       thumbnailFile: null,
       thumbnailFileName: ''
     }
@@ -289,6 +303,11 @@ const openModal = (item = null) => {
 
   isModalOpen.value = true
 }
+
+watch(careerCategories, (items) => {
+  if (!isModalOpen.value || form.value.id || form.value.categoryId) return
+  form.value.categoryId = items[0]?.id || ''
+})
 
 const closeModal = () => {
   if (isSaving.value) return
@@ -309,6 +328,11 @@ const saveForm = async () => {
 
   if (!form.value.job_title?.trim() || !stripHtml(form.value.job_description).trim()) {
     formError.value = 'Job title and description are required.'
+    return
+  }
+
+  if (!form.value.categoryId) {
+    formError.value = 'Category is required.'
     return
   }
 
@@ -368,7 +392,7 @@ const confirmDelete = async () => {
 }
 
 onMounted(() => {
-  fetchCareers()
+  Promise.all([fetchCareers(), fetchCategories()])
   fetchApplications()
 })
 </script>

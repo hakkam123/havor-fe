@@ -1,0 +1,208 @@
+<template>
+  <div class="overflow-hidden bg-white">
+    <PublicDetailHero
+      :image="campaign?.image_url || fallbackImage"
+      :image-alt="campaign?.title || 'Campaign hero image'"
+      label="Company Campaign"
+    />
+
+    <section class="bg-white py-12 sm:py-14">
+      <div class="marketing-container">
+        <div v-if="campaign" class="mx-auto max-w-4xl text-center">
+          <p class="text-[0.72rem] font-semibold uppercase tracking-normal text-[#1f5dcc]">
+            {{ campaign.category }}
+          </p>
+          <h1 class="mt-4 text-[clamp(2rem,4.2vw,3.65rem)] font-semibold leading-tight tracking-normal text-[#0e2344]">
+            {{ campaign.title }}
+          </h1>
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[0.82rem] font-medium text-slate-500">
+            <span v-if="campaign.createdAt">{{ formatDate(campaign.createdAt) }}</span>
+            <span>{{ campaign.readTime }} min read</span>
+          </div>
+        </div>
+
+        <div v-else class="brand-panel p-6 text-center">
+          <h1 class="text-3xl font-semibold tracking-normal text-[#0e2344]">Campaign not found</h1>
+          <p class="mt-3 text-sm leading-7 text-slate-600">The campaign you requested is not available in the current campaign library.</p>
+          <NuxtLink to="/media-news" class="btn-primary mt-6 inline-flex">Back to Media & News</NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <section v-if="campaign" class="border-t border-[#dbe6f4] bg-white py-12">
+      <div class="marketing-container">
+        <div class="grid gap-10 lg:grid-cols-[4rem_minmax(0,1fr)_18rem]">
+          <aside class="hidden lg:block" v-motion-fade-up>
+            <div class="sticky top-28">
+              <p class="brand-meta">Share</p>
+              <div class="mt-4 flex flex-col gap-3">
+                <button
+                  type="button"
+                  class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]"
+                  aria-label="Copy campaign link"
+                  @click="copyCampaignLink"
+                >
+                  <LinkIcon class="h-4 w-4" />
+                </button>
+                <a
+                  v-for="item in shareLinks"
+                  :key="item.label"
+                  :href="item.href"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex h-9 w-9 items-center justify-center rounded-full border border-[#dbe6f4] text-[#0e2344] transition hover:border-[#1f5dcc] hover:text-[#1f5dcc]"
+                  :aria-label="item.label"
+                >
+                  <component :is="item.icon" class="h-4 w-4" />
+                </a>
+              </div>
+              <p v-if="copyMessage" class="mt-3 text-xs font-medium text-emerald-700">{{ copyMessage }}</p>
+            </div>
+          </aside>
+
+          <article class="min-w-0" v-motion-fade-up>
+            <div class="detail-content" v-html="sanitizeHtml(campaign.content)"></div>
+          </article>
+
+          <aside class="space-y-8" v-motion-fade-up>
+            <div>
+              <h2 class="text-[1.3rem] font-semibold text-[#0e2344]">Campaign Categories</h2>
+              <div class="mt-3 h-0.5 w-8 bg-[#1f5dcc]"></div>
+              <div class="mt-6 space-y-4">
+                <NuxtLink
+                  v-for="item in categoryCards"
+                  :key="item.category"
+                  :to="`/campaign/${item.slug}`"
+                  class="group relative block min-h-28 overflow-hidden rounded-lg bg-[#071529]"
+                >
+                  <img :src="item.image_url || fallbackImage" :alt="item.category" class="absolute inset-0 h-full w-full object-cover opacity-55 transition duration-500 group-hover:scale-[1.04]">
+                  <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,21,41,0.22)_0%,rgba(7,21,41,0.86)_100%)]"></div>
+                  <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4 text-white">
+                    <span class="text-[0.74rem] font-semibold uppercase tracking-normal">{{ item.category }}</span>
+                    <ArrowUpRight class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </div>
+                </NuxtLink>
+              </div>
+            </div>
+
+            <div class="rounded-lg bg-[#0d3b91] p-5 text-white">
+              <p class="text-[0.75rem] font-medium uppercase tracking-normal text-white/70">Campaign Inquiry</p>
+              <h3 class="mt-3 text-lg font-semibold leading-tight">Discuss this initiative with Havor.</h3>
+              <NuxtLink to="/contact" class="mt-5 inline-flex text-sm font-medium text-white/88 hover:text-white">
+                Contact our team
+              </NuxtLink>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section v-if="campaign && relatedCampaigns.length" class="border-t border-[#dbe6f4] bg-white py-12 sm:py-14">
+      <div class="marketing-container">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <h2 class="border-l-2 border-[#1f5dcc] pl-5 text-[clamp(1.65rem,3vw,2.4rem)] font-semibold text-[#0e2344]">
+            Related Campaigns
+          </h2>
+          <NuxtLink to="/media-news" class="btn-outline">View Media & News</NuxtLink>
+        </div>
+
+        <div class="mt-8 grid gap-5 md:grid-cols-3">
+          <NuxtLink
+            v-for="item in relatedCampaigns"
+            :key="item.slug"
+            :to="`/campaign/${item.slug}`"
+            class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.1)]"
+            v-motion-fade-up
+          >
+            <img :src="item.image_url || fallbackImage" :alt="item.title" class="aspect-[16/9] w-full object-cover transition duration-500 group-hover:scale-[1.03]">
+            <div class="p-4">
+              <p class="brand-meta text-[#1f5dcc]">{{ item.category }}</p>
+              <h3 class="mt-2 line-clamp-2 text-[1.02rem] font-semibold leading-snug text-[#0e2344]">{{ item.title }}</h3>
+              <p v-if="item.createdAt" class="mt-3 text-xs font-medium text-slate-500">{{ formatDate(item.createdAt) }}</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+import { ArrowUpRight, Link as LinkIcon, Mail, Share2 } from 'lucide-vue-next'
+
+definePageMeta({
+  layout: 'public'
+})
+
+const route = useRoute()
+const slug = computed(() => String(route.params.slug || ''))
+const defaultFallbackImage = '/images/banner/006.jpg'
+
+const { campaigns, fetchCampaigns, fetchCampaignBySlug, error } = useCampaigns()
+const { fetchBannerPage, useBannerPage } = useBanners()
+const campaignBanner = useBannerPage('media-news', 'news')
+const fallbackImage = computed(() => campaignBanner.value.media_url || defaultFallbackImage)
+const campaign = ref<ReturnType<typeof useCampaigns>['campaigns']['value'][number] | null>(null)
+const currentUrl = ref('')
+const copyMessage = ref('')
+
+onMounted(async () => {
+  const [selectedCampaign] = await Promise.all([
+    fetchCampaignBySlug(slug.value),
+    fetchCampaigns(),
+    fetchBannerPage('media-news')
+  ])
+
+  campaign.value = selectedCampaign
+  currentUrl.value = window.location.href
+
+  if (!error.value && !campaign.value) {
+    showError({
+      statusCode: 404,
+      statusMessage: 'Campaign not found'
+    })
+  }
+})
+
+const relatedCampaigns = computed(() => campaigns.value.filter((item) => item.slug !== slug.value).slice(0, 3))
+const categoryCards = computed(() => {
+  const categoryMap = new Map<string, typeof campaigns.value[number]>()
+
+  campaigns.value.forEach((item) => {
+    if (!categoryMap.has(item.category)) categoryMap.set(item.category, item)
+  })
+
+  return [...categoryMap.values()].slice(0, 4)
+})
+const encodedShareUrl = computed(() => encodeURIComponent(currentUrl.value || `/campaign/${slug.value}`))
+const encodedShareText = computed(() => encodeURIComponent(campaign.value?.title || 'Havor campaign'))
+const shareLinks = computed(() => [
+  { label: 'Share on WhatsApp', href: `https://wa.me/?text=${encodedShareText.value}%20${encodedShareUrl.value}`, icon: Share2 },
+  { label: 'Share on LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedShareUrl.value}`, icon: Share2 },
+  { label: 'Share by email', href: `mailto:?subject=${encodedShareText.value}&body=${encodedShareUrl.value}`, icon: Mail }
+])
+const copyCampaignLink = async () => {
+  const link = currentUrl.value || `/campaign/${slug.value}`
+
+  try {
+    await navigator.clipboard.writeText(link)
+    copyMessage.value = 'Campaign link copied.'
+  } catch (_error) {
+    copyMessage.value = 'Copy failed. Please copy the address from your browser.'
+  }
+}
+const formatDate = (value: string) => new Date(value).toLocaleDateString('en-GB', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric'
+})
+
+usePageSeo({
+  title: computed(() => campaign.value ? `${campaign.value.title} | Campaign | PT Havor SMART Digital` : 'Campaign Detail | PT Havor SMART Digital'),
+  description: computed(() => campaign.value?.excerpt || 'Explore company campaigns and digital initiatives from PT Havor SMART Digital.'),
+  path: computed(() => `/campaign/${slug.value}`),
+  image: computed(() => campaign.value?.image_url || fallbackImage.value),
+  type: 'article'
+})
+</script>

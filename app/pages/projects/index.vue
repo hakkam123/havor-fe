@@ -66,16 +66,8 @@
               class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.02]"
             >
             <div class="p-4">
-              <div class="flex flex-wrap gap-2">
-                <span class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-medium uppercase tracking-normal text-[#1f5dcc]">{{ project.categoryName }}</span>
-                <span v-if="project.client" class="rounded-full bg-[#edf4ff] px-3 py-1 text-[0.68rem] font-medium uppercase tracking-normal text-[#1f5dcc]">{{ project.client }}</span>
-              </div>
               <h3 class="mt-3 line-clamp-2 text-[1.08rem] font-semibold leading-tight tracking-normal text-[#0e2344]">{{ project.title }}</h3>
               <p class="mt-2 line-clamp-3 text-[0.84rem] leading-6 text-slate-600">{{ stripHtml(project.description) }}</p>
-
-              <div class="mt-4 inline-flex items-center gap-2 text-[0.74rem] font-medium uppercase tracking-normal text-[#1f5dcc]">
-                View Project Detail
-              </div>
             </div>
           </NuxtLink>
 

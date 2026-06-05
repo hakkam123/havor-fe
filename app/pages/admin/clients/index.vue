@@ -23,7 +23,6 @@
           <input v-model="searchQuery" type="text" placeholder="Search client name or description..." class="admin-input pl-11">
         </div>
         <div class="flex flex-wrap items-center gap-3 text-sm text-slate-500">
-          <span class="admin-badge">Total Clients: {{ clients.length }}</span>
           <span>Showing {{ filteredClients.length }} entries</span>
         </div>
       </div>
@@ -48,7 +47,6 @@
                   </div>
                   <div>
                     <p class="font-semibold text-slate-900">{{ item.name }}</p>
-                    <p class="text-xs text-slate-400">Client ID {{ item.id }}</p>
                   </div>
                 </div>
               </td>

@@ -15,6 +15,8 @@ export const useAdminCareers = () => {
     job_description: String(item.job_description || ''),
     excerpt: String(item.job_description || '').replace(/<[^>]*>?/gm, '').trim().slice(0, 180),
     thumbnail: resolveAssetUrl(item.thumbnail),
+    categoryId: item.categoryId === null || item.categoryId === undefined || item.categoryId === '' ? null : Number(item.categoryId),
+    categoryName: String(item.categoryName ?? item.category_name ?? ''),
     slug: toSlug(item.job_title)
   })
 
@@ -35,6 +37,7 @@ export const useAdminCareers = () => {
   const toCareerFormData = (payload: any) => toFormData({
     job_title: payload.job_title,
     job_description: payload.job_description,
+    categoryId: payload.categoryId,
     thumbnail: payload.thumbnailFile ?? payload.thumbnail
   })
 

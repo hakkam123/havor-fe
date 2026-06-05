@@ -81,40 +81,6 @@
       </div>
     </section>
 
-    <section class="brand-section bg-[#f5f8fc]">
-      <div class="marketing-container">
-        <SectionHeading
-          title="Content Categories"
-          description="Browse Havor content groups managed from the CMS across products, media updates, campaigns, and career content."
-        />
-
-        <div class="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          <article
-            v-for="group in landingCategoryGroups"
-            :key="group.title"
-            class="border-t border-[#dbe6f4] pt-5"
-            v-motion-fade-up
-          >
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <p class="brand-meta">{{ group.label }}</p>
-                <h3 class="mt-2 text-[1rem] font-semibold leading-tight text-[#0e2344]">{{ group.title }}</h3>
-              </div>
-              <NuxtLink :to="group.href" class="btn-outline px-3 py-1.5 text-[0.72rem]">
-                View
-              </NuxtLink>
-            </div>
-
-            <div v-if="group.categories.length" class="mt-4 flex flex-wrap gap-2">
-              <span v-for="category in group.categories" :key="`${group.type}-${category}`" class="brand-chip">
-                {{ category }}
-              </span>
-            </div>
-            <p v-else class="mt-4 text-sm leading-6 text-slate-500">No categories available yet.</p>
-          </article>
-        </div>
-      </div>
-    </section>
 
     <section class="brand-section bg-[#f5f8fc]">
       <div class="marketing-container">
@@ -276,10 +242,6 @@
                 @error="handleImageError($event, defaultProjectImage)"
               >
               <div class="p-4">
-                <div class="flex flex-wrap gap-2">
-                  <span v-if="project.categoryName" class="brand-chip">{{ project.categoryName }}</span>
-                  <span v-if="project.client" class="brand-chip">{{ project.client }}</span>
-                </div>
                 <h3 class="mt-4 line-clamp-2 text-[1.08rem] font-semibold leading-tight text-[#0e2344]">{{ project.title }}</h3>
                 <p class="mt-2 line-clamp-3 text-[0.84rem] leading-6 text-slate-600">{{ stripHtml(project.description) }}</p>
                 <div class="mt-4">
@@ -394,19 +356,15 @@
             title="Company Campaign"
             description="Explore Havor initiatives for digital transformation, long-term support, and practical technology adoption across organizations that need dependable execution."
           />
-
-          <div class="lg:justify-self-end">
-            <NuxtLink to="/contact" class="btn-outline">Discuss a Campaign</NuxtLink>
-          </div>
         </div>
 
         <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <NuxtLink
             v-for="campaign in campaignItems"
             :key="campaign.title"
-            to="/contact"
+            :to="campaign.slug ? `/campaign/${campaign.slug}` : '/contact'"
             class="group overflow-hidden rounded-lg border border-[#dbe6f4] bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(18,56,122,0.1)]"
-            :aria-label="`Discuss campaign: ${campaign.title}`"
+            :aria-label="campaign.slug ? `Open campaign detail: ${campaign.title}` : `Discuss campaign: ${campaign.title}`"
             v-motion-fade-up
           >
             <img
@@ -441,82 +399,12 @@
         </div>
       </template>
       <template #actions>
-        <form
-          id="contact-form"
-          class="w-full rounded-lg border border-white/18 bg-white p-4 text-[#0e2344] shadow-[0_20px_54px_rgba(3,11,24,0.24)] sm:w-[30rem] sm:p-5"
-          novalidate
-          @submit.prevent="handleContactSubmit"
+        <NuxtLink
+          to="/contact"
+          class="btn-primary inline-flex items-center justify-center"
         >
-          <div class="grid gap-3 sm:grid-cols-2">
-            <label class="text-sm font-semibold" for="contact-name">
-              Name <span class="text-rose-600">*</span>
-              <input
-                id="contact-name"
-                v-model="contactForm.name"
-                class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
-                type="text"
-                autocomplete="name"
-                :aria-invalid="Boolean(contactFieldErrors.name)"
-              >
-              <span v-if="contactFieldErrors.name" class="mt-1 block text-xs font-medium text-rose-600">{{ contactFieldErrors.name }}</span>
-            </label>
-
-            <label class="text-sm font-semibold" for="contact-email">
-              Email <span class="text-rose-600">*</span>
-              <input
-                id="contact-email"
-                v-model="contactForm.email"
-                class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
-                type="email"
-                autocomplete="email"
-                :aria-invalid="Boolean(contactFieldErrors.email)"
-              >
-              <span v-if="contactFieldErrors.email" class="mt-1 block text-xs font-medium text-rose-600">{{ contactFieldErrors.email }}</span>
-            </label>
-          </div>
-
-          <label class="mt-3 block text-sm font-semibold" for="contact-subject">
-            Subject <span class="text-rose-600">*</span>
-            <input
-              id="contact-subject"
-              v-model="contactForm.subject"
-              class="mt-2 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
-              type="text"
-              autocomplete="off"
-              :aria-invalid="Boolean(contactFieldErrors.subject)"
-            >
-            <span v-if="contactFieldErrors.subject" class="mt-1 block text-xs font-medium text-rose-600">{{ contactFieldErrors.subject }}</span>
-          </label>
-
-          <label class="mt-3 block text-sm font-semibold" for="contact-message">
-            Message <span class="text-rose-600">*</span>
-            <textarea
-              id="contact-message"
-              v-model="contactForm.message"
-              class="mt-2 min-h-28 w-full rounded-lg border border-[#d6e5fb] px-3 py-2.5 text-sm outline-none transition focus:border-[#9bbcf2] focus:ring-4 focus:ring-[#edf4ff]"
-              :aria-invalid="Boolean(contactFieldErrors.message)"
-            ></textarea>
-            <span v-if="contactFieldErrors.message" class="mt-1 block text-xs font-medium text-rose-600">{{ contactFieldErrors.message }}</span>
-          </label>
-
-          <p
-            v-if="contactMessage"
-            class="mt-3 rounded-lg px-3 py-2 text-sm font-medium"
-            :class="contactStatus === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'"
-            role="status"
-            aria-live="polite"
-          >
-            {{ contactMessage }}
-          </p>
-
-          <button
-            type="submit"
-            class="btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:opacity-60"
-            :disabled="contactStatus === 'loading'"
-          >
-            {{ contactStatus === 'loading' ? 'Sending...' : 'Send Message' }}
-          </button>
-        </form>
+          {{ t('home.cta.button') }}
+        </NuxtLink>
       </template>
     </PublicImageCta>
   </div>
@@ -814,19 +702,22 @@ const fallbackCampaignItems = computed(() => [
     category: campaignCategoryNames.value[0] || 'Digital Readiness',
     title: 'Operational Assessment for Growing Teams',
     excerpt: 'A focused campaign to map workflow gaps, clarify priorities, and prepare practical implementation steps.',
-    image: featuredImage.value
+    image: featuredImage.value,
+    slug: ''
   },
   {
     category: campaignCategoryNames.value[1] || 'Implementation Support',
     title: 'Build, Improve, and Maintain Core Systems',
     excerpt: 'Support for companies that need dependable execution across web platforms, internal tools, and integrations.',
-    image: aboutImage.value
+    image: aboutImage.value,
+    slug: ''
   },
   {
     category: campaignCategoryNames.value[2] || 'Long-Term Partnership',
     title: 'Technology Care for Business Continuity',
     excerpt: 'A structured support model for monitoring, iteration, and ongoing improvement after launch.',
-    image: ctaImage.value
+    image: ctaImage.value,
+    slug: ''
   }
 ])
 const campaignItems = computed(() => {
@@ -836,7 +727,8 @@ const campaignItems = computed(() => {
     category: campaign.category,
     title: campaign.title,
     excerpt: campaign.excerpt,
-    image: campaign.image_url || fallbackCampaignItems.value[index]?.image || ctaImage.value
+    image: campaign.image_url || fallbackCampaignItems.value[index]?.image || ctaImage.value,
+    slug: campaign.slug
   }))
 })
 const visibleHomeProjects = computed(() => works.value.slice(0, homeProjectLimit.value))
