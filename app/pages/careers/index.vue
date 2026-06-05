@@ -119,8 +119,7 @@
         </div>
         <div v-else class="mt-8 brand-soft-panel p-10 text-center">
           <h3 class="text-xl font-semibold text-[#0e2344]">No open positions at the moment</h3>
-          <p class="mt-4 text-slate-600">While we don't have active roles listed right now, we are always looking for great talent. Send us your CV for future opportunities.</p>
-          <button type="button" class="btn-outline mt-8 inline-flex" @click="openCareerModal('General Career Inquiry')">Send your Resume</button>
+          <p class="mt-4 text-slate-600">While we don't have active roles listed right now, we are always looking for great talent. Send us your CV to our email for future opportunities.</p>
         </div>
       </div>
     </section>
@@ -268,7 +267,7 @@
             </div>
             <button
               type="button"
-              class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#dbe6f4] text-xl leading-none text-slate-500 transition hover:bg-[#edf4ff] hover:text-[#0e2344]"
+              class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xl leading-none text-slate-500 transition hover:text-[#0e2344]"
               aria-label="Close application form"
               @click="closeCareerModal"
             >
