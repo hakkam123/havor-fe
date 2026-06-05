@@ -255,7 +255,7 @@
           novalidate
           @submit.prevent="handleCareerSubmit"
         >
-          <div class="flex items-start justify-between gap-4 border-b border-[#dbe6f4] pb-4">
+          <div class="flex items-start justify-between gap-4 pb-4">
             <div>
               <p class="brand-meta">Career Application</p>
               <h2 id="career-application-title" class="mt-2 text-2xl font-semibold leading-tight text-[#0e2344]">
