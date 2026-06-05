@@ -45,7 +45,7 @@
 
     <section class="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_380px]">
       <div class="admin-table-shell">
-        <div class="admin-toolbar">
+        <div class="admin-toolbar flex items-center justify-between">
           <div>
             <p class="text-sm font-semibold text-slate-900">Live Incoming Messages</p>
             <p class="mt-1 text-xs text-[var(--admin-muted)]">
@@ -121,9 +121,6 @@
             <div>
               <p class="text-sm font-semibold text-slate-900">Landing Page Activity</p>
               <p class="mt-1 text-xs text-[var(--admin-muted)]">Tracked locally from public homepage visits on this browser.</p>
-            </div>
-            <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-blue-50">
-              <Globe class="h-5 w-5 text-blue-500" />
             </div>
           </div>
 
