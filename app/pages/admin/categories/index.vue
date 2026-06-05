@@ -197,9 +197,34 @@ const isValidCategoryType = (type) => categoryTypes.includes(type)
 
 const filteredCategories = computed(() => categoryTypes.flatMap((type) => categoriesByType(type)))
 
-const categoriesByType = (type) => categoryResources[type]?.categories.value || []
-const paginatedCategoriesByType = (type) => categoriesByType(type)
-const categoryTotalByType = (type) => categoryResources[type]?.paginationMeta.value.total || 0
+const categoryMatchesSearch = (item) => {
+  const query = searchQuery.value.trim().toLowerCase()
+  if (!query) return true
+
+  return [item.name, item.slug]
+    .filter(Boolean)
+    .some((value) => String(value).toLowerCase().includes(query))
+}
+
+const rawCategoriesByType = (type) => categoryResources[type]?.categories.value || []
+const isCategoryServerPaginated = (type) => Boolean(categoryResources[type]?.paginationMeta.value.isServerPaginated)
+const categoriesByType = (type) => rawCategoriesByType(type).filter(categoryMatchesSearch)
+const categoryTotalByType = (type) => (
+  isCategoryServerPaginated(type)
+    ? categoryResources[type]?.paginationMeta.value.total || 0
+    : categoriesByType(type).length
+)
+const paginatedCategoriesByType = (type) => {
+  const source = categoriesByType(type)
+  if (isCategoryServerPaginated(type)) return source
+
+  const page = Math.max(1, Number(categoryPages.value[type]) || 1)
+  const pageSize = Math.max(1, Number(categoryPageSizes.value[type]) || 10)
+  const startIndex = (page - 1) * pageSize
+  const endIndex = startIndex + pageSize
+
+  return source.slice(startIndex, endIndex)
+}
 
 const fetchCategoryPage = (type) => categoryResources[type]?.fetchCategories({
   page: categoryPages.value[type],

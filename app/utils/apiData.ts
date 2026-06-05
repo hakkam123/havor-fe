@@ -15,6 +15,7 @@ export type ApiPaginationMeta = {
   pageCount: number
   hasNextPage: boolean
   hasPreviousPage: boolean
+  isServerPaginated: boolean
 }
 
 export const defaultPaginationMeta = (limit = 10): ApiPaginationMeta => ({
@@ -23,13 +24,29 @@ export const defaultPaginationMeta = (limit = 10): ApiPaginationMeta => ({
   limit,
   pageCount: 1,
   hasNextPage: false,
-  hasPreviousPage: false
+  hasPreviousPage: false,
+  isServerPaginated: false
 })
 
 export const toApiPaginationMeta = (value: unknown, fallbackLimit = 10): ApiPaginationMeta => {
   const meta = value && typeof value === 'object' ? (value as { meta?: Partial<ApiPaginationMeta> }).meta : null
+  const itemCount = Array.isArray(value)
+    ? value.length
+    : value && typeof value === 'object' && Array.isArray((value as { data?: unknown }).data)
+      ? (value as { data: unknown[] }).data.length
+      : 0
 
-  if (!meta) return defaultPaginationMeta(fallbackLimit)
+  if (!meta) {
+    return {
+      total: itemCount,
+      page: 1,
+      limit: fallbackLimit,
+      pageCount: Math.max(1, Math.ceil(itemCount / fallbackLimit)),
+      hasNextPage: itemCount > fallbackLimit,
+      hasPreviousPage: false,
+      isServerPaginated: false
+    }
+  }
 
   return {
     total: Number(meta.total) || 0,
@@ -37,7 +54,8 @@ export const toApiPaginationMeta = (value: unknown, fallbackLimit = 10): ApiPagi
     limit: Number(meta.limit) || fallbackLimit,
     pageCount: Math.max(1, Number(meta.pageCount) || 1),
     hasNextPage: Boolean(meta.hasNextPage),
-    hasPreviousPage: Boolean(meta.hasPreviousPage)
+    hasPreviousPage: Boolean(meta.hasPreviousPage),
+    isServerPaginated: true
   }
 }
 

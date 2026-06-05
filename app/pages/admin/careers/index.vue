@@ -78,7 +78,7 @@
       <AdminPagination
         v-model:page="careersPage"
         v-model:page-size="careersPageSize"
-        :total="careersPaginationMeta.total"
+        :total="careersPaginationTotal"
         label="positions"
       />
     </section>
@@ -156,7 +156,7 @@
       <AdminPagination
         v-model:page="applicationsPage"
         v-model:page-size="applicationsPageSize"
-        :total="applicationsPaginationMeta.total"
+        :total="applicationsPaginationTotal"
         label="applications"
       />
     </section>
@@ -289,11 +289,16 @@ const filteredCareers = computed(() => {
   )
 })
 
+const isCareersServerPaginated = computed(() => careersPaginationMeta.value.isServerPaginated)
+const careersPaginationTotal = computed(() => isCareersServerPaginated.value ? careersPaginationMeta.value.total : filteredCareers.value.length)
 const {
   currentPage: careersPage,
   pageSize: careersPageSize,
   paginatedItems: paginatedCareers
-} = useAdminPagination(filteredCareers)
+} = useAdminPagination(filteredCareers, 10, {
+  totalItems: careersPaginationTotal,
+  serverSide: isCareersServerPaginated
+})
 
 const fetchCareersPage = () => fetchCareers({
   page: careersPage.value,
@@ -302,11 +307,18 @@ const fetchCareersPage = () => fetchCareers({
 })
 
 const applicationsSource = computed(() => applications.value)
+const isApplicationsServerPaginated = computed(() => applicationsPaginationMeta.value.isServerPaginated)
+const applicationsPaginationTotal = computed(() => (
+  isApplicationsServerPaginated.value ? applicationsPaginationMeta.value.total : applicationsSource.value.length
+))
 const {
   currentPage: applicationsPage,
   pageSize: applicationsPageSize,
   paginatedItems: paginatedApplications
-} = useAdminPagination(applicationsSource)
+} = useAdminPagination(applicationsSource, 10, {
+  totalItems: applicationsPaginationTotal,
+  serverSide: isApplicationsServerPaginated
+})
 
 const fetchApplicationsPage = () => fetchApplications({
   page: applicationsPage.value,
@@ -437,11 +449,21 @@ onMounted(() => {
   fetchCategories()
 })
 
-watch([careersPage, careersPageSize, searchQuery], () => {
+watch([careersPage, careersPageSize, searchQuery], ([, , search], [, oldPageSize, oldSearch] = []) => {
+  if ((careersPageSize.value !== oldPageSize || search !== oldSearch) && careersPage.value !== 1) {
+    careersPage.value = 1
+    return
+  }
+
   fetchCareersPage()
 }, { immediate: true })
 
-watch([applicationsPage, applicationsPageSize], () => {
+watch([applicationsPage, applicationsPageSize], ([, size], [, oldPageSize] = []) => {
+  if (size !== oldPageSize && applicationsPage.value !== 1) {
+    applicationsPage.value = 1
+    return
+  }
+
   fetchApplicationsPage()
 }, { immediate: true })
 </script>

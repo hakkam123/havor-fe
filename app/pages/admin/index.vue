@@ -117,7 +117,7 @@
         <AdminPagination
           v-model:page="currentPage"
           v-model:page-size="pageSize"
-          :total="messagesPaginationMeta.total"
+          :total="dashboardMessagePaginationTotal"
           label="messages"
         />
       </div>
@@ -296,7 +296,14 @@ const dashboardMessages = computed(() => {
   if (messageFilter.value === 'read') return sortedMessages.value.filter((message) => message.is_read)
   return sortedMessages.value
 })
-const { currentPage, pageSize, paginatedItems: paginatedDashboardMessages } = useAdminPagination(dashboardMessages)
+const isDashboardMessageServerPaginated = computed(() => messagesPaginationMeta.value.isServerPaginated)
+const dashboardMessagePaginationTotal = computed(() => (
+  isDashboardMessageServerPaginated.value ? messagesPaginationMeta.value.total : dashboardMessages.value.length
+))
+const { currentPage, pageSize, paginatedItems: paginatedDashboardMessages } = useAdminPagination(dashboardMessages, 10, {
+  totalItems: dashboardMessagePaginationTotal,
+  serverSide: isDashboardMessageServerPaginated
+})
 const unreadMessages = computed(() => sortedMessages.value.filter((message) => !message.is_read).slice(0, 4))
 const latestApplications = computed(() => applications.value.slice(0, 4))
 
@@ -337,7 +344,12 @@ onMounted(async () => {
   refreshTimer = setInterval(refreshDashboard, 30000)
 })
 
-watch([currentPage, pageSize, messageFilter], () => {
+watch([currentPage, pageSize, messageFilter], ([, , filter], [, oldPageSize, oldFilter] = []) => {
+  if ((pageSize.value !== oldPageSize || filter !== oldFilter) && currentPage.value !== 1) {
+    currentPage.value = 1
+    return
+  }
+
   refreshDashboard()
 })
 

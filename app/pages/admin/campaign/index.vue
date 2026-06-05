@@ -95,7 +95,7 @@
       <AdminPagination
         v-model:page="currentPage"
         v-model:page-size="pageSize"
-        :total="paginationMeta.total"
+        :total="campaignPaginationTotal"
         label="campaigns"
       />
     </section>
@@ -242,7 +242,12 @@ const filteredCampaigns = computed(() => {
   )
 })
 
-const { currentPage, pageSize, paginatedItems: paginatedCampaigns } = useAdminPagination(filteredCampaigns)
+const isCampaignServerPaginated = computed(() => paginationMeta.value.isServerPaginated)
+const campaignPaginationTotal = computed(() => isCampaignServerPaginated.value ? paginationMeta.value.total : filteredCampaigns.value.length)
+const { currentPage, pageSize, paginatedItems: paginatedCampaigns } = useAdminPagination(filteredCampaigns, 10, {
+  totalItems: campaignPaginationTotal,
+  serverSide: isCampaignServerPaginated
+})
 
 const fetchCampaignPage = () => fetchCampaigns({
   page: currentPage.value,
@@ -374,7 +379,12 @@ onMounted(() => {
   fetchCategories()
 })
 
-watch([currentPage, pageSize, searchQuery, statusFilter], () => {
+watch([currentPage, pageSize, searchQuery, statusFilter], ([, , search, status], [, oldPageSize, oldSearch, oldStatus] = []) => {
+  if ((pageSize.value !== oldPageSize || search !== oldSearch || status !== oldStatus) && currentPage.value !== 1) {
+    currentPage.value = 1
+    return
+  }
+
   fetchCampaignPage()
 }, { immediate: true })
 </script>

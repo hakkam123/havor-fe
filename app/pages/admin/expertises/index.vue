@@ -69,7 +69,7 @@
       <AdminPagination
         v-model:page="currentPage"
         v-model:page-size="pageSize"
-        :total="paginationMeta.total"
+        :total="expertisePaginationTotal"
         label="expertises"
       />
     </section>
@@ -199,7 +199,12 @@ const filteredExpertises = computed(() => {
   )
 })
 
-const { currentPage, pageSize, paginatedItems: paginatedExpertises } = useAdminPagination(filteredExpertises)
+const isExpertiseServerPaginated = computed(() => paginationMeta.value.isServerPaginated)
+const expertisePaginationTotal = computed(() => isExpertiseServerPaginated.value ? paginationMeta.value.total : filteredExpertises.value.length)
+const { currentPage, pageSize, paginatedItems: paginatedExpertises } = useAdminPagination(filteredExpertises, 10, {
+  totalItems: expertisePaginationTotal,
+  serverSide: isExpertiseServerPaginated
+})
 
 const fetchExpertisePage = () => fetchExpertise({
   page: currentPage.value,
@@ -214,7 +219,12 @@ const stats = computed(() => [
   { label: 'Search Results', value: filteredExpertises.value.length, meta: 'Current filtered expertise count' }
 ])
 
-watch([currentPage, pageSize, searchQuery], () => {
+watch([currentPage, pageSize, searchQuery], ([, , search], [, oldPageSize, oldSearch] = []) => {
+  if ((pageSize.value !== oldPageSize || search !== oldSearch) && currentPage.value !== 1) {
+    currentPage.value = 1
+    return
+  }
+
   fetchExpertisePage()
 }, { immediate: true })
 

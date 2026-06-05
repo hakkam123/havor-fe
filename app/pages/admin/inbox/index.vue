@@ -80,7 +80,7 @@
           <AdminPagination
             v-model:page="currentPage"
             v-model:page-size="pageSize"
-            :total="paginationMeta.total"
+            :total="messagePaginationTotal"
             label="messages"
           />
         </div>
@@ -160,7 +160,12 @@ const messagesForCurrentFilter = () => {
 }
 
 const filteredMessages = computed(messagesForCurrentFilter)
-const { currentPage, pageSize, paginatedItems: paginatedMessages } = useAdminPagination(filteredMessages, 8)
+const isMessageServerPaginated = computed(() => paginationMeta.value.isServerPaginated)
+const messagePaginationTotal = computed(() => isMessageServerPaginated.value ? paginationMeta.value.total : filteredMessages.value.length)
+const { currentPage, pageSize, paginatedItems: paginatedMessages } = useAdminPagination(filteredMessages, 10, {
+  totalItems: messagePaginationTotal,
+  serverSide: isMessageServerPaginated
+})
 
 const fetchMessagePage = async () => {
   await fetchMessages({
@@ -223,7 +228,12 @@ const confirmDelete = async () => {
   }
 }
 
-watch([currentPage, pageSize, messageFilter], () => {
+watch([currentPage, pageSize, messageFilter], ([, , filter], [, oldPageSize, oldFilter] = []) => {
+  if ((pageSize.value !== oldPageSize || filter !== oldFilter) && currentPage.value !== 1) {
+    currentPage.value = 1
+    return
+  }
+
   fetchMessagePage()
 }, { immediate: true })
 </script>

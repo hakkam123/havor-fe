@@ -77,7 +77,7 @@
       <AdminPagination
         v-model:page="currentPage"
         v-model:page-size="pageSize"
-        :total="paginationMeta.total"
+        :total="workPaginationTotal"
         label="works"
       />
     </section>
@@ -209,7 +209,12 @@ const filteredWorks = computed(() => {
   )
 })
 
-const { currentPage, pageSize, paginatedItems: paginatedWorks } = useAdminPagination(filteredWorks)
+const isWorkServerPaginated = computed(() => paginationMeta.value.isServerPaginated)
+const workPaginationTotal = computed(() => isWorkServerPaginated.value ? paginationMeta.value.total : filteredWorks.value.length)
+const { currentPage, pageSize, paginatedItems: paginatedWorks } = useAdminPagination(filteredWorks, 10, {
+  totalItems: workPaginationTotal,
+  serverSide: isWorkServerPaginated
+})
 
 const fetchWorkPage = () => fetchWorks({
   page: currentPage.value,
@@ -228,7 +233,12 @@ onMounted(async () => {
   await Promise.all([fetchCategories(), fetchClients()])
 })
 
-watch([currentPage, pageSize, searchQuery], () => {
+watch([currentPage, pageSize, searchQuery], ([, , search], [, oldPageSize, oldSearch] = []) => {
+  if ((pageSize.value !== oldPageSize || search !== oldSearch) && currentPage.value !== 1) {
+    currentPage.value = 1
+    return
+  }
+
   fetchWorkPage()
 }, { immediate: true })
 

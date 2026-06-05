@@ -64,7 +64,7 @@
       <AdminPagination
         v-model:page="currentPage"
         v-model:page-size="pageSize"
-        :total="paginationMeta.total"
+        :total="bannerPaginationTotal"
         label="banners"
       />
     </section>
@@ -156,7 +156,12 @@ const form = ref({
   mediaFileName: ''
 })
 
-const { currentPage, pageSize, paginatedItems: paginatedBanners } = useAdminPagination(banners, 9)
+const isBannerServerPaginated = computed(() => paginationMeta.value.isServerPaginated)
+const bannerPaginationTotal = computed(() => isBannerServerPaginated.value ? paginationMeta.value.total : banners.value.length)
+const { currentPage, pageSize, paginatedItems: paginatedBanners } = useAdminPagination(banners, 10, {
+  totalItems: bannerPaginationTotal,
+  serverSide: isBannerServerPaginated
+})
 
 const fetchBannerPage = () => fetchBanners({
   page: currentPage.value,
@@ -170,7 +175,12 @@ const stats = computed(() => [
   { label: 'Pages Covered', value: new Set(banners.value.map((item) => item.page_name).filter(Boolean)).size, meta: 'Distinct banner destinations' }
 ])
 
-watch([currentPage, pageSize], () => {
+watch([currentPage, pageSize], ([, size], [, oldPageSize] = []) => {
+  if (size !== oldPageSize && currentPage.value !== 1) {
+    currentPage.value = 1
+    return
+  }
+
   fetchBannerPage()
 }, { immediate: true })
 

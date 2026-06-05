@@ -90,7 +90,7 @@
       <AdminPagination
         v-model:page="currentPage"
         v-model:page-size="pageSize"
-        :total="paginationMeta.total"
+        :total="newsPaginationTotal"
         label="articles"
       />
     </section>
@@ -241,7 +241,12 @@ const filteredNews = computed(() => {
   )
 })
 
-const { currentPage, pageSize, paginatedItems: paginatedNews } = useAdminPagination(filteredNews)
+const isNewsServerPaginated = computed(() => paginationMeta.value.isServerPaginated)
+const newsPaginationTotal = computed(() => isNewsServerPaginated.value ? paginationMeta.value.total : filteredNews.value.length)
+const { currentPage, pageSize, paginatedItems: paginatedNews } = useAdminPagination(filteredNews, 10, {
+  totalItems: newsPaginationTotal,
+  serverSide: isNewsServerPaginated
+})
 
 const fetchNewsPage = () => fetchNews({
   page: currentPage.value,
@@ -373,7 +378,12 @@ onMounted(() => {
   fetchCategories()
 })
 
-watch([currentPage, pageSize, searchQuery, statusFilter], () => {
+watch([currentPage, pageSize, searchQuery, statusFilter], ([, , search, status], [, oldPageSize, oldSearch, oldStatus] = []) => {
+  if ((pageSize.value !== oldPageSize || search !== oldSearch || status !== oldStatus) && currentPage.value !== 1) {
+    currentPage.value = 1
+    return
+  }
+
   fetchNewsPage()
 }, { immediate: true })
 </script>

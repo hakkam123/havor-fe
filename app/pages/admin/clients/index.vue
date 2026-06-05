@@ -81,7 +81,7 @@
       <AdminPagination
         v-model:page="currentPage"
         v-model:page-size="pageSize"
-        :total="paginationMeta.total"
+        :total="clientPaginationTotal"
         label="clients"
       />
     </section>
@@ -182,7 +182,12 @@ const filteredClients = computed(() => {
   )
 })
 
-const { currentPage, pageSize, paginatedItems: paginatedClients } = useAdminPagination(filteredClients)
+const isClientServerPaginated = computed(() => paginationMeta.value.isServerPaginated)
+const clientPaginationTotal = computed(() => isClientServerPaginated.value ? paginationMeta.value.total : filteredClients.value.length)
+const { currentPage, pageSize, paginatedItems: paginatedClients } = useAdminPagination(filteredClients, 10, {
+  totalItems: clientPaginationTotal,
+  serverSide: isClientServerPaginated
+})
 
 const fetchClientPage = () => fetchClients({
   page: currentPage.value,
@@ -190,7 +195,12 @@ const fetchClientPage = () => fetchClients({
   search: searchQuery.value.trim()
 })
 
-watch([currentPage, pageSize, searchQuery], () => {
+watch([currentPage, pageSize, searchQuery], ([, , search], [, oldPageSize, oldSearch] = []) => {
+  if ((pageSize.value !== oldPageSize || search !== oldSearch) && currentPage.value !== 1) {
+    currentPage.value = 1
+    return
+  }
+
   fetchClientPage()
 }, { immediate: true })
 

@@ -17,7 +17,8 @@
       </div>
 
       <p class="min-w-[9rem] text-right">
-        {{ startItem }}-{{ endItem }} of {{ normalizedTotal }} {{ label }}
+        <span v-if="normalizedTotal">Showing {{ startItem }}-{{ endItem }} of {{ normalizedTotal }} {{ label }}</span>
+        <span v-else>Showing 0 of 0 {{ label }}</span>
       </p>
 
       <button

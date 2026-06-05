@@ -96,7 +96,7 @@
       <AdminPagination
         v-model:page="currentPage"
         v-model:page-size="pageSize"
-        :total="paginationMeta.total"
+        :total="productPaginationTotal"
         label="products"
       />
     </section>
@@ -226,7 +226,12 @@ const filteredProducts = computed(() => {
   )
 })
 
-const { currentPage, pageSize, paginatedItems: paginatedProducts } = useAdminPagination(filteredProducts)
+const isProductServerPaginated = computed(() => paginationMeta.value.isServerPaginated)
+const productPaginationTotal = computed(() => isProductServerPaginated.value ? paginationMeta.value.total : filteredProducts.value.length)
+const { currentPage, pageSize, paginatedItems: paginatedProducts } = useAdminPagination(filteredProducts, 10, {
+  totalItems: productPaginationTotal,
+  serverSide: isProductServerPaginated
+})
 
 const fetchProductPage = () => fetchProducts({
   page: currentPage.value,
@@ -246,7 +251,12 @@ onMounted(async () => {
   await fetchCategories()
 })
 
-watch([currentPage, pageSize, searchQuery, selectedCategoryId], () => {
+watch([currentPage, pageSize, searchQuery, selectedCategoryId], ([, , search, category], [, oldPageSize, oldSearch, oldCategory] = []) => {
+  if ((pageSize.value !== oldPageSize || search !== oldSearch || category !== oldCategory) && currentPage.value !== 1) {
+    currentPage.value = 1
+    return
+  }
+
   fetchProductPage()
 }, { immediate: true })
 
