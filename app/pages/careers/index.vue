@@ -177,7 +177,7 @@
           </div>
 
           <div class="mt-5 grid gap-3 sm:grid-cols-2">
-            <div class="border-t border-[#e2eaf5] pt-3">
+            <div class="pt-3">
               <p class="brand-meta">Role Category</p>
               <p class="mt-1 text-sm font-semibold text-[#0e2344]">{{ roleCategoryFor(selectedCareer) }}</p>
             </div>
