@@ -21,6 +21,7 @@ export const useNews = (options: UseNewsOptions = {}) => {
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
   const manualLoading = ref(false)
+  const manualNews = ref<NewsItem[] | null>(null)
   const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
   const includeDrafts = Boolean(options.includeDrafts)
   const newsQueryKey = ['news', { includeDrafts }] as const
@@ -61,7 +62,7 @@ export const useNews = (options: UseNewsOptions = {}) => {
     enabled: options.immediate !== false
   })
 
-  const news = computed(() => newsQuery.data.value || [])
+  const news = computed(() => manualNews.value || newsQuery.data.value || [])
   const isLoading = computed(() => manualLoading.value || newsQuery.isLoading.value || newsQuery.isFetching.value)
   const error = computed(() => mutationError.value || (newsQuery.error.value ? 'Unable to load news right now.' : null))
 
@@ -70,7 +71,8 @@ export const useNews = (options: UseNewsOptions = {}) => {
     manualLoading.value = true
     try {
       const items = await loadNews(params)
-      queryClient.setQueryData(newsQueryKey.value, items)
+      manualNews.value = items
+      queryClient.setQueryData(newsQueryKey, items)
       return items
     } catch (fetchError) {
       console.error('Failed to fetch news', fetchError)

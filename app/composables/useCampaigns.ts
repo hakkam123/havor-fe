@@ -21,6 +21,7 @@ export const useCampaigns = (options: UseCampaignOptions = {}) => {
   const queryClient = useQueryClient()
   const mutationError = ref<string | null>(null)
   const manualLoading = ref(false)
+  const manualCampaigns = ref<CampaignItem[] | null>(null)
   const paginationMeta = ref<ApiPaginationMeta>(toApiPaginationMeta(null))
   const includeDrafts = Boolean(options.includeDrafts)
   const campaignQueryKey = ['campaigns', { includeDrafts }] as const
@@ -61,7 +62,7 @@ export const useCampaigns = (options: UseCampaignOptions = {}) => {
     enabled: options.immediate !== false
   })
 
-  const campaigns = computed(() => campaignsQuery.data.value || [])
+  const campaigns = computed(() => manualCampaigns.value || campaignsQuery.data.value || [])
   const isLoading = computed(() => manualLoading.value || campaignsQuery.isLoading.value || campaignsQuery.isFetching.value)
   const error = computed(() => mutationError.value || (campaignsQuery.error.value ? 'Unable to load campaigns right now.' : null))
 
@@ -70,7 +71,8 @@ export const useCampaigns = (options: UseCampaignOptions = {}) => {
     manualLoading.value = true
     try {
       const items = await loadCampaigns(params)
-      queryClient.setQueryData(campaignQueryKey.value, items)
+      manualCampaigns.value = items
+      queryClient.setQueryData(campaignQueryKey, items)
       return items
     } catch (fetchError) {
       console.error('Failed to fetch campaigns', fetchError)

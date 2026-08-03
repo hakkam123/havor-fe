@@ -2,6 +2,7 @@ const legacyApiBase = process.env.VITE_API_BASE_URL?.replace(/\/+$/, '')
 const legacyApiEndpoint = legacyApiBase
   ? legacyApiBase.endsWith('/api') ? legacyApiBase : `${legacyApiBase}/api`
   : ''
+const stagingApiEndpoint = 'https://tplnext.com/havor/api'
 const defaultApiBase = '/havor/api'
 const tinymceApiKey =
   process.env.NUXT_PUBLIC_TINYMCE_API_KEY
@@ -45,8 +46,13 @@ export default defineNuxtConfig({
     '@vueuse/motion/nuxt'
   ],
   css: ['~/assets/css/tailwind.css'],
+  routeRules: {
+    '/havor/api/**': {
+      proxy: `${process.env.NUXT_API_SERVER_BASE || legacyApiEndpoint || stagingApiEndpoint}/**`
+    }
+  },
   runtimeConfig: {
-    apiServerBase: process.env.NUXT_API_SERVER_BASE || legacyApiEndpoint || '',
+    apiServerBase: process.env.NUXT_API_SERVER_BASE || legacyApiEndpoint || stagingApiEndpoint,
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || legacyApiEndpoint || defaultApiBase,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || '',

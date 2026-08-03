@@ -42,13 +42,15 @@ export const useAuthStore = defineStore('auth', () => {
   const getApiBase = () => {
     const apiBase = String(config.public.apiBase || '').replace(/\/+$/, '')
     const serverApiBase = String(config.apiServerBase || '').replace(/\/+$/, '')
+    const legacyApiBase = String(import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+    const legacyApiEndpoint = legacyApiBase.endsWith('/api') ? legacyApiBase : `${legacyApiBase}/api`
 
     if (!apiBase) {
       throw new Error('NUXT_PUBLIC_API_BASE is not configured')
     }
 
-    if (import.meta.server && apiBase.startsWith('/') && serverApiBase) {
-      return serverApiBase
+    if (import.meta.server && apiBase.startsWith('/')) {
+      return serverApiBase || legacyApiEndpoint
     }
 
     return apiBase

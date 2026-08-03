@@ -21,8 +21,8 @@ const getApiBaseUrl = () => {
   const apiBaseUrl = String(config.public.apiBase || (legacyApiBaseUrl ? legacyApiEndpoint : '/havor/api')).replace(/\/+$/, '')
   const serverApiBaseUrl = String(config.apiServerBase || '').replace(/\/+$/, '')
 
-  if (import.meta.server && apiBaseUrl.startsWith('/') && serverApiBaseUrl) {
-    return serverApiBaseUrl
+  if (import.meta.server && apiBaseUrl.startsWith('/')) {
+    return serverApiBaseUrl || legacyApiEndpoint
   }
 
   if (!apiBaseUrl) {
